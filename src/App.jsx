@@ -6,9 +6,9 @@ import {
   ChevronLeft, ChevronRight, WandSparkles
 } from 'lucide-react'
 import * as si from 'simple-icons'
-
+import { Counter } from 'counterapi';
 import {
-  LINKS, HIGHLIGHTS, NOW_ROLES, PAST_ROLES, PROJECTS, HONOURS,
+  COUNTER, LINKS, HIGHLIGHTS, NOW_ROLES, PAST_ROLES, PROJECTS, HONOURS,
   TITLES, YT_VIDEOS, SECTION_LINKS, MEDIUM_POSTS
 } from './data'
 
@@ -165,6 +165,41 @@ const ScrollDown = () => {
     </AnimatePresence>
   )
 }
+
+const useSiteViews = () => {
+  const [views, setViews] = React.useState(null);
+  React.useEffect(() => {
+    let mounted = true;
+    const onceKey = `counterapi:${COUNTER.workspace}:${COUNTER.counter}:hit`;
+    const shouldHit = !sessionStorage.getItem(onceKey);
+
+    const client = new Counter({
+      workspace: COUNTER.workspace,
+      timeout: 5000,
+    });
+
+    (async () => {
+      try {
+        const res = shouldHit
+          ? await client.up(COUNTER.counter)
+          : await client.get(COUNTER.counter);
+
+        const v =
+          res?.data?.up_count ??
+          res?.value ??
+          null;
+
+        if (shouldHit) sessionStorage.setItem(onceKey, '1');
+        if (mounted && v != null) setViews(v);
+      } catch (e) {
+        console.error('CounterAPI error:', e);
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, []);
+  return views;
+};
 
 const Header = () => {
   const active = useScrollSpy(SECTION_LINKS.map((s) => s.href), 160)
@@ -764,6 +799,8 @@ const Contact = () => (
 )
 
 export default function App() {
+  const views = useSiteViews();
+
   React.useEffect(() => {
     document.title = 'Akash James — AI Architect'
     const upsert = (sel, create) => { let el = document.head.querySelector(sel); if (!el) { el = create(); document.head.appendChild(el) } return el }
@@ -805,7 +842,12 @@ export default function App() {
       <Publications/>
       <Honours/>
       <Contact/>
-      <footer className="pb-8 text-center text-xs text-zinc-500">© {new Date().getFullYear()} Akash James • Built on Tailwind • Deployed on GitHub Pages</footer>
+      <footer className="pb-8 text-center text-xs text-zinc-500">
+        © {new Date().getFullYear()} Akash James • Built on Tailwind • Deployed on GitHub Pages
+        <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-zinc-300 align-middle">
+          {views == null ? 'visits — …' : `visits — ${views.toLocaleString()}`}
+        </span>
+      </footer>
     </main>
   )
 }

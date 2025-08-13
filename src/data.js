@@ -1,4 +1,7 @@
-// Static content & links (pure data only)
+export const COUNTER = {
+  workspace: 'akashjamesdev',
+  counter:   'aj-visits'
+};
 
 export const LINKS = {
   linkedin: 'https://linkedin.com/in/akashjames',
