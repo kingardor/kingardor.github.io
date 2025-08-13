@@ -304,20 +304,28 @@ const Hero = () => {
 
 const PopCard = ({ kpi, title, sub, gradient }) => (
   <motion.div
-    whileHover={{ y: -6, scale: 1.02 }}
+    whileHover={{ y: -4, scale: 1.01 }}
     transition={{ type: 'spring', stiffness: 220, damping: 18 }}
     className="relative group"
   >
-    {/* Glow border */}
+    {/* Subtle glow (muted on mobile) */}
     <div
       aria-hidden
-      className={`absolute -inset-[1.5px] rounded-2xl bg-gradient-to-br ${gradient} opacity-80 blur-sm transition-opacity group-hover:opacity-100`}
+      className={`absolute -inset-[1px] rounded-xl bg-gradient-to-br ${gradient} opacity-50 blur-md md:opacity-80 md:blur-lg transition-opacity group-hover:opacity-100`}
     />
     {/* Inner card */}
-    <div className="relative rounded-2xl border border-white/10 bg-zinc-900/60 p-5 sm:p-6 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
-      <div className="text-4xl font-extrabold tracking-tight text-zinc-50">{kpi}</div>
-      <div className="mt-1 text-base font-medium text-zinc-100">{title}</div>
-      {sub ? <div className="mt-1 text-sm text-zinc-400">{sub}</div> : null}
+    <div className="relative rounded-xl border border-white/10 bg-zinc-900/60 p-4 sm:p-5 md:p-6 backdrop-blur-md shadow-lg md:shadow-2xl">
+      <div className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-50">
+        {kpi}
+      </div>
+      <div className="mt-0.5 text-sm sm:text-base font-medium text-zinc-100">
+        {title}
+      </div>
+      {sub ? (
+        <div className="mt-0.5 text-xs sm:text-sm text-zinc-400">
+          {sub}
+        </div>
+      ) : null}
     </div>
   </motion.div>
 )
@@ -330,9 +338,9 @@ const Highlights = () => {
     'from-emerald-400 via-teal-500 to-cyan-500',
   ]
   return (
-    <Section id="highlights" className="pt-12">
-      {/* no visible title per requirement */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <Section id="highlights" className="pt-6 sm:pt-8">
+      {/* No visible title */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
         {HIGHLIGHTS.map((h, i) => (
           <PopCard
             key={h.title}
