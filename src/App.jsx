@@ -3,13 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight, Mail, ExternalLink, Award, BookOpen, FileCode2, Cpu,
   Brain, Camera, Sparkles, ShieldCheck, GraduationCap, BadgeCheck,
-  ChevronLeft, ChevronRight, WandSparkles
+  ChevronLeft, ChevronRight, WandSparkles,
+  Network
 } from 'lucide-react'
 import * as si from 'simple-icons'
 import { Counter } from 'counterapi';
 import {
   COUNTER, LINKS, HIGHLIGHTS, NOW_ROLES, PAST_ROLES, PROJECTS, HONOURS,
-  TITLES, YT_VIDEOS, SECTION_LINKS, MEDIUM_POSTS
+  YT_VIDEOS, SECTION_LINKS, MEDIUM_POSTS,
+  ASSISTANT, CHAT_SUGGESTIONS
 } from './data'
 
 const cn = (...c) => c.filter(Boolean).join(' ')
@@ -57,9 +59,9 @@ const BrandIcon = ({ icon, className }) => (
 
 // BADGES kept here (contains JSX icons)
 const BADGES = [
+  { icon: <Network className="h-4 w-4"/>, label: 'Founding AI Architect — Stealth (Agentic Video Data Lake)' },
   { icon: <WandSparkles className="h-4 w-4"/>, label: 'Generative AI Builder' },
   { icon: <ShieldCheck className="h-4 w-4"/>, label: 'Z by HP Global Data Science Ambassador' },
-  { icon: <Cpu className="h-4 w-4"/>, label: 'NVIDIA Jetson AI Ambassador' },
   { icon: <BadgeCheck className="h-4 w-4"/>, label: 'Jetson AI Research Lab Member' },
 ]
 
@@ -71,7 +73,20 @@ const SKILLS = [
   { icon: <Cpu className="h-4 w-4"/>, name: 'Acceleration', items: ['DeepStream','TensorRT','CUDA','Triton'] },
 ]
 
-// Scroll spy: returns active section id (without #)
+const useHashPath = () => {
+  const [path, setPath] = React.useState(location.hash.slice(1) || '/')
+  React.useEffect(() => {
+    const onHash = () => setPath(location.hash.slice(1) || '/')
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  return path
+}
+const goChat = (prompt) => {
+  const q = prompt ? `?q=${encodeURIComponent(prompt)}` : ''
+  location.hash = `/chat${q}`
+}
+
 const useScrollSpy = (hashes, offset = 160) => {
   const [active, setActive] = React.useState(hashes[0]?.slice(1) || '')
   React.useEffect(() => {
@@ -140,7 +155,7 @@ const ScrollDown = () => {
         <motion.a
           href="#highlights"
           aria-label="Scroll to highlights"
-          className="group absolute inset-x-0 bottom-6 z-20 flex justify-center"
+          className="group absolute inset-x-0 bottom-10 sm:bottom-10 z-20 flex justify-center"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 4 }}
@@ -157,7 +172,7 @@ const ScrollDown = () => {
                   className="mt-1 h-1.5 w-1.5 rounded-full bg-white/90"
                 />
               </div>
-              <span className="text-xs font-medium text-zinc-300/80 group-hover:text-zinc-100">Scroll</span>
+              <span className="text-xs font-medium text-zinc-300/80 group-hover:text-zinc-100">Scroll to see more!</span>
             </div>
           </div>
         </motion.a>
@@ -245,58 +260,121 @@ const Header = () => {
   )
 }
 
+const ChatBar = ({ onSubmit }) => {
+  const [text, setText] = React.useState('')
+  return (
+    <div className="relative w-full max-w-3xl">
+      {/* glow */}
+      <div aria-hidden className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-fuchsia-500/30 via-pink-500/25 to-rose-500/30 blur-xl" />
+      {/* shell */}
+      <form
+        onSubmit={(e)=>{e.preventDefault(); if(text.trim()) onSubmit(text.trim())}}
+        className="relative rounded-[1.5rem] bg-zinc-900/85 backdrop-blur border border-white/10 px-5 py-3.5 sm:px-6 sm:py-4 shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
+      >
+        <input
+          value={text}
+          onChange={(e)=>setText(e.target.value)}
+          placeholder={`Ask ${ASSISTANT.name} (Versatile Online Intelligent Cognitive Agent) anything about me!`}
+          className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-sm sm:text-base"
+          aria-label="Ask Veronica"
+        />
+        <button
+          type="submit"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-100 px-3 py-1.5 text-sm"
+        >
+          Chat
+        </button>
+      </form>
+
+      {/* suggestion chips */}
+      <div className="mt-3 flex flex-wrap justify-center gap-2">
+        {CHAT_SUGGESTIONS.map((s)=>(
+          <button
+            key={s}
+            onClick={()=>onSubmit(s)}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-200 hover:bg-white/10"
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const AnimatedBadges = () => {
+  const container = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+  };
+  const item = {
+    hidden: { opacity: 0, y: 6, scale: 0.98 },
+    show:   { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 320, damping: 22 } },
+  };
+
+  return (
+    <motion.div
+      className="mt-4 flex flex-wrap justify-center gap-2"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      {BADGES.map((b, i) => (
+        <motion.div
+          key={i}
+          variants={item}
+          whileHover={{ y: -2, scale: 1.02 }}
+          className="relative group"
+        >
+          {/* soft, animated glow behind each pill */}
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -inset-2 rounded-full
+                       bg-gradient-to-r from-fuchsia-500/25 via-pink-500/25 to-rose-500/25
+                       blur-md"
+            animate={{ opacity: [0, 0.75, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.12 }}
+          />
+          <Pill className="bg-white/5">
+            {b.icon}
+            {b.label}
+          </Pill>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+};
+
+
 const Hero = () => {
   const [idx, setIdx] = React.useState(0)
-  React.useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % TITLES.length), 2800)
-    return () => clearInterval(t)
-  }, [])
+  // React.useEffect(() => {
+  //   const t = setInterval(() => setIdx((i) => (i + 1) % TITLES.length), 2800)
+  //   return () => clearInterval(t)
+  // }, [])
 
   return (
     <section id="top" className="relative h-[100svh] w-full overflow-hidden">
       <img src="/hero.jpg" alt="Akash James" className="absolute inset-0 h-full w-full object-cover brightness-[.65] saturate-90" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/55 to-black/80"/>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(2,6,23,0.2),transparent_55%)]"/>
-
-      <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-6 text-center">
+      <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-center
+                justify-end px-6 text-center gap-5 sm:gap-6
+                pb-28 sm:pb-36 md:pb-44">
+            
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
           className="text-balance text-4xl font-extrabold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl"
         >
           Akash <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-fuchsia-400 to-red-400">James</span>
         </motion.h1>
 
-        <div className="mt-4 h-8 sm:h-9">
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={idx}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.35 }}
-              className="text-sm font-medium text-zinc-300 sm:text-base"
-            >
-              {TITLES[idx]}
-            </motion.p>
-          </AnimatePresence>
-        </div>
+        <AnimatedBadges />
 
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          {BADGES.map((b, i) => (
-            <Pill key={i}>
-              {b.icon}
-              {b.label}
-            </Pill>
-          ))}
-        </div>
-
-        <div className="mt-8 flex flex-wrap gap-3">
-          <A href="#projects">See work <ArrowRight className="h-4 w-4"/></A>
-          <A href="#contact" className="border-fuchsia-500/40 bg-fuchsia-500/10 hover:bg-fuchsia-500/20">Contact</A>
-        </div>
+        {/* chat bar */}
+        <ChatBar onSubmit={goChat} />
       </div>
+
       <ScrollDown />
     </section>
   )
@@ -806,8 +884,73 @@ const Contact = () => (
   </Section>
 )
 
+const parseSearch = (s) => Object.fromEntries(new URLSearchParams(s).entries())
+
+const ChatPage = () => {
+  const { q='' } = React.useMemo(()=>parseSearch(location.hash.split('?')[1]||''), [])
+  const [messages, setMessages] = React.useState(
+    q ? [{ role:'user', content:q }] : []
+  )
+  const [input, setInput] = React.useState('')
+
+  const send = (text) => {
+    if (!text.trim()) return
+    setMessages((m)=>[...m, { role:'user', content:text.trim() }])
+    setInput('')
+    // TODO: call backend proxy → stream response; for now, stub
+    setMessages((m)=>[...m, { role:'assistant', content:`(Coming soon) ${ASSISTANT.name} will answer here.` }])
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#0b0b0e] via-[#0b0b0e] to-[#0b1220] text-zinc-100">
+      <div className="mx-auto max-w-3xl px-4 pt-6 pb-24">
+        <div className="mb-6 flex items-center justify-between">
+          <a href="#/" className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10">← Home</a>
+          <div className="text-sm text-zinc-400">Chat with {ASSISTANT.name}</div>
+        </div>
+
+        <div className="space-y-4">
+          {messages.map((m,i)=>(
+            <div key={i} className={m.role==='user' ? 'text-right' : 'text-left'}>
+              <div className={cn(
+                'inline-block max-w-[85%] rounded-2xl px-4 py-2 text-sm sm:text-base',
+                m.role==='user'
+                  ? 'bg-fuchsia-500/15 border border-fuchsia-400/20'
+                  : 'bg-white/5 border border-white/10'
+              )}>
+                {m.content}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* composer */}
+      <div className="fixed inset-x-0 bottom-0 z-20 bg-gradient-to-t from-[#0b0b0e] to-transparent">
+        <div className="mx-auto max-w-3xl px-4 pb-6">
+          <form
+            onSubmit={(e)=>{e.preventDefault(); send(input)}}
+            className="relative rounded-2xl bg-zinc-900/85 backdrop-blur border border-white/10 px-4 py-3"
+          >
+            <input
+              value={input}
+              onChange={(e)=>setInput(e.target.value)}
+              placeholder={`Message ${ASSISTANT.name}…`}
+              className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-sm sm:text-base"
+            />
+            <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-100 px-3 py-1.5 text-sm">
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const views = useSiteViews();
+  const path = useHashPath();
 
   React.useEffect(() => {
     document.title = 'Akash James — AI Architect'
@@ -836,6 +979,9 @@ export default function App() {
       jobTitle: 'AI Architect'
     })
   }, [])
+
+  if (path.startsWith('/chat')) return <ChatPage />
+
   return (
     <main className="min-h-screen scroll-smooth font-[ui-sans-serif] text-zinc-100 antialiased">
       <BgFX/>

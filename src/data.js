@@ -1,3 +1,13 @@
+export const ASSISTANT = { name: "Veronica" };
+
+export const CHAT_SUGGESTIONS = [
+  "Give me a 10-sec intro",
+  "Show your top 3 projects",
+  "What’s your current stack?",
+  "Link the NVIDIA GTC talk",
+  "How can I contact you?"
+];
+
 export const COUNTER = {
   workspace: 'akashjamesdev',
   counter:   'aj-visits'
@@ -65,13 +75,6 @@ export const PROJECTS = [
 export const HONOURS = [
   { title: 'Patent: Face Image Matching based on Feature Comparison', url: 'https://www.ipqwery.com/ipowner/en/owner/ip/1255518-sparkcognition-inc.html?rgk=IPType&rgk=Jurisdiction&rvk=Patent&rvk=WIPO' },
   { title: 'Ambassador of the Month — Z by HP', url: 'https://community.datascience.hp.com/community-spotlight-55/ambassador-of-the-month-akash-james-232' },
-];
-
-export const TITLES = [
-  'Founding AI Architect — Stealth (Agentic Video Data Lake)',
-  'Generative AI • qLoRA • SFT • DPO',
-  'Multimodal RAG • Qdrant • GraphRAG',
-  'Edge/Video AI • DeepStream • TensorRT'
 ];
 
 export const YT_VIDEOS = [
