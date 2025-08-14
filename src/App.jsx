@@ -14,10 +14,12 @@ import YouTube from './sections/YouTube'
 import Publications from './sections/Publications'
 import Honours from './sections/Honours'
 import Contact from './sections/Contact'
-import ChatPage from './sections/ChatPage'
+import ChatPage from './sections/Chat/ChatPage'
 
 const goChat = (prompt) => {
-  const q = prompt ? `?q=${encodeURIComponent(prompt)}` : ''
+  const seed = (prompt || '').trim()
+  if (seed) sessionStorage.setItem('chat:seed', seed)
+  const q = seed ? `?q=${encodeURIComponent(seed)}` : ''
   location.hash = `/chat${q}`
 }
 

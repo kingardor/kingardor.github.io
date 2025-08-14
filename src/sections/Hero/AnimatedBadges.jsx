@@ -1,6 +1,7 @@
 import React from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Pill } from '../../components/Primitives'
+import useIsMobile from '../../hooks/useIsMobile'
 import { WandSparkles, ShieldCheck, BadgeCheck, Network } from 'lucide-react'
 
 const BADGES = [
@@ -11,25 +12,48 @@ const BADGES = [
 ]
 
 export default function AnimatedBadges() {
-  const container = { hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } }
-  const item = { hidden: { opacity: 0, y: 6, scale: 0.98 }, show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 320, damping: 22 } } }
+  const isMobile = useIsMobile()
+  const COLS = 1
+  const [i, setI] = React.useState(0)
+
+  React.useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % BADGES.length), 1400) // quick cycle
+    return () => clearInterval(t)
+  }, [])
+
+  const visible = Array.from(
+    { length: Math.min(COLS, BADGES.length) },
+    (_, k) => BADGES[(i + k) % BADGES.length]
+  )
 
   return (
-    <motion.div className="mt-4 flex flex-wrap justify-center gap-2" variants={container} initial="hidden" animate="show">
-      {BADGES.map((b, i) => (
-        <motion.div key={i} variants={item} whileHover={{ y: -2, scale: 1.02 }} className="relative group">
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute -inset-2 rounded-full bg-gradient-to-r from-fuchsia-500/25 via-pink-500/25 to-rose-500/25 blur-md"
-            animate={{ opacity: [0, 0.75, 0] }}
-            transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.12 }}
-          />
-          <Pill className="bg-white/5">
-            {b.icon}
-            {b.label}
-          </Pill>
-        </motion.div>
-      ))}
-    </motion.div>
+    <div className="mt-2 sm:mt-3 w-full max-w-4xl">
+      <div className="flex flex-wrap justify-center gap-2 md:gap-2.5">
+        <AnimatePresence initial={false} mode="popLayout">
+          {visible.map((b, idx) => (
+            <motion.div
+              key={b.label + i}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22 }}
+              className="relative"
+            >
+              {/* soft glow, non-interactive */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-2 rounded-full
+                           bg-gradient-to-r from-fuchsia-500/25 via-pink-500/25 to-rose-500/25
+                           blur-md"
+              />
+              <Pill className="relative bg-white/5">
+                {b.icon}
+                {b.label}
+              </Pill>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </div>
   )
 }
