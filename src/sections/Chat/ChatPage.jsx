@@ -5,6 +5,7 @@ import { ASSISTANT } from '../../data'
 import parseSearch from '../../utils/parseSearch'
 import VantaHalo from './VantaHalo'
 import { openSSE } from '../../utils/openSSE'
+import { ArrowRight, Square } from 'lucide-react'
 
 const API_BASE = ('https://veronica-proxy-vercel.vercel.app').replace(/\/$/, '')
 const HISTORY_KEY = 'chat:history:v1'
@@ -199,35 +200,48 @@ export default function ChatPage() {
           <div ref={endRef} />
         </div>
 
-        {/* composer */}
-        <div className="fixed inset-x-0 bottom-0 z-20 bg-gradient-to-t from-[#0b0b0e] to-transparent">
+        <div className="fixed inset-x-0 bottom-0 z-20 bg-gradient-to-t from-[#0b0b0e] to-transparent pb-[env(safe-area-inset-bottom)]">
           <div className="mx-auto max-w-3xl px-4 pb-6">
-            <form
-              onSubmit={(e)=>{ e.preventDefault(); const t = input; setInput(''); send(t) }}
-              className="relative rounded-2xl bg-zinc-900/85 backdrop-blur border border-white/10 px-4 py-3"
-            >
-              <input
-                value={input}
-                onChange={(e)=>setInput(e.target.value)}
-                placeholder={`Message ${ASSISTANT.name}…`}
-                className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-[16px] sm:text-base"
-                autoComplete="off"
-                spellCheck={false}
-              />
+            <div className="relative">
+              <form
+                onSubmit={(e)=>{ e.preventDefault(); const t = input; setInput(''); send(t) }}
+                className="relative rounded-2xl bg-zinc-900/85 backdrop-blur border border-white/10 px-4 py-3"
+              >
+                <input
+                  value={input}
+                  onChange={(e)=>setInput(e.target.value)}
+                  placeholder={`Message ${ASSISTANT.name}…`}
+                  className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-[16px] sm:text-base"
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                {/* no internal button */}
+              </form>
+
+              {/* external action button (outside the pill) */}
               {loading ? (
-                <button type="button" onClick={stop}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-100 px-3 py-1.5 text-sm">
-                  Stop
+                <button
+                  type="button"
+                  onClick={stop}
+                  className="absolute left-full top-1/2 -translate-y-1/2 ml-2 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 backdrop-blur p-2"
+                  aria-label="Stop generating"
+                >
+                  <Square className="h-4 w-4 text-zinc-100" />
                 </button>
               ) : (
-                <button type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-white/10 hover:bg-white/20 text-zinc-100 px-3 py-1.5 text-sm">
-                  Send
+                <button
+                  type="button"
+                  onClick={()=>{ const t = input; setInput(''); send(t) }}
+                  className="absolute left-full top-1/2 -translate-y-1/2 ml-2 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 backdrop-blur p-2"
+                  aria-label="Send"
+                >
+                  <ArrowRight className="h-4 w-4 text-zinc-100" />
                 </button>
               )}
-            </form>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   )
