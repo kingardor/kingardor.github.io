@@ -210,7 +210,7 @@ export default function ChatPage() {
                 value={input}
                 onChange={(e)=>setInput(e.target.value)}
                 placeholder={`Message ${ASSISTANT.name}…`}
-                className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-sm sm:text-base"
+                className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-[16px] sm:text-base"
                 autoComplete="off"
                 spellCheck={false}
               />
