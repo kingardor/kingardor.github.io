@@ -58,7 +58,7 @@ export default function ChatBar() {
           value={text}
           onChange={(e)=>setText(e.target.value)}
           placeholder={placeholder}
-          className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-sm sm:text-base"
+          className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-[16px] sm:text-base"
           aria-label={`Ask ${ASSISTANT.name}`}
           autoComplete="off"
           spellCheck={false}
