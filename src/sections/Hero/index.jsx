@@ -3,12 +3,9 @@ import { motion } from 'framer-motion'
 import AnimatedBadges from './AnimatedBadges'
 import ChatBar from './ChatBar'
 import ScrollDown from './ScrollDown'
-import VantaHalo from '../Chat/VantaHalo'
-
 export default function Hero({ onSubmit }) {
   return (
     <section id="top" className="relative h-[100svh] w-full overflow-hidden">
-      <VantaHalo />
       <img src="/hero.jpg" alt="Akash James" className="absolute inset-0 h-full w-full object-cover brightness-[.65] saturate-90 z-0" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/55 to-black/80 z-0"/>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(2,6,23,0.2),transparent_55%)] z-0"/>
