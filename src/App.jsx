@@ -9,6 +9,8 @@ import Highlights from './sections/Highlights/Highlights'
 import About from './sections/About/About'
 import Experience from './sections/Experience/Experience'
 import Skills from './sections/Skills/Skills'
+import Timeline from './sections/Timeline/Timeline'
+import SkillsChart from './sections/Skills/SkillsChart'
 import Projects from './sections/Projects/index'
 import YouTube from './sections/YouTube/YouTube'
 import Publications from './sections/Publications/Publications'
@@ -31,13 +33,15 @@ export default function App() {
 
   return (
     <main className="min-h-screen scroll-smooth font-[ui-sans-serif] text-zinc-100 antialiased">
-      <BgFX/>
       <Header/>
       <Hero onSubmit={goChat}/>
+      <BgFX/>
       <Highlights/>
       <About/>
       <Experience/>
+      <Timeline/>
       <Skills/>
+      <SkillsChart/>
       <Projects/>
       <YouTube/>
       <Publications/>

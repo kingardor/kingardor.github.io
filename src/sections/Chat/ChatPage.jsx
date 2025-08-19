@@ -50,21 +50,44 @@ function stripQueryFromHash() {
 
 function HeaderStatus({ loading }) {
   return (
-    <div className="text-sm text-zinc-400 flex items-center gap-2">
-      {loading ? (
-        <>
-          <span className="relative flex items-center gap-1">
-            <span>Thinking</span>
-            <span className="flex gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.2s]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.1s]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce" />
-            </span>
-          </span>
-        </>
-      ) : (
-        <span className="animate-pulse">Chat with {ASSISTANT.name}…</span>
-      )}
+    <div className="flex items-center gap-2">
+      <div
+        className={
+          "flex items-center gap-2 px-4 py-1.5 rounded-full shadow-lg border border-white/10 backdrop-blur-lg " +
+          (loading
+            ? "bg-gradient-to-r from-fuchsia-700/60 to-indigo-700/60 animate-pulse"
+            : "bg-zinc-900/70")
+        }
+        style={{
+          minWidth: 0,
+          fontWeight: 500,
+          fontSize: "1rem",
+          color: "#fff",
+          boxShadow: loading
+            ? "0 0 16px 2px rgba(236,72,153,0.18), 0 1.5px 8px 0 rgba(99,102,241,0.12)"
+            : "0 1.5px 8px 0 rgba(99,102,241,0.08)",
+        }}
+      >
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-fuchsia-500 to-indigo-500 shadow border border-white/20 mr-2">
+          {loading ? (
+            <svg className="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-30" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+              <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+            </svg>
+          ) : (
+            <span role="img" aria-label="Chat">💬</span>
+          )}
+        </span>
+        <span className="truncate">
+          {loading ? (
+            <>
+              Thinking...
+            </>
+          ) : (
+            <>Chat with {ASSISTANT.name}…</>
+          )}
+        </span>
+      </div>
     </div>
   )
 }
@@ -194,45 +217,75 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen bg-transparent text-zinc-100">
       <VantaHalo boost={loading} />
-      <div className="relative mx-auto max-w-3xl px-4 pt-6 pb-24">
+      <div className="relative mx-auto max-w-3xl px-4 pt-3 pb-6 flex flex-col h-[calc(100vh-4rem)]">
         <div className="mb-6 flex items-center justify-between">
           <a href="#/" className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10">← Home</a>
           <HeaderStatus loading={loading} />
         </div>
-        <div className="space-y-4">
-          {messages.map((m, i) => (
-            <div key={i} className={m.role === 'user' ? 'text-right' : 'text-left'}>
-              <div className={
-                'inline-block max-w-[85%] rounded-2xl px-4 py-2 text-sm sm:text-base ' +
-                (m.role === 'user'
-                  ? 'bg-fuchsia-700/30 border border-fuchsia-500/40'
-                  : 'bg-zinc-800/90 border border-zinc-700')
-              }>
-                {m.role === 'model'
-                  ? (
-                    m.content
-                      ? (
-                          <div className="prose prose-invert max-w-none whitespace-pre-wrap break-words">
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              components={{
-                                a: (props) => <a {...props} target="_blank" rel="noreferrer" />,
-                                code: ({inline, children, ...p}) =>
-                                  inline
-                                    ? <code {...p}>{children}</code>
-                                    : <code {...p} className="block whitespace-pre-wrap break-words">{children}</code>
-                              }}
-                            >
-                              {m.content}
-                            </ReactMarkdown>
-                          </div>
-                        )
-                      : <TypingDots />
-                  )
-                  : m.content}
+        <div className="flex-1 overflow-y-auto space-y-4">
+          {messages.map((m, i) => {
+            const isUser = m.role === 'user';
+            return (
+              <div
+                key={i}
+                className={`flex items-end gap-2 ${isUser ? 'justify-end' : 'justify-start'} animate-fadein`}
+              >
+                {!isUser && (
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-fuchsia-500 to-indigo-500 shadow-lg border-2 border-white/30 flex items-center justify-center text-lg font-bold select-none">
+                    <span role="img" aria-label="AI">🤖</span>
+                  </div>
+                )}
+                <div
+                  className={
+                    'relative max-w-[80%] rounded-2xl px-5 py-3 text-sm sm:text-base shadow-xl backdrop-blur-lg transition-all duration-300 ' +
+                    (isUser
+                      ? 'bg-fuchsia-700/40 border border-fuchsia-400/40 text-zinc-100 glassmorphism-user'
+                      : 'bg-zinc-900/60 border border-indigo-400/30 text-zinc-100 glassmorphism-ai')
+                  }
+                  style={{
+                    boxShadow: isUser
+                      ? '0 4px 32px 0 rgba(236,72,153,0.18), 0 1.5px 8px 0 rgba(236,72,153,0.12)'
+                      : '0 4px 32px 0 rgba(99,102,241,0.18), 0 1.5px 8px 0 rgba(99,102,241,0.12)',
+                    border: isUser
+                      ? '1.5px solid rgba(236,72,153,0.25)'
+                      : '1.5px solid rgba(99,102,241,0.18)',
+                    backdropFilter: 'blur(16px) saturate(1.5)',
+                    background: isUser
+                      ? 'linear-gradient(135deg,rgba(236,72,153,0.22),rgba(168,85,247,0.18))'
+                      : 'linear-gradient(135deg,rgba(39,39,42,0.65),rgba(99,102,241,0.13))',
+                  }}
+                >
+                  {m.role === 'model'
+                    ? (
+                      m.content
+                        ? (
+                            <div className="prose prose-invert max-w-none whitespace-pre-wrap break-words">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                  a: (props) => <a {...props} target="_blank" rel="noreferrer" />,
+                                  code: ({inline, children, ...p}) =>
+                                    inline
+                                      ? <code {...p}>{children}</code>
+                                      : <code {...p} className="block whitespace-pre-wrap break-words">{children}</code>
+                                }}
+                              >
+                                {m.content}
+                              </ReactMarkdown>
+                            </div>
+                          )
+                        : <TypingDots />
+                    )
+                    : m.content}
+                </div>
+                {isUser && (
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-fuchsia-500 to-pink-400 shadow-lg border-2 border-white/30 flex items-center justify-center text-lg font-bold select-none">
+                    <span role="img" aria-label="User">🧑‍💻</span>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div ref={endRef} />
         </div>
 
@@ -241,7 +294,11 @@ export default function ChatPage() {
           <div className="mx-auto max-w-3xl px-4 pb-6">
             <form
               onSubmit={(e)=>{ e.preventDefault(); const t = input; setInput(''); send(t) }}
-              className="relative rounded-2xl bg-zinc-900/85 backdrop-blur border border-white/10 px-4 py-3"
+              className="relative flex items-center gap-2 rounded-2xl bg-zinc-900/80 backdrop-blur-lg border border-white/10 px-4 py-3 shadow-2xl"
+              style={{
+                boxShadow: '0 8px 32px 0 rgba(168,85,247,0.18), 0 1.5px 8px 0 rgba(236,72,153,0.12)',
+                backdropFilter: 'blur(18px) saturate(1.5)',
+              }}
             >
               <input
                 value={input}
@@ -250,8 +307,20 @@ export default function ChatPage() {
                 className="w-full bg-transparent outline-none text-zinc-100 placeholder:text-zinc-400 text-[16px] sm:text-base"
                 autoComplete="off"
                 spellCheck={false}
+                style={{
+                  paddingRight: '3rem'
+                }}
               />
-              {/* external action button lives outside in your hero; keep pill clean here */}
+              <button
+                type="submit"
+                className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-fuchsia-500 to-indigo-500 shadow-lg hover:scale-110 transition-transform duration-150 active:scale-95 focus:outline-none"
+                tabIndex={0}
+                aria-label="Send"
+              >
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
             </form>
           </div>
         </div>
