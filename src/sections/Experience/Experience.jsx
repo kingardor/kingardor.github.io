@@ -1,7 +1,7 @@
 import React from 'react'
-import { Section, Pill } from '../components/Primitives'
+import { Section, Pill } from '../../shared/components/Primitives'
 import { GraduationCap } from 'lucide-react'
-import { NOW_ROLES, PAST_ROLES } from '../data'
+import { NOW_ROLES, PAST_ROLES } from '../../data'
 
 const RoleCard = ({ r }) => (
   <div className="rounded-2xl border border-white/10 bg-white/5 p-4">

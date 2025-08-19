@@ -1,11 +1,11 @@
 import React from 'react'
 import * as si from 'simple-icons'
 import { Mail } from 'lucide-react'
-import { LINKS, SECTION_LINKS } from '../data'
-import useScrollSpy from '../hooks/useScrollSpy'
-import useIsMobile from '../hooks/useIsMobile'
-import useAutoHideHeader from '../hooks/useAutoHideHeader'
-import { SocialButton, cn } from '../components/Primitives'
+import { LINKS, SECTION_LINKS } from '../../data'
+import useScrollSpy from '../../shared/hooks/useScrollSpy'
+import useIsMobile from '../../shared/hooks/useIsMobile'
+import useAutoHideHeader from '../../shared/hooks/useAutoHideHeader'
+import { SocialButton, cn } from '../../shared/components/Primitives'
 
 export default function Header() {
   const active = useScrollSpy(SECTION_LINKS.map((s) => s.href), 160)

@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ArrowRight, ExternalLink } from 'lucide-react'
-import { cn, Pill } from '../../components/Primitives'
+import { cn, Pill } from '../../shared/components/Primitives'
 
 const ProjectSlide = ({ p, isDraggingRef }) => (
   <div className="min-w-full p-3 sm:p-4 md:p-6">

@@ -2,9 +2,9 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { ASSISTANT } from '../../data'
-import parseSearch from '../../utils/parseSearch'
+import parseSearch from '../../shared/utils/parseSearch'
 import VantaHalo from './VantaHalo'
-import { openSSE } from '../../utils/openSSE'
+import { openSSE } from '../../shared/utils/openSSE'
 
 const API_BASE = ('https://veronica-proxy-vercel.vercel.app').replace(/\/$/, '')
 const HISTORY_KEY = 'chat:history:v1'

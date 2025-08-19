@@ -1,8 +1,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Section } from '../components/Primitives'
+import { Section } from '../../shared/components/Primitives'
 import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-react'
-import { MEDIUM_POSTS } from '../data'
+import { MEDIUM_POSTS } from '../../data'
 
 const isLikelyMediumPost = (u) => {
   try {

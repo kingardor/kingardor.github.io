@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Section } from '../components/Primitives'
-import { HIGHLIGHTS } from '../data'
+import { Section } from '../../shared/components/Primitives'
+import { HIGHLIGHTS } from '../../data'
 
 const PopCard = ({ kpi, title, sub, gradient }) => (
   <motion.div whileHover={{ y: -4, scale: 1.01 }} transition={{ type: 'spring', stiffness: 220, damping: 18 }} className="relative group">

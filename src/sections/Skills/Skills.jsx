@@ -1,5 +1,5 @@
 import React from 'react'
-import { Section } from '../components/Primitives'
+import { Section } from '../../shared/components/Primitives'
 import { Cpu, FileCode2, Brain, Camera } from 'lucide-react'
 
 const SKILLS = [

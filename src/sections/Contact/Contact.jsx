@@ -1,7 +1,7 @@
 import React from 'react'
 import * as si from 'simple-icons'
-import { Section, A, BrandIcon } from '../components/Primitives'
-import { LINKS } from '../data'
+import { Section, A, BrandIcon } from '../../shared/components/Primitives'
+import { LINKS } from '../../data'
 import { Mail } from 'lucide-react'
 
 export default function Contact() {
