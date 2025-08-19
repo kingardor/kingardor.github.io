@@ -1,0 +1,68 @@
+{
+  "updatedAt": "2025-08-19T19:48:21.156Z",
+  "items": [
+    {
+      "id": "9SUKE8_7CtY",
+      "title": "Supercharging Vector with LLMs",
+      "url": "https://www.youtube.com/watch?v=9SUKE8_7CtY",
+      "thumb": "https://i2.ytimg.com/vi/9SUKE8_7CtY/hqdefault.jpg",
+      "publishedAt": "2024-03-08T21:01:15+00:00"
+    },
+    {
+      "id": "MzF0zGpBH3c",
+      "title": "Dab with Computer Vision | NVIDIA DeepStream",
+      "url": "https://www.youtube.com/watch?v=MzF0zGpBH3c",
+      "thumb": "https://i2.ytimg.com/vi/MzF0zGpBH3c/hqdefault.jpg",
+      "publishedAt": "2021-08-21T18:52:33+00:00"
+    },
+    {
+      "id": "Oz7mIk9SI3g",
+      "title": "Control drones with voice | Veronica AI",
+      "url": "https://www.youtube.com/shorts/Oz7mIk9SI3g",
+      "thumb": "https://i4.ytimg.com/vi/Oz7mIk9SI3g/hqdefault.jpg",
+      "publishedAt": "2021-08-08T11:33:04+00:00"
+    },
+    {
+      "id": "aK2rTRuw3Dg",
+      "title": "Veronica - Fly Drones | Advanced Computer Vision HUD | TensorRT 8",
+      "url": "https://www.youtube.com/watch?v=aK2rTRuw3Dg",
+      "thumb": "https://i2.ytimg.com/vi/aK2rTRuw3Dg/hqdefault.jpg",
+      "publishedAt": "2021-07-30T15:28:41+00:00"
+    },
+    {
+      "id": "snlZtGCyJMg",
+      "title": "Activity Recognition | NVIDIA TensorRT 8 | RTX ON",
+      "url": "https://www.youtube.com/watch?v=snlZtGCyJMg",
+      "thumb": "https://i4.ytimg.com/vi/snlZtGCyJMg/hqdefault.jpg",
+      "publishedAt": "2021-07-22T22:35:02+00:00"
+    },
+    {
+      "id": "e-s4LvBJqus",
+      "title": "Veronica can now recognise people | Face Recognition | ArcFace | NVIDIA DeepStream",
+      "url": "https://www.youtube.com/watch?v=e-s4LvBJqus",
+      "thumb": "https://i2.ytimg.com/vi/e-s4LvBJqus/hqdefault.jpg",
+      "publishedAt": "2021-07-17T10:52:47+00:00"
+    },
+    {
+      "id": "4YC2z33TEI0",
+      "title": "Veronica - Personal AI Assistant built with NVIDIA DeepStream and NeMo",
+      "url": "https://www.youtube.com/watch?v=4YC2z33TEI0",
+      "thumb": "https://i1.ytimg.com/vi/4YC2z33TEI0/hqdefault.jpg",
+      "publishedAt": "2021-07-17T10:50:58+00:00"
+    },
+    {
+      "id": "NNTB4Q_aHS4",
+      "title": "YOLOv4 with Deepstream | 1500 FPS | NVIDIA RTX",
+      "url": "https://www.youtube.com/watch?v=NNTB4Q_aHS4",
+      "thumb": "https://i3.ytimg.com/vi/NNTB4Q_aHS4/hqdefault.jpg",
+      "publishedAt": "2021-04-15T09:28:38+00:00"
+    },
+    {
+      "id": "D8h0ko8Bndo",
+      "title": "Activity Recognition using 3D ResNets | TensorRT acceleration",
+      "url": "https://www.youtube.com/watch?v=D8h0ko8Bndo",
+      "thumb": "https://i1.ytimg.com/vi/D8h0ko8Bndo/hqdefault.jpg",
+      "publishedAt": "2021-04-11T18:14:32+00:00"
+    }
+  ]
+}
