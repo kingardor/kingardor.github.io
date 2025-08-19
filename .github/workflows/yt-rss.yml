@@ -28,7 +28,7 @@ jobs:
         env:
           YT_CHANNEL_ID: UCgJZkbxrBpbuHv4jOFuR8zQ
           YT_MAX: '9'
-        run: node scripts/fetch_yt_rss.js
+        run: node src/scripts/fetch_yt_rss.js
 
       - name: Commit & push if changed
         run: |
