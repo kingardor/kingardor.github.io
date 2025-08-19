@@ -3,7 +3,6 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { ASSISTANT } from '../../data'
 import parseSearch from '../../shared/utils/parseSearch'
-import VantaHalo from './VantaHalo'
 import { openSSE } from '../../shared/utils/openSSE'
 
 const API_BASE = ('https://veronica-proxy-vercel.vercel.app').replace(/\/$/, '')
@@ -121,6 +120,7 @@ export default function ChatPage() {
     if (loading) endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }, [tailContent, loading])
 
+
   const stop = React.useCallback(() => {
     try { streamRef.current?.close?.() } catch {}
     streamRef.current = null
@@ -216,7 +216,6 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-transparent text-zinc-100">
-      <VantaHalo boost={loading} />
       <div className="relative mx-auto max-w-3xl px-4 pt-3 pb-6 flex flex-col h-[calc(100vh-4rem)]">
         <div className="mb-6 flex items-center justify-between">
           <a href="#/" className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10">← Home</a>

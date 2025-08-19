@@ -29,30 +29,34 @@ export default function App() {
   const views = useSiteViews()
   const path = useHashPath()
 
-  if (path.startsWith('/chat')) return <ChatPage />
-
   return (
-    <main className="min-h-screen scroll-smooth font-[ui-sans-serif] text-zinc-100 antialiased">
-      <Header/>
-      <Hero onSubmit={goChat}/>
-      <BgFX/>
-      <Highlights/>
-      <About/>
-      <Experience/>
-      <Timeline/>
-      <Skills/>
-      <SkillsChart/>
-      <Projects/>
-      <YouTube/>
-      <Publications/>
-      <Honours/>
-      <Contact/>
-      <footer className="pb-8 text-center text-xs text-zinc-500">
-        © {new Date().getFullYear()} Akash James • Built on Tailwind • Deployed on GitHub Pages
-        <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-zinc-300 align-middle">
-          {views == null ? 'visits — …' : `visits — ${views.toLocaleString()}`}
-        </span>
-      </footer>
-    </main>
+    <>
+      <BgFX />
+      {path.startsWith('/chat') ? (
+        <ChatPage />
+      ) : (
+        <main className="min-h-screen scroll-smooth font-[ui-sans-serif] text-zinc-100 antialiased">
+          <Header/>
+          <Hero onSubmit={goChat}/>
+          <Highlights/>
+          <About/>
+          <Experience/>
+          <Timeline/>
+          <Skills/>
+          <SkillsChart/>
+          <Projects/>
+          <YouTube/>
+          <Publications/>
+          <Honours/>
+          <Contact/>
+          <footer className="pb-8 text-center text-xs text-zinc-500">
+            © {new Date().getFullYear()} Akash James • Built on Tailwind • Deployed on GitHub Pages
+            <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-zinc-300 align-middle">
+              {views == null ? 'visits — …' : `visits — ${views.toLocaleString()}`}
+            </span>
+          </footer>
+        </main>
+      )}
+    </>
   )
 }
