@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pill } from '../../components/Primitives'
-import useIsMobile from '../../hooks/useIsMobile'
+import { Pill } from '../../shared/components/Primitives'
+import useIsMobile from '../../shared/hooks/useIsMobile'
 import { WandSparkles, ShieldCheck, BadgeCheck, Network } from 'lucide-react'
 
 const BADGES = [

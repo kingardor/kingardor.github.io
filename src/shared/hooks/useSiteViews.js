@@ -1,6 +1,6 @@
 import React from 'react'
 import { Counter } from 'counterapi'
-import { COUNTER } from '../data'
+import { COUNTER } from '../../data'
 
 export default function useSiteViews() {
   const [views, setViews] = React.useState(null)

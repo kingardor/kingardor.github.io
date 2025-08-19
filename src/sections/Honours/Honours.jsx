@@ -1,7 +1,7 @@
 import React from 'react'
-import { Section } from '../components/Primitives'
+import { Section } from '../../shared/components/Primitives'
 import { Award, ExternalLink } from 'lucide-react'
-import { HONOURS } from '../data'
+import { HONOURS } from '../../data'
 
 export default function Honours() {
   return (

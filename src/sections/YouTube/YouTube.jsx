@@ -1,8 +1,9 @@
-import React from 'react'
-import { Section } from '../components/Primitives'
+import React, { useEffect, useState } from 'react'
+import { Section } from '../../shared/components/Primitives'
 import { BookOpen } from 'lucide-react'
-import { YT_VIDEOS } from '../data'
-import { getYTid, ytThumb } from '../utils/yt'
+import { getYTid, ytThumb } from '../../shared/utils/yt'
+import { fetchYoutubeVideos } from '../../shared/utils/fetchYoutubeVideos'
+import { YT_VIDEOS as STATIC_YT_VIDEOS } from '../../data'
 
 const ExternalVideoCard = ({ url, title }) => {
   const domain = (() => { try { return new URL(url).hostname.replace(/^www\./,'') } catch { return url } })()
@@ -22,14 +23,39 @@ const ExternalVideoCard = ({ url, title }) => {
 }
 
 export default function YouTube() {
+  const YT_API_KEY = import.meta.env.VITE_YT_API_KEY || '';
+  const YT_CHANNEL_ID = 'UCgJZkbxrBpbuHv4jOFuR8zQ'; // Replace with your channel ID
+
+  const [videos, setVideos] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!YT_API_KEY || !YT_CHANNEL_ID) {
+      setVideos(STATIC_YT_VIDEOS);
+      return;
+    }
+    fetchYoutubeVideos(YT_API_KEY, YT_CHANNEL_ID, 6)
+      .then((vids) => {
+        if (vids.length > 0) setVideos(vids.map(v => v.url));
+        else setVideos(STATIC_YT_VIDEOS);
+      })
+      .catch(() => {
+        setError('Failed to load YouTube videos');
+        setVideos(STATIC_YT_VIDEOS);
+      });
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <Section id="videos" className="pt-12">
       <div className="mb-6 flex items-center gap-3">
         <BookOpen className="h-5 w-5 text-zinc-300"/>
         <h2 className="text-xl font-semibold text-zinc-100">Talks & Videos</h2>
       </div>
+      {error && <div className="text-red-400 mb-4">Error: {error}</div>}
+      {!videos && !error && <div className="text-zinc-400 mb-4">Loading videos...</div>}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {YT_VIDEOS.map((u) => {
+        {videos && videos.map((u) => {
           const id = getYTid(u)
           return (
             <div key={u} className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">

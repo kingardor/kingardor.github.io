@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Section, K } from '../components/Primitives'
+import { Section, K } from '../../shared/components/Primitives'
 import { Sparkles } from 'lucide-react'
 
 export default function About() {

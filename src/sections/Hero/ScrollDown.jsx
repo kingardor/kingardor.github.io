@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import useHasScrolled from '../../hooks/useHasScrolled'
+import useHasScrolled from '../../shared/hooks/useHasScrolled'
 
 export default function ScrollDown() {
   const hide = useHasScrolled(40)
