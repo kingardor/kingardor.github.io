@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Section } from '../../shared/components/Primitives'
 import { BookOpen } from 'lucide-react'
-import { getYTid, ytThumb } from '../../shared/utils/yt'
-import { fetchYoutubeVideos } from '../../shared/utils/fetchYoutubeVideos'
+import { getYTid } from '../../shared/utils/yt' // keep if you prefer URLs array
 import { YT_VIDEOS as STATIC_YT_VIDEOS } from '../../data'
 
 const ExternalVideoCard = ({ url, title }) => {
   const domain = (() => { try { return new URL(url).hostname.replace(/^www\./,'') } catch { return url } })()
-  const thumb = /youtube\.com|youtu\.be/.test(domain) ? ytThumb(url) : ''
+  const thumb = /youtube\.com|youtu\.be/.test(domain) ? `https://i.ytimg.com/vi/${getYTid(url)}/hqdefault.jpg` : ''
   return (
     <a href={url} target="_blank" rel="noreferrer" className="group block overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10">
       <div className="aspect-video w-full bg-black/40">
@@ -23,28 +22,30 @@ const ExternalVideoCard = ({ url, title }) => {
 }
 
 export default function YouTube() {
-  const YT_API_KEY = import.meta.env.VITE_YT_API_KEY || '';
-  const YT_CHANNEL_ID = 'UCgJZkbxrBpbuHv4jOFuR8zQ'; // Replace with your channel ID
-
-  const [videos, setVideos] = useState(null);
-  const [error, setError] = useState(null);
+  const [videos, setVideos] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (!YT_API_KEY || !YT_CHANNEL_ID) {
-      setVideos(STATIC_YT_VIDEOS);
-      return;
+    async function load() {
+      // Try static JSON produced by GitHub Action (RSS → JSON)
+      try {
+        const base = import.meta.env.BASE_URL || '/'
+        const r = await fetch(`${base}yt.json?d=${Date.now()}`)
+        if (r.ok) {
+          const data = await r.json()
+          if (Array.isArray(data.items) && data.items.length) {
+            setVideos(data.items.map(v => v.url))
+            return
+          }
+        }
+      } catch {}
+
+      // Fallback: your static list
+      setVideos(STATIC_YT_VIDEOS)
+      setError('Using cached/static list (RSS not available).')
     }
-    fetchYoutubeVideos(YT_API_KEY, YT_CHANNEL_ID, 6)
-      .then((vids) => {
-        if (vids.length > 0) setVideos(vids.map(v => v.url));
-        else setVideos(STATIC_YT_VIDEOS);
-      })
-      .catch(() => {
-        setError('Failed to load YouTube videos');
-        setVideos(STATIC_YT_VIDEOS);
-      });
-    // eslint-disable-next-line
-  }, []);
+    load()
+  }, [])
 
   return (
     <Section id="videos" className="pt-12">
@@ -52,7 +53,6 @@ export default function YouTube() {
         <BookOpen className="h-5 w-5 text-zinc-300"/>
         <h2 className="text-xl font-semibold text-zinc-100">Talks & Videos</h2>
       </div>
-      {error && <div className="text-red-400 mb-4">Error: {error}</div>}
       {!videos && !error && <div className="text-zinc-400 mb-4">Loading videos...</div>}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {videos && videos.map((u) => {
