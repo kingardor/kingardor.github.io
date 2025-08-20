@@ -4,6 +4,8 @@ import { BookOpen } from 'lucide-react'
 import { getYTid } from '../../shared/utils/yt' // keep if you prefer URLs array
 import { YT_VIDEOS as STATIC_YT_VIDEOS } from '../../data'
 
+const API_BASE = ('https://veronica-proxy-vercel.vercel.app').replace(/\/$/, '')
+
 const ExternalVideoCard = ({ url, title }) => {
   const domain = (() => { try { return new URL(url).hostname.replace(/^www\./,'') } catch { return url } })()
   const thumb = /youtube\.com|youtu\.be/.test(domain) ? `https://i.ytimg.com/vi/${getYTid(url)}/hqdefault.jpg` : ''
@@ -27,10 +29,9 @@ export default function YouTube() {
 
   useEffect(() => {
     async function load() {
-      // Try static JSON produced by GitHub Action (RSS → JSON)
       try {
-        const base = import.meta.env.BASE_URL || '/'
-        const r = await fetch(`${base}yt.json?d=${Date.now()}`)
+        const apiUrl =  API_BASE + '/api/youtube-feed'
+        const r = await fetch(`${apiUrl}?d=${Date.now()}`)
         if (r.ok) {
           const data = await r.json()
           if (Array.isArray(data.items) && data.items.length) {
