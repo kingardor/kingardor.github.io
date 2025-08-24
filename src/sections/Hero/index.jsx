@@ -12,7 +12,7 @@ export default function Hero({ onSubmit }) {
       <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-center justify-end px-6 text-center gap-5 sm:gap-6 pb-28 sm:pb-36 md:pb-44">
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
           className="text-balance text-4xl font-extrabold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl">
-          Akash <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-fuchsia-400 to-red-400">James</span>
+          Akash <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-400 to-rose-400">James</span>
         </motion.h1>
 
         <AnimatedBadges />

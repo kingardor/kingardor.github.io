@@ -25,7 +25,7 @@ const ProjectSlide = ({ p, isDraggingRef, featured }) => (
         <div className="font-medium text-zinc-100 flex items-center gap-2">
           {p.name}
           {featured && (
-            <span className="ml-2 px-2 py-0.5 rounded-full bg-pink-600/80 text-xs text-white font-semibold shadow">Featured</span>
+            <span className="ml-2 px-2 py-0.5 rounded-full bg-red-600/80 text-xs text-white font-semibold shadow">Featured</span>
           )}
         </div>
         <ArrowRight className="h-4 w-4 text-zinc-400 transition-transform group-hover:translate-x-1"/>

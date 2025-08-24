@@ -43,7 +43,7 @@ export default function AnimatedBadges() {
               <div
                 aria-hidden
                 className="pointer-events-none absolute -inset-2 rounded-full
-                           bg-gradient-to-r from-fuchsia-500/25 via-pink-500/25 to-rose-500/25
+                           bg-gradient-to-r from-red-700/25 via-red-500/25 to-rose-500/25
                            blur-md"
               />
               <Pill className="relative bg-white/5">
