@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Section } from '../../shared/components/Primitives'
+import { Section, A } from '../../shared/components/Primitives'
 import { BookOpen } from 'lucide-react'
 import { getYTid } from '../../shared/utils/yt' // keep if you prefer URLs array
 import { YT_VIDEOS as STATIC_YT_VIDEOS } from '../../data'
+import useIsMobile from '../../shared/hooks/useIsMobile'
 
 const API_BASE = ('https://veronica-proxy-vercel.vercel.app').replace(/\/$/, '')
 
@@ -26,6 +27,17 @@ const ExternalVideoCard = ({ url, title }) => {
 export default function YouTube() {
   const [videos, setVideos] = useState(null)
   const [error, setError] = useState(null)
+  const isMobile = useIsMobile()
+  const DEFAULT_MOBILE = 3
+  const DEFAULT_DESKTOP = 6
+
+  // Track how many videos are visible
+  const [visibleCount, setVisibleCount] = useState(isMobile ? DEFAULT_MOBILE : DEFAULT_DESKTOP)
+
+  // Update visibleCount if device type changes
+  useEffect(() => {
+    setVisibleCount(isMobile ? DEFAULT_MOBILE : DEFAULT_DESKTOP)
+  }, [isMobile])
 
   useEffect(() => {
     async function load() {
@@ -48,6 +60,12 @@ export default function YouTube() {
     load()
   }, [])
 
+  // Videos to display (plus the external card)
+  const shownVideos = videos ? videos.slice(0, visibleCount) : []
+
+  // Show "See more" if there are more videos to show
+  const canSeeMore = videos && visibleCount < videos.length
+
   return (
     <Section id="videos" className="pt-12">
       <div className="mb-6 flex items-center gap-3">
@@ -56,7 +74,7 @@ export default function YouTube() {
       </div>
       {!videos && !error && <div className="text-zinc-400 mb-4">Loading videos...</div>}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {videos && videos.map((u) => {
+        {shownVideos.map((u) => {
           const id = getYTid(u)
           return (
             <div key={u} className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
@@ -75,6 +93,13 @@ export default function YouTube() {
         })}
         <ExternalVideoCard url="https://www.nvidia.com/en-us/on-demand/session/gtc25-s74465/" title="NVIDIA GTC 2025 — Session S74465" />
       </div>
+      {canSeeMore && (
+        <div className="mt-6 flex justify-center">
+          <A as="button" onClick={() => setVisibleCount(videos.length)}>
+            See more
+          </A>
+        </div>
+      )}
     </Section>
   )
 }
