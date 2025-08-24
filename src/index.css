@@ -11,6 +11,7 @@ html, body, #root {
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* background: #101014; */
 }
 
 /* Glassmorphism overlay for chat depth */
@@ -20,8 +21,8 @@ html, body, #root {
     z-index: 1;
     pointer-events: none;
     border-radius: 2rem;
-    background: rgba(24, 24, 32, 0.45);
-    box-shadow: 0 8px 32px 0 rgba(168,85,247,0.12), 0 1.5px 8px 0 rgba(236,72,153,0.08);
+    background: rgba(16, 16, 20, 0.85);
+    box-shadow: 0 8px 32px 0 rgba(220,38,38,0.12), 0 1.5px 8px 0 rgba(244,63,94,0.08);
     backdrop-filter: blur(24px) saturate(1.5);
     border: 1.5px solid rgba(255,255,255,0.08);
     opacity: 0.85;

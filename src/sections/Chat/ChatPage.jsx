@@ -43,7 +43,7 @@ function useVantaTrunkCDN(loading){
         touchControls:true,
         gyroControls:true,
         minHeight:200,minWidth:200,scale:1,scaleMobile:1,
-        backgroundColor:0x0b0b0e,color:0x6366f1,spacing:0,
+        backgroundColor:0x0b0b0e,color:0xcc0000,spacing:0,
         chaos:chaosRef.current
       })
       resizeHandler=()=>vRef.current?.resize?.()

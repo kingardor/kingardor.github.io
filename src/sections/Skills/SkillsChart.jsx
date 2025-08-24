@@ -23,7 +23,7 @@ export default function SkillsChart() {
             <PolarGrid stroke="#fff2" />
             <PolarAngleAxis dataKey="skill" stroke="#fff" fontSize={12} />
             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-            <Radar name="Skill" dataKey="value" stroke="#f472b6" fill="#f472b6" fillOpacity={0.5} />
+            <Radar name="Skill" dataKey="value" stroke="#00ff00" fill="#00cc00" fillOpacity={0.5} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
