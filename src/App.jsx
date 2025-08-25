@@ -49,6 +49,7 @@ export default function App() {
     return () => observer.disconnect();
   }, [path]);
 
+
   return (
     <>
       <BgFX />
