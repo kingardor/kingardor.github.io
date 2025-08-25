@@ -17,7 +17,7 @@ export default function SkillsChart() {
   return (
     <Section id="skills-chart" className="pt-8">
       <h3 className="text-lg font-semibold text-zinc-100 mb-4">Skill Radar</h3>
-      <div className="w-full h-72 flex items-center justify-center">
+      <div className="w-full max-w-xs h-60 md:max-w-xl md:h-[28rem] flex items-center justify-center mx-auto">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart cx="50%" cy="50%" outerRadius="80%" data={SKILLS}>
             <PolarGrid stroke="#fff2" />

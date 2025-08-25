@@ -29,7 +29,7 @@ export default function YouTube() {
   const [error, setError] = useState(null)
   const isMobile = useIsMobile()
   const DEFAULT_MOBILE = 3
-  const DEFAULT_DESKTOP = 6
+  const DEFAULT_DESKTOP = 5
 
   // Track how many videos are visible
   const [visibleCount, setVisibleCount] = useState(isMobile ? DEFAULT_MOBILE : DEFAULT_DESKTOP)
@@ -126,9 +126,12 @@ export default function YouTube() {
 
       {canSeeMore && (
         <div className="mt-6 flex justify-center">
-          <A as="button" className="px-6 py-2 rounded bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition" onClick={() => setVisibleCount(videos.length)}>
+          <button
+            className="px-6 py-2 rounded bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition"
+            onClick={() => setVisibleCount(videos.length)}
+          >
             See more
-          </A>
+          </button>
         </div>
       )}
     </Section>
