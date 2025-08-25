@@ -4,7 +4,7 @@ import { Section } from "../../shared/components/Primitives";
 const nvidiaTalk = {
   title: "NVIDIA GTC 2025 — Session S74465",
   url: "https://www.nvidia.com/en-us/on-demand/session/gtc25-s74465/",
-  image: "/nvidia.jpg",
+  image: "/nvidia.webp",
   description: "Watch my invited talk at NVIDIA GTC 2025, where I discuss cutting-edge AI, robotics, and real-world deployment stories.",
 };
 

@@ -13,7 +13,7 @@ const ExternalVideoCard = ({ url, title }) => {
   return (
     <a href={url} target="_blank" rel="noreferrer" className="group block overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10">
       <div className="aspect-video w-full bg-black/40">
-        {thumb ? <img src={thumb} alt="" className="h-full w-full object-cover"/> : <div className="flex h-full w-full items-center justify-center text-zinc-400">Preview</div>}
+        {thumb ? <img src={thumb} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover"/> : <div className="flex h-full w-full items-center justify-center text-zinc-400">Preview</div>}
       </div>
       <div className="p-4">
         <div className="text-xs text-zinc-400">{domain}</div>

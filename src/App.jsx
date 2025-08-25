@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import BgFX from './shared/components/BgFX'
 import { LINKS } from './data'
 import useHashPath from './shared/hooks/useHashPath'
@@ -12,13 +12,14 @@ import Experience from './sections/Experience/Experience'
 import Skills from './sections/Skills/Skills'
 import Timeline from './sections/Timeline/Timeline'
 import SkillsChart from './sections/Skills/SkillsChart'
-import Projects from './sections/Projects/index'
-import YouTube from './sections/YouTube/YouTube'
 import Publications from './sections/Publications/Publications'
 import Honours from './sections/Honours/Honours'
 import Contact from './sections/Contact/Contact'
-import ChatPage from './sections/Chat/ChatPage'
 import ChatFAB from './shared/components/ChatFAB'
+
+const Projects = React.lazy(() => import('./sections/Projects'));
+const YouTube = React.lazy(() => import('./sections/YouTube/YouTube'));
+const ChatPage = React.lazy(() => import('./sections/Chat/ChatPage'));
 
 const goChat = (prompt) => {
   const seed = (prompt || '').trim()
@@ -54,7 +55,9 @@ export default function App() {
     <>
       <BgFX />
       {path.startsWith('/chat') ? (
-        <ChatPage />
+        <Suspense fallback={<div className="text-zinc-400">Loading chat...</div>}>
+          <ChatPage />
+        </Suspense>
       ) : (
         <>
           <main className="min-h-screen scroll-smooth font-[ui-sans-serif] text-zinc-100 antialiased">
@@ -66,9 +69,9 @@ export default function App() {
             <Timeline/>
             <Skills/>
             <SkillsChart/>
-            <Projects/>
+            <Suspense fallback={<div className="text-zinc-400">Loading projects...</div>}><Projects/></Suspense>
             <Talks/>
-            <YouTube/>
+            <Suspense fallback={<div className="text-zinc-400">Loading videos...</div>}><YouTube/></Suspense>
             <Publications/>
             <Honours/>
             <Contact/>
