@@ -23,7 +23,7 @@ const BlogCard = ({ item }) => {
     <a href={url} target="_blank" rel="noreferrer" className="group block h-56 w-64 sm:w-72 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.03] p-4 hover:bg-white/10">
       <div className="flex h-full flex-col">
         <div className="mb-3 flex items-center gap-3">
-          <img src={icon} alt="" className="h-5 w-5 rounded-sm" />
+          <img src={icon} alt="" loading="lazy" decoding="async" className="h-5 w-5 rounded-sm" />
           <span className="text-xs text-zinc-400">{domain}</span>
         </div>
         <div className="font-medium text-zinc-100" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>

@@ -2,8 +2,15 @@ import React from 'react'
 export default function useHasScrolled(threshold = 40) {
   const [scrolled, setScrolled] = React.useState(false)
   React.useEffect(() => {
+    let ticking = false;
     const onScroll = () => {
-      setScrolled(window.scrollY > threshold)
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > threshold)
+          ticking = false
+        })
+        ticking = true
+      }
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
