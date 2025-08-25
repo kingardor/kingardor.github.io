@@ -5,8 +5,11 @@ export default function useAutoHideHeader() {
     let last = window.scrollY
     const onScroll = () => {
       const y = window.scrollY
-      const down = y > last && y > 80
-      setHidden(down)
+      if (y > last && y > 80) {
+        setHidden(true) // scrolling down, hide
+      } else if (y < last) {
+        setHidden(false) // scrolling up, show
+      }
       last = y
     }
     window.addEventListener('scroll', onScroll, { passive: true })

@@ -6,6 +6,7 @@ import useSiteViews from './shared/hooks/useSiteViews'
 import Header from './sections/Header/Header'
 import Hero from './sections/Hero/index'
 import Highlights from './sections/Highlights/Highlights'
+import Talks from './sections/Talks/Talks'
 import About from './sections/About/About'
 import Experience from './sections/Experience/Experience'
 import Skills from './sections/Skills/Skills'
@@ -65,6 +66,7 @@ export default function App() {
             <Skills/>
             <SkillsChart/>
             <Projects/>
+            <Talks/>
             <YouTube/>
             <Publications/>
             <Honours/>
