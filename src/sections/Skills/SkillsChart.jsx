@@ -13,10 +13,10 @@ const NeonDefs = () => (
       <stop offset="100%" stopColor="#0ff" stopOpacity="0.2" />
     </radialGradient>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="6" result="coloredBlur" />
       <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="coloredBlur" />
+        <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
   </defs>
@@ -57,7 +57,7 @@ export default function SkillsChart() {
   }, []);
 
   return (
-    <Section id="skills-chart" className="pt-8 relative">
+    <Section id="skills" className="pt-8 relative">
       {/* Animated background */}
       <div className="absolute inset-0 -z-10 pointer-events-none flex items-center justify-center">
         <div className="w-80 h-80 md:w-[32rem] md:h-[32rem] rounded-full bg-gradient-to-tr from-[#00fff7] via-[#00ff85] to-[#0ff] opacity-30 blur-3xl animate-spin-slow"></div>
