@@ -3,20 +3,10 @@ import { ExternalLink } from 'lucide-react'
 
 export const cn = (...c) => c.filter(Boolean).join(' ')
 
-import { motion } from 'framer-motion'
-import { staggerContainer } from '../../utils/motion'
-
 export const Section = ({ id, className, children }) => (
-  <motion.section
-    id={id}
-    variants={staggerContainer(0.2, 0.1)}
-    initial="hidden"
-    whileInView="show"
-    viewport={{ once: true, amount: 0.1 }}
-    className={cn("relative mx-auto w-full max-w-6xl scroll-mt-28 px-4 sm:px-6 md:px-8", className)}
-  >
+  <section id={id} className={cn("relative mx-auto w-full max-w-6xl scroll-mt-28 px-4 sm:px-6 md:px-8", className)}>
     {children}
-  </motion.section>
+  </section>
 )
 
 export const K = ({ children }) => <span className="text-zinc-200/90">{children}</span>
@@ -36,7 +26,7 @@ export const A = ({ href, children, className }) => {
       className={cn('group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-100 transition hover:translate-y-[-1px] hover:bg-white/10', className)}
     >
       {children}
-      {!isInternal && <ExternalLink className="h-4 w-4 opacity-70 transition group-hover:translate-x-0.5" />}
+      {!isInternal && <ExternalLink className="h-4 w-4 opacity-70 transition group-hover:translate-x-0.5"/>}
     </a>
   )
 }

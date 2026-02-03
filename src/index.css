@@ -1,16 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800&display=swap');
 @import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
+:root {
+    color-scheme: dark;
+}
 
-html, body, #root {
+html,
+body,
+#root {
     min-height: 100svh;
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* background: #101014; */
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    color: #f4f4f5;
+    /* zinc-100 */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* 3D Canvas container fix */
+canvas {
+    touch-action: none;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+    background: rgba(20, 20, 24, 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 /* Glassmorphism overlay for chat depth */
@@ -21,9 +58,9 @@ html, body, #root {
     pointer-events: none;
     border-radius: 2rem;
     background: rgba(16, 16, 20, 0.85);
-    box-shadow: 0 8px 32px 0 rgba(220,38,38,0.12), 0 1.5px 8px 0 rgba(244,63,94,0.08);
+    box-shadow: 0 8px 32px 0 rgba(220, 38, 38, 0.12), 0 1.5px 8px 0 rgba(244, 63, 94, 0.08);
     backdrop-filter: blur(24px) saturate(1.5);
-    border: 1.5px solid rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
     opacity: 0.85;
 }
 
@@ -33,11 +70,13 @@ html, body, #root {
         opacity: 0;
         transform: translateY(24px) scale(0.98);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
 }
+
 .animate-fadein {
     animation: fadein 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }

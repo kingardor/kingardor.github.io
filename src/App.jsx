@@ -59,11 +59,11 @@ export default function App() {
         </Suspense>
       ) : (
         <>
-          <main className="min-h-screen scroll-smooth font-[ui-sans-serif] text-zinc-100 antialiased">
-            <Header/>
-            <Hero onSubmit={goChat}/>
-            <Highlights/>
-            <About/>
+          <main className="min-h-screen scroll-smooth text-zinc-100 antialiased">
+            <Header />
+            <Hero onSubmit={goChat} />
+            <Highlights />
+            <About />
             {/* Career Timeline (left) and Skills Radar (right) side-by-side */}
             <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-stretch justify-center w-full max-w-6xl mx-auto py-12">
               <div className="flex-1 min-w-0">
@@ -74,12 +74,12 @@ export default function App() {
               </div>
             </div>
             <Skills />
-            <Suspense fallback={<div className="text-zinc-400">Loading projects...</div>}><Projects/></Suspense>
-            <Talks/>
-            <Suspense fallback={<div className="text-zinc-400">Loading videos...</div>}><YouTube/></Suspense>
-            <Publications/>
-            <Honours/>
-            <Contact/>
+            <Suspense fallback={<div className="text-zinc-400">Loading projects...</div>}><Projects /></Suspense>
+            <Talks />
+            <Suspense fallback={<div className="text-zinc-400">Loading videos...</div>}><YouTube /></Suspense>
+            <Publications />
+            <Honours />
+            <Contact />
             <footer className="pb-8 text-center text-xs text-zinc-500">
               © {new Date().getFullYear()} Akash James • Built on Tailwind • Deployed on GitHub Pages
               <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-zinc-300 align-middle">
