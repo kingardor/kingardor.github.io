@@ -1,50 +1,207 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-
-import AnimatedBadges from './AnimatedBadges'
 import ChatBar from './ChatBar'
 import ScrollDown from './ScrollDown'
-import { textVariant } from '../../utils/motion'
+import { HIGHLIGHTS } from '../../data'
 
-const HeroBubble = () => {
+/* ─── Film grain overlay ─── */
+function GrainOverlay() {
+  return <div className="grain-overlay" aria-hidden style={{ zIndex: 4 }} />
+}
+
+/* ─── Word reveal ─── */
+function WordReveal({ text, delay = 0, className = '', style = {} }) {
   return (
-    <Sphere args={[1, 100, 200]} scale={2.4}>
-      <MeshDistortMaterial
-        color="#db2777" // Pink-600ish
-        attach="material"
-        distort={0.5}
-        speed={2}
-        roughness={0.2}
-        metalness={0.8}
-      />
-    </Sphere>
+    <>
+      {text.split(' ').map((word, i) => (
+        <div key={i} style={{ overflow: 'hidden', display: 'inline-block', marginRight: '0.22em' }}>
+          <motion.span
+            initial={{ y: '110%', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: delay + i * 0.1 }}
+            style={{ display: 'inline-block', ...style }}
+            className={className}
+          >
+            {word}
+          </motion.span>
+        </div>
+      ))}
+    </>
   )
 }
 
+/* ─── Inline stat pill ─── */
+function StatPill({ kpi, label }) {
+  return (
+    <div className="flex flex-col items-center px-4 sm:px-5">
+      <span
+        className="font-black leading-none"
+        style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)', color: 'var(--nm-accent)' }}
+      >
+        {kpi}
+      </span>
+      <span className="hud-text mt-0.5" style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap' }}>
+        {label}
+      </span>
+    </div>
+  )
+}
+
+/* ─── Hero ─── */
 export default function Hero({ onSubmit }) {
   return (
-    <section id="top" className="relative h-[100svh] w-full overflow-hidden">
-      <picture className="absolute inset-0 h-full w-full z-0">
+    <section
+      id="top"
+      className="relative w-full overflow-hidden"
+      style={{ height: '100svh', background: '#000' }}
+    >
+      {/* 1. Full-bleed photo — face shows in upper portion */}
+      <picture className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
         <source srcSet="/hero.webp" type="image/webp" />
-        <img src="/hero.webp" alt="Akash James" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover brightness-[.65] saturate-90 z-0" />
+        <img
+          src="/hero.webp"
+          alt="Akash James"
+          loading="eager"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{
+            filter: 'brightness(0.58) saturate(0.75) contrast(1.08)',
+            objectPosition: 'center 18%',
+          }}
+        />
       </picture>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/55 to-black/80 z-0" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(2,6,23,0.2),transparent_55%)] z-0" />
 
-      <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-center justify-end px-6 text-center gap-5 sm:gap-6 pb-28 sm:pb-36 md:pb-44">
-        <motion.div
-          variants={textVariant(0.2)}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-        >
-          <h1 className="text-balance text-4xl font-extrabold tracking-tight text-zinc-50 sm:text-6xl md:text-7xl">
-            Akash <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-400 to-rose-400">James</span>
-          </h1>
-        </motion.div>
+      {/* 2. Strong bottom gradient — keeps lower zone dark for text */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 1,
+          background: `linear-gradient(to bottom,
+            rgba(0,0,0,0.0)  0%,
+            rgba(0,0,0,0.05) 25%,
+            rgba(0,0,0,0.4)  50%,
+            rgba(0,0,0,0.88) 70%,
+            rgba(0,0,0,0.97) 85%,
+            rgba(0,0,0,1.0)  100%
+          )`,
+        }}
+      />
 
-        <AnimatedBadges />
-        <ChatBar onSubmit={onSubmit} />
+      {/* 3. Subtle red bottom glow */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 2,
+          background: 'radial-gradient(ellipse 60% 30% at 50% 100%, rgba(220,38,38,0.16), transparent 70%)',
+        }}
+      />
+
+      {/* 4. Film grain */}
+      <GrainOverlay />
+
+      {/* 5. Thin red top stripe */}
+      <div
+        aria-hidden
+        className="absolute top-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: '2px',
+          zIndex: 5,
+          background: 'linear-gradient(90deg, transparent, #dc2626 35%, #db2777 65%, transparent)',
+          opacity: 0.65,
+        }}
+      />
+
+      {/* 6. Main content — centered, pinned to bottom */}
+      <div
+        className="relative flex flex-col justify-end items-center w-full h-full"
+        style={{ zIndex: 10 }}
+      >
+        <div className="w-full max-w-4xl mx-auto px-6 sm:px-10 pb-12 sm:pb-16 flex flex-col items-center gap-0 text-center">
+
+          {/* Status badges row */}
+          <motion.div
+            className="flex items-center justify-center gap-5 mb-5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <div className="flex items-center gap-2">
+              <span
+                className="w-[5px] h-[5px] rounded-full"
+                style={{ background: 'var(--nm-accent)', boxShadow: '0 0 8px var(--nm-accent)', animation: 'pulseGlow 2s ease-in-out infinite' }}
+              />
+              <span className="hud-text" style={{ fontSize: '0.58rem', color: 'rgba(255,255,255,0.45)' }}>
+                AI ARCHITECT
+              </span>
+            </div>
+            <div className="w-px h-3" style={{ background: 'rgba(255,255,255,0.15)' }} />
+            <div className="flex items-center gap-1.5">
+              <span className="w-[5px] h-[5px] rounded-full bg-green-400" style={{ boxShadow: '0 0 6px #22c55e', animation: 'blink 2s infinite' }} />
+              <span className="hud-text" style={{ fontSize: '0.58rem', color: 'rgba(255,255,255,0.35)' }}>OPEN TO WORK</span>
+            </div>
+          </motion.div>
+
+          {/* ── Name ── */}
+          <div
+            className="flex items-baseline justify-center gap-[0.22em] leading-[0.88] tracking-[-0.04em] mb-5"
+            style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, fontSize: 'clamp(3.5rem, 10vw, 8rem)' }}
+          >
+            <div style={{ overflow: 'hidden' }}>
+              <motion.span
+                initial={{ y: '110%', opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
+                style={{ display: 'inline-block', color: '#ffffff' }}
+              >
+                AKASH
+              </motion.span>
+            </div>
+            <div style={{ overflow: 'hidden' }}>
+              <motion.span
+                initial={{ y: '110%', opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
+                style={{ display: 'inline-block', color: 'var(--nm-accent)', textShadow: '0 0 80px rgba(220,38,38,0.45)' }}
+              >
+                JAMES
+              </motion.span>
+            </div>
+          </div>
+
+          {/* Thin divider */}
+          <motion.div
+            className="h-px mb-5"
+            style={{ background: 'rgba(255,255,255,0.12)', width: '100%', maxWidth: '28rem' }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+          />
+
+          {/* Stats row */}
+          <motion.div
+            className="flex items-center justify-center mb-6"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 1.0 }}
+          >
+            {HIGHLIGHTS.map((h, i) => (
+              <React.Fragment key={h.title}>
+                <StatPill kpi={h.kpi} label={h.title} />
+                {i < HIGHLIGHTS.length - 1 && (
+                  <div className="w-px self-stretch" style={{ background: 'rgba(255,255,255,0.12)' }} />
+                )}
+              </React.Fragment>
+            ))}
+          </motion.div>
+
+          {/* Veronica chat bar */}
+          <div className="w-full max-w-xl">
+            <ChatBar onSubmit={onSubmit} />
+          </div>
+
+        </div>
       </div>
 
       <ScrollDown />

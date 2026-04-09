@@ -1,40 +1,199 @@
-import React from 'react'
+import React, { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 import { Section } from '../../shared/components/Primitives'
-import { Calendar } from 'lucide-react'
 import { NOW_ROLES, PAST_ROLES } from '../../data'
 
-const TIMELINE = [
-  ...NOW_ROLES.map(r => ({ ...r, current: true })),
-  ...PAST_ROLES.map(r => ({ ...r, current: false }))
+const ALL_ROLES = [
+  ...NOW_ROLES.map(r  => ({ ...r, isCurrent: true  })),
+  ...PAST_ROLES.map(r => ({ ...r, isCurrent: false })),
 ]
 
+/* ─── Single chapter entry ──────────────────────────────────────────────── */
+function Chapter({ role, index, total }) {
+  const ref    = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+
+  /* Extract start year for ghost text */
+  const year = role.period.match(/\d{4}/)?.[0] ?? ''
+
+  /* Opacity fades as we go back in time */
+  const opacity = role.isCurrent ? 1 : Math.max(0.55, 1 - index * 0.15)
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 48 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
+      className="relative w-full"
+      style={{ opacity }}
+    >
+      {/* Ghost year — massive background text */}
+      <div
+        aria-hidden
+        className="absolute pointer-events-none select-none overflow-hidden"
+        style={{
+          top: '-0.15em',
+          right: 0,
+          fontFamily: 'Outfit, sans-serif',
+          fontWeight: 900,
+          fontSize: 'clamp(3.5rem, 10vw, 7rem)',
+          lineHeight: 1,
+          letterSpacing: '-0.05em',
+          color: role.isCurrent ? 'var(--nm-accent)' : '#fff',
+          opacity: role.isCurrent ? 0.06 : 0.04,
+          userSelect: 'none',
+          zIndex: 0,
+        }}
+      >
+        {role.isCurrent ? 'NOW' : year}
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 pb-16">
+
+        {/* Counter line */}
+        <div className="flex items-center gap-4 mb-5">
+          <span
+            className="hud-text text-[10px]"
+            style={{ color: role.isCurrent ? 'var(--nm-accent)' : 'rgba(255,255,255,0.22)', letterSpacing: '0.14em' }}
+          >
+            {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+          </span>
+          <div className="flex-1 h-px" style={{ background: role.isCurrent ? 'rgba(220,38,38,0.35)' : 'rgba(255,255,255,0.08)' }} />
+          {role.isCurrent && (
+            <motion.span
+              className="inline-flex items-center gap-1.5 hud-text text-[10px] px-3 py-1"
+              style={{
+                color: 'var(--nm-accent)',
+                border: '1px solid rgba(220,38,38,0.4)',
+                borderRadius: '99px',
+              }}
+              animate={{ opacity: [1, 0.45, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: 'var(--nm-accent)', boxShadow: '0 0 6px var(--nm-accent)' }}
+              />
+              LIVE
+            </motion.span>
+          )}
+          <span
+            className="hud-text text-[10px]"
+            style={{ color: 'rgba(255,255,255,0.22)', letterSpacing: '0.1em' }}
+          >
+            {role.period}
+          </span>
+        </div>
+
+        {/* Role title — huge */}
+        <h3
+          className="mb-2 leading-[0.92] tracking-tight"
+          style={{
+            fontFamily: 'Outfit, sans-serif',
+            fontWeight: 900,
+            fontSize: role.isCurrent
+              ? 'clamp(1.8rem, 3.5vw, 2.8rem)'
+              : 'clamp(1.3rem, 2.8vw, 2rem)',
+            color: role.isCurrent ? 'var(--nm-text)' : 'rgba(255,255,255,0.75)',
+          }}
+        >
+          {role.title}
+        </h3>
+
+        {/* Org */}
+        <p
+          className="hud-text mb-5"
+          style={{
+            fontSize: '0.72rem',
+            letterSpacing: '0.1em',
+            color: role.isCurrent ? 'var(--nm-accent)' : 'rgba(255,255,255,0.3)',
+          }}
+        >
+          {role.org}
+        </p>
+
+        {/* Blurb */}
+        <p
+          className="text-sm sm:text-base leading-relaxed max-w-2xl"
+          style={{ color: role.isCurrent ? 'var(--nm-text-muted)' : 'rgba(255,255,255,0.35)' }}
+        >
+          {role.blurb}
+        </p>
+
+        {/* Tags */}
+        {role.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-5">
+            {role.tags.map(tag => (
+              <span
+                key={tag}
+                className="hud-text"
+                style={{
+                  fontSize: '0.6rem',
+                  color: role.isCurrent ? 'var(--nm-accent)' : 'rgba(255,255,255,0.28)',
+                  border: `1px solid ${role.isCurrent ? 'rgba(220,38,38,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                  borderRadius: '99px',
+                  padding: '0.22rem 0.7rem',
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom separator */}
+      <div
+        className="w-full h-px"
+        style={{
+          background: role.isCurrent
+            ? 'linear-gradient(to right, rgba(220,38,38,0.4), rgba(220,38,38,0.1), transparent)'
+            : 'rgba(255,255,255,0.06)',
+        }}
+      />
+    </motion.div>
+  )
+}
+
+/* ─── Section ───────────────────────────────────────────────────────────── */
 export default function Timeline() {
   return (
-    <Section id="timeline" className="pt-12">
-      <div className="mb-6 flex items-center gap-3">
-        <Calendar className="h-5 w-5 text-blue-400"/>
-        <h2 className="text-xl font-semibold text-zinc-100">Career Timeline</h2>
+    <Section id="timeline" className="py-20">
+
+      {/* Heading */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="mb-16"
+      >
+        <h2
+          className="text-4xl sm:text-5xl font-black tracking-tight"
+          style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--nm-text)' }}
+        >
+          Career
+        </h2>
+        <div
+          className="mt-4 h-px w-full"
+          style={{ background: 'linear-gradient(90deg, var(--nm-accent), transparent)' }}
+        />
+      </motion.div>
+
+      {/* Chapters */}
+      <div className="flex flex-col gap-0">
+        {ALL_ROLES.map((role, i) => (
+          <Chapter
+            key={role.title + i}
+            role={role}
+            index={i}
+            total={ALL_ROLES.length}
+          />
+        ))}
       </div>
-      <div className="relative mx-auto max-w-2xl">
-        <div className="border-l-2 border-blue-400/30 pl-10">
-          {TIMELINE.map((role, idx) => (
-            <div key={role.title + idx} className="mb-10 last:mb-0 relative">
-              <div className="absolute -left-6 top-2 w-5 h-5 rounded-full bg-blue-400/80 border-2 border-white/30 shadow" />
-              <div className="flex flex-col gap-1">
-                <div className="text-base font-semibold text-blue-200">{role.title}</div>
-                <div className="text-xs text-zinc-400">{role.org} • {role.period}</div>
-                <div className="text-sm text-zinc-100/90">{role.blurb}</div>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {role.tags?.map(t => (
-                    <span key={t} className="bg-blue-400/20 text-blue-200 px-2 py-0.5 rounded-full text-xs">{t}</span>
-                  ))}
-                </div>
-                {role.current && <span className="mt-1 inline-block text-xs text-blue-400 font-bold">Current</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+
     </Section>
   )
 }
