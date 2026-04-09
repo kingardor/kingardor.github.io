@@ -62,7 +62,7 @@ export default function ChatBar({ onSubmit }) {
       {/* Input bar */}
       <form onSubmit={handleSubmit}>
         <div
-          className="relative flex items-center gap-3 rounded-2xl px-5 py-3.5"
+          className="relative flex items-center gap-2 sm:gap-3 rounded-2xl px-3 sm:px-5 py-3"
           style={{
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.1)',

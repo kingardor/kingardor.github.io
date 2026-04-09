@@ -53,7 +53,7 @@ function Chapter({ role, index, total }) {
       <div className="relative z-10 pb-16">
 
         {/* Counter line */}
-        <div className="flex items-center gap-4 mb-5">
+        <div className="flex items-center gap-2 sm:gap-4 mb-5 overflow-hidden">
           <span
             className="hud-text text-[10px]"
             style={{ color: role.isCurrent ? 'var(--nm-accent)' : 'var(--nm-text-subtle)', letterSpacing: '0.14em' }}
@@ -94,8 +94,8 @@ function Chapter({ role, index, total }) {
             fontFamily: 'Outfit, sans-serif',
             fontWeight: 900,
             fontSize: role.isCurrent
-              ? 'clamp(1.8rem, 3.5vw, 2.8rem)'
-              : 'clamp(1.3rem, 2.8vw, 2rem)',
+              ? 'clamp(1.5rem, 3.5vw, 2.8rem)'
+              : 'clamp(1.1rem, 2.8vw, 2rem)',
             color: role.isCurrent ? 'var(--nm-text)' : 'var(--nm-text-muted)',
           }}
         >

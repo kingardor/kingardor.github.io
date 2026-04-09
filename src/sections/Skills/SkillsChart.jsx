@@ -33,10 +33,10 @@ const ROWS = [
     ],
     duration: 40,   /* seconds for one full loop */
     dir: 'normal',  /* normal = left, reverse = right */
-    size: 'clamp(2.2rem, 5vw, 4rem)',
+    size: 'clamp(1.6rem, 5vw, 4rem)',
     weight: 900,
-    gap: '3rem',
-    iconSize: 32,
+    gap: '2.5rem',
+    iconSize: 28,
   },
   {
     label: 'Frameworks',
@@ -55,10 +55,10 @@ const ROWS = [
     ],
     duration: 28,
     dir: 'reverse',
-    size: 'clamp(1.5rem, 3.2vw, 2.8rem)',
+    size: 'clamp(1.1rem, 3.2vw, 2.8rem)',
     weight: 700,
-    gap: '2.5rem',
-    iconSize: 22,
+    gap: '2rem',
+    iconSize: 20,
   },
   {
     label: 'Tools & Infra',
@@ -78,10 +78,10 @@ const ROWS = [
     ],
     duration: 52,
     dir: 'normal',
-    size: 'clamp(1.1rem, 2.4vw, 2rem)',
+    size: 'clamp(0.85rem, 2.4vw, 2rem)',
     weight: 600,
-    gap: '2rem',
-    iconSize: 16,
+    gap: '1.5rem',
+    iconSize: 14,
   },
 ]
 

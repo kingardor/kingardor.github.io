@@ -34,14 +34,14 @@ function WordReveal({ text, delay = 0, className = '', style = {} }) {
 /* ─── Inline stat pill ─── */
 function StatPill({ kpi, label }) {
   return (
-    <div className="flex flex-col items-center px-4 sm:px-5">
+    <div className="flex flex-col items-center px-3 sm:px-5">
       <span
         className="font-black leading-none"
-        style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)', color: 'var(--nm-accent)' }}
+        style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(1rem, 2.5vw, 1.8rem)', color: 'var(--nm-accent)' }}
       >
         {kpi}
       </span>
-      <span className="hud-text mt-0.5" style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap' }}>
+      <span className="hud-text mt-0.5 text-center" style={{ fontSize: '0.48rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.3 }}>
         {label}
       </span>
     </div>
@@ -134,31 +134,31 @@ export default function Hero({ onSubmit }) {
 
           {/* Status badges row */}
           <motion.div
-            className="flex items-center justify-center gap-5 mb-5"
+            className="flex items-center justify-center gap-3 sm:gap-5 mb-5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <span
                 className="w-[5px] h-[5px] rounded-full"
                 style={{ background: 'var(--nm-accent)', boxShadow: '0 0 8px var(--nm-accent)', animation: 'pulseGlow 2s ease-in-out infinite' }}
               />
-              <span className="hud-text" style={{ fontSize: '0.58rem', color: 'rgba(255,255,255,0.45)' }}>
+              <span className="hud-text" style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.45)' }}>
                 AI ARCHITECT
               </span>
             </div>
             <div className="w-px h-3" style={{ background: 'rgba(255,255,255,0.15)' }} />
             <div className="flex items-center gap-1.5">
               <span className="w-[5px] h-[5px] rounded-full bg-green-400" style={{ boxShadow: '0 0 6px #22c55e', animation: 'blink 2s infinite' }} />
-              <span className="hud-text" style={{ fontSize: '0.58rem', color: 'rgba(255,255,255,0.35)' }}>OPEN TO WORK</span>
+              <span className="hud-text" style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.35)' }}>OPEN TO WORK</span>
             </div>
           </motion.div>
 
           {/* ── Name ── */}
           <div
             className="flex items-baseline justify-center gap-[0.22em] leading-[0.88] tracking-[-0.04em] mb-5"
-            style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, fontSize: 'clamp(3.5rem, 10vw, 8rem)' }}
+            style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, fontSize: 'clamp(2.8rem, 10vw, 8rem)' }}
           >
             <div style={{ overflow: 'hidden' }}>
               <motion.span
@@ -193,19 +193,22 @@ export default function Hero({ onSubmit }) {
 
           {/* Stats row */}
           <motion.div
-            className="flex items-center justify-center mb-6"
+            className="mb-6 w-full"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 1.0 }}
           >
-            {HIGHLIGHTS.map((h, i) => (
-              <React.Fragment key={h.title}>
-                <StatPill kpi={h.kpi} label={h.title} />
-                {i < HIGHLIGHTS.length - 1 && (
-                  <div className="w-px self-stretch" style={{ background: 'rgba(255,255,255,0.12)' }} />
-                )}
-              </React.Fragment>
-            ))}
+            {/* 2×2 grid on mobile, single row on sm+ */}
+            <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-y-3 sm:gap-y-0">
+              {HIGHLIGHTS.map((h, i) => (
+                <React.Fragment key={h.title}>
+                  <StatPill kpi={h.kpi} label={h.title} />
+                  {i < HIGHLIGHTS.length - 1 && (
+                    <div className="hidden sm:block w-px self-stretch" style={{ background: 'rgba(255,255,255,0.12)' }} />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
           </motion.div>
 
           {/* Veronica chat bar */}

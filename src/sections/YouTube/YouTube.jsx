@@ -40,7 +40,7 @@ function Skeleton() {
       </div>
       <div className="flex gap-3 overflow-hidden">
         {[0, 1, 2, 3, 4].map(i => (
-          <div key={i} className="nm-card overflow-hidden shrink-0" style={{ width: 220 }}>
+          <div key={i} className="nm-card overflow-hidden shrink-0" style={{ width: 'clamp(160px, 40vw, 220px)' }}>
             <div className="aspect-video skeleton-shimmer" />
             <div className="h-8 mx-3 my-2 skeleton-shimmer rounded" />
           </div>
@@ -159,7 +159,7 @@ function StripCard({ item, active, onClick, index }) {
     <motion.div
       onClick={onClick}
       className="nm-card overflow-hidden group relative shrink-0 cursor-pointer"
-      style={{ width: 220 }}
+      style={{ width: 'clamp(160px, 40vw, 220px)' }}
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
