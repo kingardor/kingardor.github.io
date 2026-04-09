@@ -112,7 +112,7 @@ export default function Talks() {
                   fontFamily: "'Outfit', sans-serif",
                   fontWeight: 900,
                   fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-                  color: 'var(--nm-text)',
+                  color: '#ffffff',
                   letterSpacing: '-0.02em',
                 }}
               >
@@ -122,7 +122,7 @@ export default function Talks() {
               {/* Description */}
               <p
                 className="text-sm sm:text-base mb-6 max-w-2xl"
-                style={{ color: 'var(--nm-text-muted)', lineHeight: 1.65 }}
+                style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.65 }}
               >
                 {TALK.description}
               </p>

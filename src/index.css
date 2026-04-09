@@ -72,7 +72,17 @@ html, body, #root {
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   color: var(--nm-text);
   background: var(--nm-bg);
-  transition: background 0.4s ease, color 0.3s ease;
+}
+
+/* Smooth theme transition — only active for ~450ms while toggling */
+[data-transitioning],
+[data-transitioning] * {
+  transition:
+    background-color 0.35s ease,
+    background 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease !important;
 }
 
 h1, h2, h3, h4, h5, h6 {

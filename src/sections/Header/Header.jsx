@@ -1,18 +1,17 @@
 import React from 'react'
 import * as si from 'simple-icons'
-import { Mail, Sun, Moon } from 'lucide-react'
+import { Mail } from 'lucide-react'
 import { LINKS, SECTION_LINKS } from '../../data'
 import useScrollSpy from '../../shared/hooks/useScrollSpy'
 import useIsMobile from '../../shared/hooks/useIsMobile'
 import useAutoHideHeader from '../../shared/hooks/useAutoHideHeader'
 import { SocialButton, cn } from '../../shared/components/Primitives'
-import { useTheme } from '../../shared/contexts/ThemeContext'
+import ThemeToggle from '../../shared/components/ThemeToggle'
 
 export default function Header() {
   const active = useScrollSpy(SECTION_LINKS.map((s) => s.href), 160)
   const isMobile = useIsMobile()
   const hidden = useAutoHideHeader()
-  const { theme, toggle } = useTheme()
 
   return (
     <header
@@ -76,22 +75,7 @@ export default function Header() {
                 <Mail className="h-4 w-4" />
               </a>
 
-              {/* Theme toggle */}
-              <button
-                onClick={toggle}
-                aria-label="Toggle theme"
-                className="rounded-xl p-2 transition-all"
-                style={{
-                  border: '1px solid var(--nm-border)',
-                  background: 'var(--nm-surface)',
-                  color: 'var(--nm-accent)',
-                  boxShadow: '3px 3px 8px var(--nm-shadow-dark), -2px -2px 5px var(--nm-shadow-light)',
-                }}
-              >
-                {theme === 'dark'
-                  ? <Sun className="h-4 w-4" />
-                  : <Moon className="h-4 w-4" />}
-              </button>
+              <ThemeToggle />
             </nav>
           </div>
         </div>
