@@ -17,8 +17,6 @@ import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const DIST = join(__dirname, '..', 'dist')
-const WAIT_MS = 800    // React renders in <500 ms; loader minimum is 1700 ms so
-                       // the #loader element is still in the DOM at snapshot time
 const PORT = 45679
 
 // ── Sanity checks ────────────────────────────────────────────────────────────
@@ -84,13 +82,20 @@ try {
   // Log page errors as warnings (non-fatal)
   page.on('pageerror', err => console.warn('  ⚠️  page error (non-fatal):', err.message.slice(0, 120)))
 
+  // Use 'load' (not 'networkidle0') so we don't wait for YouTube/GitHub/CounterAPI
+  // calls, which can take 2–3 s and push us past the loader's 1700 ms minimum
   await page.goto(`http://127.0.0.1:${PORT}/`, {
-    waitUntil: 'networkidle0',
+    waitUntil: 'load',
     timeout: 30_000,
   })
 
-  // Wait for loader to dismiss and React to fully render
-  await new Promise(resolve => setTimeout(resolve, WAIT_MS))
+  // Snapshot exactly when React has populated #root — before any async API calls
+  // finish and well before the 1700 ms loader minimum elapses.
+  // At this moment: #root has full React content AND #loader is still in the DOM.
+  await page.waitForFunction(
+    () => document.getElementById('root')?.children.length > 0,
+    { timeout: 10_000 }
+  )
 
   const html = await page.content()
   writeFileSync(join(DIST, 'index.html'), html, 'utf8')
