@@ -40,7 +40,7 @@ function Chapter({ role, index, total }) {
           fontSize: 'clamp(3.5rem, 10vw, 7rem)',
           lineHeight: 1,
           letterSpacing: '-0.05em',
-          color: role.isCurrent ? 'var(--nm-accent)' : '#fff',
+          color: role.isCurrent ? 'var(--nm-accent)' : 'var(--nm-text)',
           opacity: role.isCurrent ? 0.06 : 0.04,
           userSelect: 'none',
           zIndex: 0,
@@ -56,11 +56,11 @@ function Chapter({ role, index, total }) {
         <div className="flex items-center gap-4 mb-5">
           <span
             className="hud-text text-[10px]"
-            style={{ color: role.isCurrent ? 'var(--nm-accent)' : 'rgba(255,255,255,0.22)', letterSpacing: '0.14em' }}
+            style={{ color: role.isCurrent ? 'var(--nm-accent)' : 'var(--nm-text-subtle)', letterSpacing: '0.14em' }}
           >
             {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
           </span>
-          <div className="flex-1 h-px" style={{ background: role.isCurrent ? 'rgba(220,38,38,0.35)' : 'rgba(255,255,255,0.08)' }} />
+          <div className="flex-1 h-px" style={{ background: role.isCurrent ? 'rgba(220,38,38,0.35)' : 'var(--nm-divider)' }} />
           {role.isCurrent && (
             <motion.span
               className="inline-flex items-center gap-1.5 hud-text text-[10px] px-3 py-1"
@@ -81,7 +81,7 @@ function Chapter({ role, index, total }) {
           )}
           <span
             className="hud-text text-[10px]"
-            style={{ color: 'rgba(255,255,255,0.22)', letterSpacing: '0.1em' }}
+            style={{ color: 'var(--nm-text-subtle)', letterSpacing: '0.1em' }}
           >
             {role.period}
           </span>
@@ -96,7 +96,7 @@ function Chapter({ role, index, total }) {
             fontSize: role.isCurrent
               ? 'clamp(1.8rem, 3.5vw, 2.8rem)'
               : 'clamp(1.3rem, 2.8vw, 2rem)',
-            color: role.isCurrent ? 'var(--nm-text)' : 'rgba(255,255,255,0.75)',
+            color: role.isCurrent ? 'var(--nm-text)' : 'var(--nm-text-muted)',
           }}
         >
           {role.title}
@@ -108,7 +108,7 @@ function Chapter({ role, index, total }) {
           style={{
             fontSize: '0.72rem',
             letterSpacing: '0.1em',
-            color: role.isCurrent ? 'var(--nm-accent)' : 'rgba(255,255,255,0.3)',
+            color: role.isCurrent ? 'var(--nm-accent)' : 'var(--nm-text-subtle)',
           }}
         >
           {role.org}
@@ -117,7 +117,7 @@ function Chapter({ role, index, total }) {
         {/* Blurb */}
         <p
           className="text-sm sm:text-base leading-relaxed max-w-2xl"
-          style={{ color: role.isCurrent ? 'var(--nm-text-muted)' : 'rgba(255,255,255,0.35)' }}
+          style={{ color: role.isCurrent ? 'var(--nm-text-muted)' : 'var(--nm-text-subtle)' }}
         >
           {role.blurb}
         </p>
@@ -131,8 +131,8 @@ function Chapter({ role, index, total }) {
                 className="hud-text"
                 style={{
                   fontSize: '0.6rem',
-                  color: role.isCurrent ? 'var(--nm-accent)' : 'rgba(255,255,255,0.28)',
-                  border: `1px solid ${role.isCurrent ? 'rgba(220,38,38,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                  color: role.isCurrent ? 'var(--nm-accent)' : 'var(--nm-text-subtle)',
+                  border: `1px solid ${role.isCurrent ? 'rgba(220,38,38,0.3)' : 'var(--nm-border)'}`,
                   borderRadius: '99px',
                   padding: '0.22rem 0.7rem',
                 }}
@@ -150,7 +150,7 @@ function Chapter({ role, index, total }) {
         style={{
           background: role.isCurrent
             ? 'linear-gradient(to right, rgba(220,38,38,0.4), rgba(220,38,38,0.1), transparent)'
-            : 'rgba(255,255,255,0.06)',
+            : 'var(--nm-divider)',
         }}
       />
     </motion.div>

@@ -10,26 +10,23 @@ export default function ScrollDown() {
         <motion.a
           href="#highlights"
           aria-label="Scroll to highlights"
-          className="group absolute inset-x-0 bottom-10 sm:bottom-10 z-20 flex justify-center"
+          className="absolute inset-x-0 bottom-8 z-20 flex flex-col items-center gap-2"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 4 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.3, delay: 1.8 }}
         >
-          <div className="relative">
-            <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-fuchsia-500/30 via-pink-500/30 to-rose-500/30 blur-lg opacity-0 transition-opacity group-hover:opacity-100" />
-            <div className="relative flex flex-col items-center gap-2">
-              <div className="h-9 w-5 rounded-full border border-white/25 bg-white/5 backdrop-blur-sm flex items-start justify-center overflow-hidden">
-                <motion.span
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: [0, 1, 1, 0], y: [2, 2, 18, 18] }}
-                  transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 0.4 }}
-                  className="mt-1 h-1.5 w-1.5 rounded-full bg-white/90"
-                />
-              </div>
-              <span className="text-xs font-medium text-zinc-300/80 group-hover:text-zinc-100">Scroll to see more!</span>
-            </div>
-          </div>
+          {/* Animated vertical line */}
+          <div
+            className="w-[1px] h-8 animate-scroll-line"
+            style={{ background: 'linear-gradient(to bottom, var(--nm-accent), transparent)' }}
+          />
+          <span
+            className="hud-text"
+            style={{ fontSize: '0.55rem', color: 'var(--nm-text-subtle)' }}
+          >
+            scroll
+          </span>
         </motion.a>
       )}
     </AnimatePresence>

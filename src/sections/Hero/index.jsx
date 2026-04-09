@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import ChatBar from './ChatBar'
 import ScrollDown from './ScrollDown'
 import { HIGHLIGHTS } from '../../data'
+import { useTheme } from '../../shared/contexts/ThemeContext'
 
 /* ─── Film grain overlay ─── */
 function GrainOverlay() {
@@ -49,6 +50,8 @@ function StatPill({ kpi, label }) {
 
 /* ─── Hero ─── */
 export default function Hero({ onSubmit }) {
+  const { theme } = useTheme()
+  const isLight = theme === 'light'
   return (
     <section
       id="top"
@@ -77,14 +80,23 @@ export default function Hero({ onSubmit }) {
         className="absolute inset-0 pointer-events-none"
         style={{
           zIndex: 1,
-          background: `linear-gradient(to bottom,
-            rgba(0,0,0,0.0)  0%,
-            rgba(0,0,0,0.05) 25%,
-            rgba(0,0,0,0.4)  50%,
-            rgba(0,0,0,0.88) 70%,
-            rgba(0,0,0,0.97) 85%,
-            rgba(0,0,0,1.0)  100%
-          )`,
+          background: isLight
+            ? `linear-gradient(to bottom,
+                rgba(0,0,0,0.0)  0%,
+                rgba(0,0,0,0.02) 25%,
+                rgba(0,0,0,0.22) 50%,
+                rgba(0,0,0,0.62) 70%,
+                rgba(0,0,0,0.82) 85%,
+                rgba(0,0,0,0.92) 100%
+              )`
+            : `linear-gradient(to bottom,
+                rgba(0,0,0,0.0)  0%,
+                rgba(0,0,0,0.05) 25%,
+                rgba(0,0,0,0.4)  50%,
+                rgba(0,0,0,0.88) 70%,
+                rgba(0,0,0,0.97) 85%,
+                rgba(0,0,0,1.0)  100%
+              )`,
         }}
       />
 

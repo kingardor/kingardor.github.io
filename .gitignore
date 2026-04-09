@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 .vite/
+.superpowers/
 
 # env
 .env

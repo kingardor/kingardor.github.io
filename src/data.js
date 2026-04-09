@@ -31,8 +31,8 @@ export const HIGHLIGHTS = [
 
 export const NOW_ROLES = [
   {
-    title: 'Founding AI Architect',
-    org: 'Stealth Startup',
+    title: 'Director of AI',
+    org: 'MyBlue.ai',
     period: 'Mar 2025 — Present',
     blurb: 'Building a video data lake with full agentic capabilities (multimodal RAG, LLM tools, graph-native retrieval).',
     tags: ['GenAI','Agentic','Video','RAG','Qdrant']

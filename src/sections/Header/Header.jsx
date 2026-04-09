@@ -1,16 +1,18 @@
 import React from 'react'
 import * as si from 'simple-icons'
-import { Mail } from 'lucide-react'
+import { Mail, Sun, Moon } from 'lucide-react'
 import { LINKS, SECTION_LINKS } from '../../data'
 import useScrollSpy from '../../shared/hooks/useScrollSpy'
 import useIsMobile from '../../shared/hooks/useIsMobile'
 import useAutoHideHeader from '../../shared/hooks/useAutoHideHeader'
 import { SocialButton, cn } from '../../shared/components/Primitives'
+import { useTheme } from '../../shared/contexts/ThemeContext'
 
 export default function Header() {
   const active = useScrollSpy(SECTION_LINKS.map((s) => s.href), 160)
   const isMobile = useIsMobile()
   const hidden = useAutoHideHeader()
+  const { theme, toggle } = useTheme()
 
   return (
     <header
@@ -18,31 +20,78 @@ export default function Header() {
       style={{ transform: hidden && isMobile ? 'translateY(-140%)' : 'translateY(0)', transition: 'transform .25s ease' }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-        <div className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur overflow-hidden">
+        <div
+          className="relative rounded-2xl overflow-hidden"
+          style={{
+            background: 'var(--glass-bg)',
+            border: '1px solid var(--glass-border)',
+            backdropFilter: 'blur(16px)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+          }}
+        >
           <div className="relative flex items-center px-3 sm:px-4 py-3">
-            <a href="#top" className="font-semibold tracking-wide text-zinc-100">AJ</a>
 
-            <nav className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:flex items-center gap-1 rounded-xl border border-white/10 bg-black/30 p-1">
+            {/* Logo */}
+            <a
+              href="#top"
+              className="font-black tracking-tight"
+              style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--nm-text)', fontSize: '1rem' }}
+            >
+              AJ<span style={{ color: 'var(--nm-accent)' }}>.</span>
+            </a>
+
+            {/* Nav links */}
+            <nav className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:flex items-center gap-1 rounded-xl p-1"
+              style={{ background: 'var(--nm-bg)', border: '1px solid var(--nm-border)' }}>
               {SECTION_LINKS.map((s) => (
                 <a
                   key={s.href}
                   href={s.href}
                   className={cn(
-                    'rounded-lg px-2.5 py-1.5 text-[13px]',
-                    active === s.href.slice(1) ? 'text-zinc-100 bg-white/10' : 'text-zinc-300 hover:text-zinc-100 hover:bg-white/10'
+                    'rounded-lg px-2.5 py-1.5 text-[13px] transition-colors',
+                    active === s.href.slice(1)
+                      ? 'bg-white/10'
+                      : 'hover:bg-white/8'
                   )}
+                  style={{
+                    color: active === s.href.slice(1) ? 'var(--nm-text)' : 'var(--nm-text-muted)',
+                  }}
                 >
                   {s.label}
                 </a>
               ))}
             </nav>
 
-            <nav className="ml-auto flex items-center gap-2 sm:gap-3">
+            {/* Right actions */}
+            <nav className="ml-auto flex items-center gap-2 sm:gap-2.5">
               <SocialButton href={LINKS.medium} icon={si.siMedium} label="Medium" />
               <SocialButton href={LINKS.github} icon={si.siGithub} label="GitHub" />
               <SocialButton href={LINKS.twitter} icon={si.siX} label="X" />
               <SocialButton href={LINKS.instagram} icon={si.siInstagram} label="Instagram" />
-              <a href={LINKS.email} className="group hidden rounded-xl border border-white/10 bg-white/5 p-2 text-zinc-200 hover:bg-white/10 sm:inline-flex"><Mail className="h-4 w-4"/></a>
+              <a
+                href={LINKS.email}
+                className="hidden sm:inline-flex rounded-xl p-2 transition-colors"
+                style={{ border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.04)', color: 'var(--nm-text-muted)' }}
+              >
+                <Mail className="h-4 w-4" />
+              </a>
+
+              {/* Theme toggle */}
+              <button
+                onClick={toggle}
+                aria-label="Toggle theme"
+                className="rounded-xl p-2 transition-all"
+                style={{
+                  border: '1px solid var(--nm-border)',
+                  background: 'var(--nm-surface)',
+                  color: 'var(--nm-accent)',
+                  boxShadow: '3px 3px 8px var(--nm-shadow-dark), -2px -2px 5px var(--nm-shadow-light)',
+                }}
+              >
+                {theme === 'dark'
+                  ? <Sun className="h-4 w-4" />
+                  : <Moon className="h-4 w-4" />}
+              </button>
             </nav>
           </div>
         </div>

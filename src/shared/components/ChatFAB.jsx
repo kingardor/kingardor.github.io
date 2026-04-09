@@ -40,7 +40,7 @@ export default function ChatFAB({ onClick, label = "ask veronica" }) {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         style={{ position: "relative" }}
       >
-        <div className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-zinc-900/90">
+        <div className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-zinc-900/90" style={{ color: '#fff' }}>
           <WandSparkles size={28} aria-hidden="true" />
         </div>
 

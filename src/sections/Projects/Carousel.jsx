@@ -13,34 +13,32 @@ const ProjectSlide = ({ p, isDraggingRef, featured }) => (
     <a
       href={p.url} target="_blank" rel="noreferrer"
       onClick={(e) => { if (isDraggingRef?.current) e.preventDefault(); }}
-      className="group block h-full rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md shadow-lg p-6 md:p-8 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all duration-200"
+      className="group block h-full rounded-2xl p-6 md:p-8 transition-all duration-200 focus:outline-none"
       style={{
-        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.18)",
-        border: "1.5px solid rgba(255,255,255,0.13)",
-        background: "rgba(30, 30, 40, 0.35)",
-        backdropFilter: "blur(12px)"
+        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.12)",
+        border: "1.5px solid var(--nm-border)",
+        background: "var(--nm-surface)",
       }}
     >
       <div className="flex items-center justify-between">
-        <div className="font-medium text-zinc-100 flex items-center gap-2">
+        <div className="font-medium flex items-center gap-2" style={{ color: 'var(--nm-text)' }}>
           {p.name}
           {featured && (
             <span className="ml-2 px-2 py-0.5 rounded-full bg-red-600/80 text-xs text-white font-semibold shadow">Featured</span>
           )}
         </div>
-        <ArrowRight className="h-4 w-4 text-zinc-400 transition-transform group-hover:translate-x-1"/>
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" style={{ color: 'var(--nm-text-muted)' }}/>
       </div>
-      <p className="mt-2 text-sm text-zinc-300/90">{p.desc}</p>
+      <p className="mt-2 text-sm" style={{ color: 'var(--nm-text-muted)' }}>{p.desc}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         {p.tags?.map((t) => (
-          // Placeholder for icon: replace with actual icon logic if desired
-          <span key={t} className="flex items-center gap-1 bg-black/40 rounded-full px-2 py-0.5 text-xs text-zinc-200">
-            {/* <IconForTag tag={t} /> */}
+          <span key={t} className="flex items-center gap-1 rounded-full px-2 py-0.5 text-xs"
+            style={{ background: 'var(--nm-bg)', color: 'var(--nm-text-muted)', border: '1px solid var(--nm-border)' }}>
             {t}
           </span>
         ))}
       </div>
-      <div className="mt-4 inline-flex items-center gap-2 text-sm text-zinc-200 opacity-80 group-hover:opacity-100">
+      <div className="mt-4 inline-flex items-center gap-2 text-sm opacity-70 group-hover:opacity-100" style={{ color: 'var(--nm-text)' }}>
         <span>Open</span><ExternalLink className="h-4 w-4"/>
       </div>
     </a>
@@ -83,7 +81,7 @@ export default function Carousel({ items }) {
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => setPaused(false)}
     >
-      <div className="overflow-hidden rounded-2xl border border-white/10">
+      <div className="overflow-hidden rounded-2xl" style={{ border: '1px solid var(--nm-border)' }}>
         <motion.div
           className="flex"
           animate={{ x: `-${i * 100}%` }}
@@ -111,16 +109,19 @@ export default function Carousel({ items }) {
         </motion.div>
       </div>
 
-      <button onClick={() => go(-1)} className="absolute left-1.5 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-black/50 p-2 backdrop-blur hover:bg-black/70">
+      <button onClick={() => go(-1)} className="absolute left-1.5 top-1/2 -translate-y-1/2 rounded-full p-2 backdrop-blur"
+        style={{ border: '1px solid var(--nm-border)', background: 'var(--nm-surface)', color: 'var(--nm-text-muted)' }}>
         <ChevronLeft className="h-5 w-5"/>
       </button>
-      <button onClick={() => go(1)} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-black/50 p-2 backdrop-blur hover:bg-black/70">
+      <button onClick={() => go(1)} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full p-2 backdrop-blur"
+        style={{ border: '1px solid var(--nm-border)', background: 'var(--nm-surface)', color: 'var(--nm-text-muted)' }}>
         <ChevronRight className="h-5 w-5"/>
       </button>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-3 md:bottom-4 flex items-center justify-center gap-1.5">
         {items.map((_, idx) => (
-          <span key={idx} className={cn("h-1 w-3 rounded-full", idx === i ? 'bg-zinc-200' : 'bg-zinc-600/50')} />
+          <span key={idx} className="h-1 w-3 rounded-full"
+            style={{ background: idx === i ? 'var(--nm-text)' : 'var(--nm-text-dim)' }} />
         ))}
       </div>
     </div>

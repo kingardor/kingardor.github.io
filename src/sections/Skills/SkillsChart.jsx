@@ -87,7 +87,7 @@ const ROWS = [
 
 function Dot() {
   return (
-    <span aria-hidden style={{ color: 'rgba(255,255,255,0.2)', flexShrink: 0, lineHeight: 1 }}>·</span>
+    <span aria-hidden style={{ color: 'var(--nm-text-subtle)', flexShrink: 0, lineHeight: 1 }}>·</span>
   )
 }
 
@@ -101,12 +101,12 @@ function Chip({ skill, active, onEnter, onLeave, iconSize }) {
       onMouseLeave={onLeave}
     >
       {skill.icon && (
-        <span style={{ color: isActive ? '#fff' : 'rgba(255,255,255,0.15)', transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center' }}>
+        <span style={{ color: isActive ? 'var(--nm-text)' : 'var(--nm-text-dim)', transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center' }}>
           <SiIcon icon={skill.icon} size={iconSize} />
         </span>
       )}
       <span style={{
-        color: isActive ? '#ffffff' : 'rgba(255,255,255,0.11)',
+        color: isActive ? 'var(--nm-text)' : 'var(--nm-text-dim)',
         textShadow: isActive ? '0 0 40px rgba(220,38,38,1), 0 0 80px rgba(220,38,38,0.5)' : 'none',
         transform: isActive ? 'scale(1.06)' : 'scale(1)',
         display: 'inline-block',
@@ -270,7 +270,7 @@ export default function SkillsChart() {
 
       <motion.p
         className="hud-text text-[10px] text-center mt-10"
-        style={{ color: 'rgba(255,255,255,0.18)', letterSpacing: '0.12em' }}
+        style={{ color: 'var(--nm-text-subtle)', letterSpacing: '0.12em' }}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}

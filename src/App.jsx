@@ -64,15 +64,8 @@ export default function App() {
             <Hero onSubmit={goChat} />
             <Highlights />
             <About />
-            {/* Career Timeline (left) and Skills Radar (right) side-by-side */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-stretch justify-center w-full max-w-6xl mx-auto py-12">
-              <div className="flex-1 min-w-0">
-                <Timeline />
-              </div>
-              <div className="flex-1 min-w-0 flex items-center justify-center">
-                <SkillsChart />
-              </div>
-            </div>
+            <Timeline />
+            <SkillsChart />
             <Skills />
             <Suspense fallback={<div className="text-zinc-400">Loading projects...</div>}><Projects /></Suspense>
             <Talks />

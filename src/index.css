@@ -23,6 +23,9 @@
   --nm-text: #f4f4f5;
   --nm-text-muted: rgba(255, 255, 255, 0.38);
   --nm-text-subtle: rgba(255, 255, 255, 0.18);
+  --nm-text-dim: rgba(255, 255, 255, 0.11);
+  --nm-divider: rgba(255, 255, 255, 0.06);
+  --nm-ghost: rgba(255, 255, 255, 0.04);
   /* Accent */
   --nm-accent: #dc2626;
   --nm-accent-2: #db2777;
@@ -47,6 +50,9 @@
   --nm-text: #1a1a2e;
   --nm-text-muted: rgba(0, 0, 0, 0.5);
   --nm-text-subtle: rgba(0, 0, 0, 0.3);
+  --nm-text-dim: rgba(0, 0, 0, 0.18);
+  --nm-divider: rgba(0, 0, 0, 0.08);
+  --nm-ghost: rgba(0, 0, 0, 0.04);
   --nm-accent: #dc2626;
   --nm-accent-2: #db2777;
   --nm-accent-glow: rgba(220, 38, 38, 0.18);

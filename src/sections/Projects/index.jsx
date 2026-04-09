@@ -17,8 +17,8 @@ export default function Projects() {
   return (
     <Section id="projects" className="pt-12">
       <div className="mb-6 flex items-center gap-3">
-        <FileCode2 className="h-5 w-5 text-zinc-300"/>
-        <h2 className="text-xl font-semibold text-zinc-100">Featured Projects</h2>
+        <FileCode2 className="h-5 w-5" style={{ color: 'var(--nm-text-muted)' }}/>
+        <h2 className="text-xl font-semibold" style={{ color: 'var(--nm-text)' }}>Featured Projects</h2>
       </div>
       {error && <div className="text-red-400 mb-4">Error: {error}</div>}
       {!projects && !error && <div className="text-zinc-400 mb-4">Loading projects...</div>}

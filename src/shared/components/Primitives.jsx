@@ -19,10 +19,15 @@ export const Section = ({ id, className, children }) => (
   </motion.section>
 )
 
-export const K = ({ children }) => <span className="text-zinc-200/90">{children}</span>
+export const K = ({ children }) => (
+  <span style={{ color: 'var(--nm-text)', fontWeight: 600 }}>{children}</span>
+)
 
 export const Pill = ({ children, className }) => (
-  <span className={cn("inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-200 backdrop-blur", className)}>
+  <span
+    className={cn("inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs backdrop-blur", className)}
+    style={{ border: '1px solid var(--nm-border)', background: 'var(--nm-surface)', color: 'var(--nm-text-muted)' }}
+  >
     {children}
   </span>
 )
@@ -33,7 +38,8 @@ export const A = ({ href, children, className }) => {
     <a
       href={href}
       {...(isInternal ? {} : { target: '_blank', rel: 'noreferrer' })}
-      className={cn('group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-100 transition hover:translate-y-[-1px] hover:bg-white/10', className)}
+      className={cn('group inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm transition hover:translate-y-[-1px]', className)}
+      style={{ border: '1px solid var(--nm-border)', background: 'var(--nm-surface)', color: 'var(--nm-text)' }}
     >
       {children}
       {!isInternal && <ExternalLink className="h-4 w-4 opacity-70 transition group-hover:translate-x-0.5" />}
@@ -52,8 +58,18 @@ export const SocialButton = ({ href, icon, label }) => (
     href={href}
     target="_blank"
     rel="noreferrer"
-    style={{ '--brand': icon ? `#${icon.hex}` : undefined }}
-    className="group rounded-xl border border-white/10 bg-white/5 p-2 text-zinc-200 hover:bg-white/10 hover:text-[var(--brand)]"
+    style={{
+      '--brand': icon ? `#${icon.hex}` : undefined,
+      border: '1px solid var(--nm-border)',
+      background: 'var(--nm-surface)',
+      color: 'var(--nm-text-muted)',
+      borderRadius: '0.75rem',
+      padding: '0.5rem',
+      display: 'inline-flex',
+      transition: 'color 0.2s',
+    }}
+    onMouseEnter={e => { e.currentTarget.style.color = 'var(--brand, var(--nm-accent))' }}
+    onMouseLeave={e => { e.currentTarget.style.color = 'var(--nm-text-muted)' }}
   >
     <BrandIcon icon={icon} />
     <span className="sr-only">{label}</span>
