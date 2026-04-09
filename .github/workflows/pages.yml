@@ -25,10 +25,19 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
+
+      # Install a modern Chrome for the prerender step
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+
       # Pre-render the homepage to static HTML for SEO
       - run: npm run prerender
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+
       # SPA-safe fallback — copy after prerender so 404.html is also pre-rendered
       - run: cp dist/index.html dist/404.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -43,4 +52,3 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
-
