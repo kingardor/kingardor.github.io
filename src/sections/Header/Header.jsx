@@ -1,5 +1,4 @@
-import React from 'react'
-import * as si from 'simple-icons'
+import { siMedium, siGithub, siX, siInstagram } from 'simple-icons'
 import { Mail } from 'lucide-react'
 import { LINKS, SECTION_LINKS } from '../../data'
 import useScrollSpy from '../../shared/hooks/useScrollSpy'
@@ -63,10 +62,10 @@ export default function Header() {
 
             {/* Right actions */}
             <nav className="ml-auto flex items-center gap-2 sm:gap-2.5">
-              <SocialButton href={LINKS.medium} icon={si.siMedium} label="Medium" />
-              <SocialButton href={LINKS.github} icon={si.siGithub} label="GitHub" />
-              <SocialButton href={LINKS.twitter} icon={si.siX} label="X" />
-              <SocialButton href={LINKS.instagram} icon={si.siInstagram} label="Instagram" />
+              <SocialButton href={LINKS.medium} icon={siMedium} label="Medium" />
+              <SocialButton href={LINKS.github} icon={siGithub} label="GitHub" />
+              <SocialButton href={LINKS.twitter} icon={siX} label="X" />
+              <SocialButton href={LINKS.instagram} icon={siInstagram} label="Instagram" />
               <a
                 href={LINKS.email}
                 className="hidden sm:inline-flex rounded-xl p-2 transition-colors"

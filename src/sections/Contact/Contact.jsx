@@ -1,15 +1,15 @@
 import React, { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import * as si from 'simple-icons'
+import { siGithub, siMedium, siX, siInstagram } from 'simple-icons'
 import { Section, BrandIcon } from '../../shared/components/Primitives'
 import { LINKS } from '../../data'
 import { Mail, Linkedin } from 'lucide-react'
 
 const SOCIALS = [
-  { label: 'GitHub',    href: LINKS.github,    icon: si.siGithub },
-  { label: 'Medium',    href: LINKS.medium,    icon: si.siMedium },
-  { label: 'X',         href: LINKS.twitter,   icon: si.siX },
-  { label: 'Instagram', href: LINKS.instagram, icon: si.siInstagram },
+  { label: 'GitHub',    href: LINKS.github,    icon: siGithub },
+  { label: 'Medium',    href: LINKS.medium,    icon: siMedium },
+  { label: 'X',         href: LINKS.twitter,   icon: siX },
+  { label: 'Instagram', href: LINKS.instagram, icon: siInstagram },
   { label: 'LinkedIn',  href: LINKS.linkedin,  lucide: Linkedin },
 ]
 
