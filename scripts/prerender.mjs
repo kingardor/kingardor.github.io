@@ -17,7 +17,8 @@ import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const DIST = join(__dirname, '..', 'dist')
-const WAIT_MS = 3500   // covers 1.7 s loader minimum + React render
+const WAIT_MS = 800    // React renders in <500 ms; loader minimum is 1700 ms so
+                       // the #loader element is still in the DOM at snapshot time
 const PORT = 45679
 
 // ── Sanity checks ────────────────────────────────────────────────────────────
