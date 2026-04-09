@@ -7,13 +7,8 @@ import { ThemeProvider } from './shared/contexts/ThemeContext'
 const loader = document.getElementById('loader')
 const rootEl = document.getElementById('root')
 
-// When the page is pre-rendered (react-snap), #root already has child nodes
-// and React only needs to hydrate (attach event handlers) — very fast.
-// In that case dismiss the loader quickly.
-// When rendering from scratch (CSR), keep the loader up so the CSS animations
-// complete before fading out.
 const isPrerendered = rootEl.hasChildNodes()
-const MIN_MS = isPrerendered ? 300 : 1700
+const MIN_MS = 1700  // always show the full loading animation
 
 const app = (
   <StrictMode>
