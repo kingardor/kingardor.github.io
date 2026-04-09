@@ -37,11 +37,11 @@ All site content (roles, projects, social links, skill data, highlights) lives i
 
 ### Background Effects
 
-`BgFX.jsx` integrates **Vanta.js** (loaded via CDN in `index.html` alongside p5.js). The `window.VANTA` global is used directly — no npm package.
+`BgFX.jsx` renders a Three.js `<Stars />` field (via `@react-three/fiber` + `@react-three/drei`) in dark mode, and a plain CSS radial gradient in light mode. No CDN scripts.
 
-### Skills Radar
+### Loading Screen
 
-Rendered with **Recharts** `RadarChart` inside the Skills/Timeline section. Data comes from `data.js`.
+A pure CSS/HTML splash screen lives in `index.html` (`#loader`). It shows immediately on page load (before JS executes) and is dismissed by `main.jsx` after React renders, with a minimum display time of ~1.7 s so all CSS animations complete before the fade-out.
 
 ### Animations
 

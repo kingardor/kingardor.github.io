@@ -1,21 +1,20 @@
 <!doctype html>
 <html lang="en" class="scroll-smooth">
   <head>
-    <meta name="theme-color" content="#0b0b0e" />
-    <meta name="color-scheme" content="dark" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0b0e" />
+    <meta name="color-scheme" content="dark" />
 
     <!-- Primary SEO -->
     <title>Akash James — AI Architect</title>
     <meta name="description" content="Founding AI Architect building agentic, video-first data lakes; ex-UC Berkeley Research Scholar; Z by HP Ambassador; NVIDIA Jetson AI Lab member." />
     <link rel="canonical" href="https://akashjames.dev/" />
 
-    <!-- Theme/color (nice PWA hinting) -->
-    <meta name="theme-color" content="#0b0b0e" />
-
-    <!-- Open Graph (absolute URLs!) -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Akash James" />
     <meta property="og:title" content="Akash James — AI Architect" />
     <meta property="og:description" content="Agentic AI • Multimodal • RAG • Edge/Video AI" />
     <meta property="og:url" content="https://akashjames.dev/" />
@@ -23,55 +22,235 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
-    <!-- Twitter -->
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@king_ardor" />
+    <meta name="twitter:creator" content="@king_ardor" />
     <meta name="twitter:title" content="Akash James — AI Architect" />
     <meta name="twitter:description" content="Agentic AI • Multimodal • RAG • Edge/Video AI" />
-    <meta name="twitter:image" content="https://kingardor.github.io/hero.webp" />
-    <meta name="twitter:site" content="@king_ardor" />
+    <meta name="twitter:image" content="https://akashjames.dev/hero.webp" />
 
-    <!-- Icons (optional, but recommended) -->
+    <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/cool.svg" />
+
+    <!-- Fonts: preconnect then load Outfit (used by loader) + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
-    <!-- JSON-LD (Person + WebSite). Keep as static script tag. -->
+    <!-- Preload hero image for faster LCP -->
+    <link rel="preload" href="/hero.webp" as="image" />
+
+    <!-- JSON-LD: Person -->
     <script type="application/ld+json">
     {
-      "@context":"https://schema.org",
-      "@type":"Person",
-      "name":"Akash James",
-      "jobTitle":"AI Architect",
-      "url":"https://akashjames.dev",
-      "sameAs":[
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Akash James",
+      "jobTitle": "AI Architect",
+      "url": "https://akashjames.dev",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "MyBlue.ai"
+      },
+      "sameAs": [
         "https://github.com/kingardor",
         "https://akash-james.medium.com",
         "https://twitter.com/king_ardor",
-        "https://instagram.com/lifeofakashjames"
+        "https://instagram.com/lifeofakashjames",
+        "https://linkedin.com/in/akashjames"
       ]
     }
     </script>
+
+    <!-- JSON-LD: WebSite -->
     <script type="application/ld+json">
     {
-      "@context":"https://schema.org",
-      "@type":"WebSite",
-      "url":"https://akashjames.dev",
-      "name":"Akash James — AI Architect",
-      "potentialAction":{
-        "@type":"SearchAction",
-        "target":"https://kingardor.github.io/?q={search_term_string}",
-        "query-input":"required name=search_term_string"
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://akashjames.dev",
+      "name": "Akash James — AI Architect",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://akashjames.dev/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
       }
     }
     </script>
-  
-  <title>Akash James</title>
+
+    <!-- Loading screen styles (pure CSS, zero JS dependency) -->
+    <style>
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #0b0b0f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 1.1rem;
+        overflow: hidden;
+        transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Grain overlay */
+      #loader::before {
+        content: '';
+        position: absolute;
+        inset: -50%;
+        width: 200%;
+        height: 200%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        pointer-events: none;
+        animation: loaderGrain 0.35s steps(1) infinite;
+      }
+
+      /* Scanning glow line */
+      #loader::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 140px;
+        background: linear-gradient(transparent, rgba(220, 38, 38, 0.07), transparent);
+        pointer-events: none;
+        animation: loaderScan 3.5s linear infinite;
+      }
+
+      .loader-logo {
+        font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+        font-weight: 900;
+        font-size: clamp(5rem, 14vw, 8rem);
+        line-height: 1;
+        color: #f4f4f5;
+        letter-spacing: -0.02em;
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        animation: loaderLogoIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+      }
+
+      .loader-logo .dot {
+        color: #dc2626;
+        display: inline-block;
+        animation: loaderGlow 2s ease-in-out 0.75s infinite;
+      }
+
+      .loader-tagline {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.32);
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        margin: 0;
+        clip-path: inset(0 100% 0 0);
+        animation: loaderType 0.8s steps(12) 0.55s forwards;
+      }
+
+      .loader-bar-wrap {
+        width: min(200px, 52vw);
+        height: 1.5px;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 99px;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        margin-top: 0.3rem;
+      }
+
+      .loader-bar-fill {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, #dc2626, #db2777);
+        border-radius: 99px;
+        animation: loaderBar 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.25s forwards;
+        box-shadow: 0 0 8px rgba(220, 38, 38, 0.65);
+      }
+
+      .loader-dots {
+        position: absolute;
+        bottom: 2.25rem;
+        display: flex;
+        gap: 6px;
+        z-index: 1;
+      }
+
+      .loader-dots span {
+        display: block;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: rgba(220, 38, 38, 0.4);
+        animation: loaderDot 1.2s ease-in-out infinite;
+      }
+      .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+      .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes loaderLogoIn {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes loaderType {
+        to { clip-path: inset(0 0% 0 0); }
+      }
+
+      @keyframes loaderBar {
+        from { width: 0; }
+        to   { width: 100%; }
+      }
+
+      @keyframes loaderGlow {
+        0%, 100% { text-shadow: 0 0 22px rgba(220,38,38,0.9), 0 0 50px rgba(220,38,38,0.4); }
+        50%       { text-shadow: 0 0 10px rgba(220,38,38,0.35), 0 0 20px rgba(220,38,38,0.12); }
+      }
+
+      @keyframes loaderDot {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50%       { opacity: 1;   transform: scale(1.6); }
+      }
+
+      @keyframes loaderScan {
+        0%   { top: -15%; }
+        100% { top: 115%; }
+      }
+
+      @keyframes loaderGrain {
+        0%  { transform: translate(0,0); }
+        10% { transform: translate(-4%,-8%); }
+        20% { transform: translate(-12%,4%); }
+        30% { transform: translate(6%,-20%); }
+        40% { transform: translate(-4%,20%); }
+        50% { transform: translate(-12%,8%); }
+        60% { transform: translate(12%,0%); }
+        70% { transform: translate(0%,12%); }
+        80% { transform: translate(2%,28%); }
+        90% { transform: translate(-8%,8%); }
+      }
+    </style>
   </head>
   <body>
+    <!-- Timestamp so main.jsx can compute how long loader has been visible -->
+    <script>window.__LOADER_START = Date.now()</script>
+
+    <div id="loader" aria-hidden="true">
+      <p class="loader-logo">AJ<span class="dot">.</span></p>
+      <p class="loader-tagline">AI Architect</p>
+      <div class="loader-bar-wrap">
+        <div class="loader-bar-fill"></div>
+      </div>
+      <div class="loader-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
     <div id="root"></div>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.trunk.min.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
