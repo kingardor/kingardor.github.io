@@ -74,15 +74,15 @@ html, body, #root {
   background: var(--nm-bg);
 }
 
-/* Smooth theme transition — only active for ~450ms while toggling */
+/* Smooth theme transition — only active for ~450ms while toggling.
+   Only background-color, color, border-color — box-shadow and background
+   shorthand trigger full repaints and cause jank on mobile GPUs. */
 [data-transitioning],
 [data-transitioning] * {
   transition:
     background-color 0.35s ease,
-    background 0.35s ease,
     color 0.35s ease,
-    border-color 0.35s ease,
-    box-shadow 0.35s ease !important;
+    border-color 0.35s ease !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
