@@ -1,5 +1,14 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState, Component } from 'react'
 import BgFX from './shared/components/BgFX'
+
+class BgFXBoundary extends Component {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  render() {
+    if (this.state.failed) return <div className="fixed inset-0 -z-10" style={{ background: 'var(--nm-bg)' }} />
+    return this.props.children
+  }
+}
 import { LINKS } from './data'
 import useHashPath from './shared/hooks/useHashPath'
 import useSiteViews from './shared/hooks/useSiteViews'
@@ -52,7 +61,7 @@ export default function App() {
 
   return (
     <>
-      <BgFX />
+      <BgFXBoundary><BgFX /></BgFXBoundary>
       {path.startsWith('/chat') ? (
         <Suspense fallback={<div className="text-zinc-400">Loading chat...</div>}>
           <ChatPage />
