@@ -6,6 +6,7 @@ import useIsMobile from '../../shared/hooks/useIsMobile'
 import useAutoHideHeader from '../../shared/hooks/useAutoHideHeader'
 import { SocialButton, cn } from '../../shared/components/Primitives'
 import ThemeToggle from '../../shared/components/ThemeToggle'
+import GlassHeaderBar from '../../shared/components/GlassHeaderBar'
 
 export default function Header() {
   const active = useScrollSpy(SECTION_LINKS.map((s) => s.href), 160)
@@ -21,37 +22,12 @@ export default function Header() {
         <div
           className="relative rounded-2xl overflow-hidden"
           style={{
-            background: 'var(--glass-bg)',
             border: '1px solid var(--glass-border)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
             boxShadow: '0 4px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08)',
           }}
         >
-          {/* Fluid glass blobs */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
-            <div style={{
-              position: 'absolute', width: 200, height: 200, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(220,38,38,0.55) 0%, transparent 65%)',
-              filter: 'blur(32px)',
-              animation: 'fluidBlob1 8s ease-in-out infinite',
-              top: '-80%', left: '5%',
-            }} />
-            <div style={{
-              position: 'absolute', width: 160, height: 160, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(219,39,119,0.45) 0%, transparent 65%)',
-              filter: 'blur(28px)',
-              animation: 'fluidBlob2 11s ease-in-out infinite',
-              top: '-60%', right: '10%',
-            }} />
-            <div style={{
-              position: 'absolute', width: 120, height: 120, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(220,38,38,0.35) 0%, transparent 65%)',
-              filter: 'blur(20px)',
-              animation: 'fluidBlob3 7s ease-in-out infinite',
-              top: '-40%', left: '40%',
-            }} />
-          </div>
+          {/* FluidGlass bar (dark: Three.js star refraction, light: CSS glass) */}
+          <GlassHeaderBar />
           <div className="relative flex items-center px-3 sm:px-4 py-3">
 
             {/* Logo */}
