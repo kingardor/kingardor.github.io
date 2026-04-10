@@ -31,25 +31,25 @@ export default function Header() {
           {/* Fluid glass blobs */}
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
             <div style={{
-              position: 'absolute', width: 120, height: 120, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(220,38,38,0.22) 0%, transparent 70%)',
-              filter: 'blur(24px)',
+              position: 'absolute', width: 200, height: 200, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(220,38,38,0.55) 0%, transparent 65%)',
+              filter: 'blur(32px)',
               animation: 'fluidBlob1 8s ease-in-out infinite',
-              top: '-30%', left: '10%',
+              top: '-80%', left: '5%',
             }} />
             <div style={{
-              position: 'absolute', width: 90, height: 90, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(219,39,119,0.16) 0%, transparent 70%)',
-              filter: 'blur(20px)',
+              position: 'absolute', width: 160, height: 160, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(219,39,119,0.45) 0%, transparent 65%)',
+              filter: 'blur(28px)',
               animation: 'fluidBlob2 11s ease-in-out infinite',
-              top: '-20%', right: '15%',
+              top: '-60%', right: '10%',
             }} />
             <div style={{
-              position: 'absolute', width: 60, height: 60, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(220,38,38,0.12) 0%, transparent 70%)',
-              filter: 'blur(16px)',
+              position: 'absolute', width: 120, height: 120, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(220,38,38,0.35) 0%, transparent 65%)',
+              filter: 'blur(20px)',
               animation: 'fluidBlob3 7s ease-in-out infinite',
-              top: '10%', left: '45%',
+              top: '-40%', left: '40%',
             }} />
           </div>
           <div className="relative flex items-center px-3 sm:px-4 py-3">
