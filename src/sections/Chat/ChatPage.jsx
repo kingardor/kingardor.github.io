@@ -527,7 +527,7 @@ export default function ChatPage() {
         style={{
           position: 'fixed', inset: 0, zIndex: 2,
           pointerEvents: 'none',
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.48) 50%, rgba(0,0,0,0.72) 100%)',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.38) 50%, rgba(0,0,0,0.65) 100%)',
         }}
       />
 

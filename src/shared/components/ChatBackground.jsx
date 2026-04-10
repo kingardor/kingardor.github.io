@@ -81,8 +81,8 @@ void main(){
   pos.x = cos(angle) * newR;
   pos.z = sin(angle) * newR;
 
-  float noiseAmt = mix(0.18, 2.2, uChaos);
-  float spd      = mix(0.22, 2.4, uChaos);
+  float noiseAmt = mix(0.06, 1.8, uChaos);
+  float spd      = mix(0.10, 2.0, uChaos);
   float nx = snoise(vec3(pos.x * .45, pos.y * .45, t * spd));
   float ny = snoise(vec3(pos.y * .45, pos.z * .45, t * spd + 33.));
   float nz = snoise(vec3(pos.z * .45, pos.x * .45, t * spd + 66.));
@@ -98,8 +98,8 @@ void main(){
   vDist = length(pos);
 
   vec4 mvPos = modelViewMatrix * vec4(pos, 1.);
-  // point size: small calm, large chaos; nearer = bigger
-  float sz = mix(1.8, 5.5, uChaos) * (1. + aRandom * 1.2);
+  // point size: small calm, larger chaos; nearer = bigger
+  float sz = mix(1.2, 4.2, uChaos) * (1. + aRandom * 0.9);
   gl_PointSize = sz * (280. / -mvPos.z);
   gl_Position  = projectionMatrix * mvPos;
 }
@@ -128,7 +128,7 @@ void main(){
   float flicker = mix(1., .55 + .45 * sin(vRandom * 432. + vChaos * 12.), vChaos);
   float bright  = mix(.55, 1.1, vChaos) * flicker;
 
-  gl_FragColor = vec4(col * bright, alpha * mix(.28, .72, vChaos));
+  gl_FragColor = vec4(col * bright, alpha * mix(.09, .55, vChaos));
 }
 `
 
@@ -151,20 +151,20 @@ void main(){
 /* ─── Components ─────────────────────────────────────────────────────────── */
 function ParticleField({ chaos }) {
   const ref = useRef()
-  const COUNT = 3200
+  const COUNT = 1100
 
   const { positions, randoms } = useMemo(() => {
     const positions = new Float32Array(COUNT * 3)
     const randoms   = new Float32Array(COUNT)
     for (let i = 0; i < COUNT; i++) {
-      // 3-arm galaxy distribution
+      // 3-arm galaxy distribution — flatter, wider, sparser
       const arm    = Math.floor(Math.random() * 3)
-      const theta  = (arm / 3) * Math.PI * 2 + (Math.random() ** 0.7) * 2.8
-      const radius = Math.random() ** 0.45 * 3.2 + 0.25
-      const scatter = Math.max(0.08, 0.5 - radius * 0.12)
-      positions[i * 3]     = Math.cos(theta) * radius + (Math.random() - 0.5) * scatter * 2
-      positions[i * 3 + 1] = (Math.random() - 0.5) * scatter * 1.4
-      positions[i * 3 + 2] = Math.sin(theta) * radius + (Math.random() - 0.5) * scatter * 2
+      const theta  = (arm / 3) * Math.PI * 2 + (Math.random() ** 0.65) * 3.2
+      const radius = Math.random() ** 0.62 * 5.0 + 0.6   // min 0.6, max ~5.6
+      const scatter = Math.max(0.15, 0.7 - radius * 0.08)
+      positions[i * 3]     = Math.cos(theta) * radius + (Math.random() - 0.5) * scatter * 2.2
+      positions[i * 3 + 1] = (Math.random() - 0.5) * scatter * 0.7   // thin disk
+      positions[i * 3 + 2] = Math.sin(theta) * radius + (Math.random() - 0.5) * scatter * 2.2
       randoms[i] = Math.random()
     }
     return { positions, randoms }
@@ -210,8 +210,8 @@ function Core({ chaos }) {
     uniforms.uChaos.value = c
     ref.current.material.uniforms.uTime.value  = uniforms.uTime.value
     ref.current.material.uniforms.uChaos.value = c
-    // scale core
-    const s = 0.12 + c * 0.28 * (Math.sin(clock.elapsedTime * 7) * 0.5 + 0.5)
+    // core is tiny in calm, pulses up in chaos
+    const s = 0.04 + c * 0.18 * (Math.sin(clock.elapsedTime * 7) * 0.5 + 0.5)
     ref.current.scale.setScalar(s)
   })
 
@@ -237,9 +237,9 @@ function Scene({ chaos }) {
       <Core chaos={chaos} />
       <EffectComposer>
         <Bloom
-          intensity={chaos ? 2.8 : 0.9}
-          luminanceThreshold={0.15}
-          luminanceSmoothing={0.9}
+          intensity={chaos ? 1.6 : 0.28}
+          luminanceThreshold={0.32}
+          luminanceSmoothing={0.85}
           mipmapBlur
         />
       </EffectComposer>
@@ -259,7 +259,7 @@ export default function ChatBackground({ chaos = false }) {
       }}
     >
       <Canvas
-        camera={{ position: [0, 2.5, 6.5], fov: 58 }}
+        camera={{ position: [0, 4.5, 9], fov: 55 }}
         gl={{ alpha: true, antialias: false }}
       >
         <Scene chaos={chaos} />
