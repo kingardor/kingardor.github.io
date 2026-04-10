@@ -23,10 +23,35 @@ export default function Header() {
           style={{
             background: 'var(--glass-bg)',
             border: '1px solid var(--glass-border)',
-            backdropFilter: 'blur(16px)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            boxShadow: '0 4px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08)',
           }}
         >
+          {/* Fluid glass blobs */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+            <div style={{
+              position: 'absolute', width: 120, height: 120, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(220,38,38,0.22) 0%, transparent 70%)',
+              filter: 'blur(24px)',
+              animation: 'fluidBlob1 8s ease-in-out infinite',
+              top: '-30%', left: '10%',
+            }} />
+            <div style={{
+              position: 'absolute', width: 90, height: 90, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(219,39,119,0.16) 0%, transparent 70%)',
+              filter: 'blur(20px)',
+              animation: 'fluidBlob2 11s ease-in-out infinite',
+              top: '-20%', right: '15%',
+            }} />
+            <div style={{
+              position: 'absolute', width: 60, height: 60, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(220,38,38,0.12) 0%, transparent 70%)',
+              filter: 'blur(16px)',
+              animation: 'fluidBlob3 7s ease-in-out infinite',
+              top: '10%', left: '45%',
+            }} />
+          </div>
           <div className="relative flex items-center px-3 sm:px-4 py-3">
 
             {/* Logo */}
