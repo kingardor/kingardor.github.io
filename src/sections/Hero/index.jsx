@@ -56,7 +56,7 @@ export default function Hero({ onSubmit }) {
     <section
       id="top"
       className="relative w-full overflow-hidden"
-      style={{ height: '100svh', background: '#000' }}
+      style={{ height: '100svh', minHeight: '-webkit-fill-available', background: '#000' }}
     >
       {/* 1. Full-bleed photo — face shows in upper portion */}
       <picture className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
@@ -70,6 +70,8 @@ export default function Hero({ onSubmit }) {
           style={{
             filter: 'brightness(0.58) saturate(0.75) contrast(1.08)',
             objectPosition: 'center 18%',
+            transform: 'translateZ(0)',
+            willChange: 'transform',
           }}
         />
       </picture>
