@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowUp, Square, User } from 'lucide-react'
 import { ASSISTANT, CHAT_SUGGESTIONS } from '../../data'
 import parseSearch from '../../shared/utils/parseSearch'
 import { openSSE } from '../../shared/utils/openSSE'
+import ChatBackground from '../../shared/components/ChatBackground'
 
 const API_BASE = 'https://veronica-proxy-vercel.vercel.app'
 const HISTORY_KEY = 'chat:history:v1'
@@ -517,12 +518,26 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen" style={{ background: 'transparent', color: 'var(--nm-text)' }}>
+      {/* Reactive galaxy background */}
+      <ChatBackground chaos={loading} />
+
+      {/* Dim overlay — keeps text legible over the particle field */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed', inset: 0, zIndex: 2,
+          pointerEvents: 'none',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.48) 50%, rgba(0,0,0,0.72) 100%)',
+        }}
+      />
+
       <ChatHeader loading={loading} />
 
       {/* Message area */}
       <div
         className="mx-auto max-w-3xl px-4"
         style={{
+          position: 'relative', zIndex: 3,
           paddingTop: 'calc(4.5rem + 1rem)',   /* clear fixed header */
           paddingBottom: '7rem',                /* clear fixed input */
           minHeight: '100vh',
