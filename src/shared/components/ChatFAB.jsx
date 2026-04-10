@@ -1,66 +1,96 @@
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { WandSparkles } from "lucide-react";
+import React, { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { MessageCircle, ArrowUpRight } from 'lucide-react'
+import { ASSISTANT } from '../../data'
 
-export default function ChatFAB({ onClick, label = "ask veronica" }) {
-  const [hovered, setHovered] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+export default function ChatFAB({ onClick }) {
+  const [mounted, setMounted] = useState(false)
 
-  // Touch detection in effect to avoid SSR hydration mismatches
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const coarse =
-      window.matchMedia?.("(pointer: coarse)")?.matches || "ontouchstart" in window;
-    setIsTouchDevice(Boolean(coarse));
-  }, []);
+    // Delay mount so it doesn't compete with page load animations
+    const t = setTimeout(() => setMounted(true), 2200)
+    return () => clearTimeout(t)
+  }, [])
 
-  const showLabel = hovered && !isTouchDevice;
+  if (!mounted) return null
 
   return (
     <motion.button
       type="button"
-      aria-label={label}
-      className="fixed z-50 bottom-6 right-6 md:bottom-8 md:right-8 flex items-center outline-none focus-visible:ring-2 focus-visible:ring-pink-400"
-      initial={{ opacity: 0, scale: 0.7, y: 40 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.7, y: 40 }}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+      aria-label={`Chat with ${ASSISTANT.name}`}
+      className="fixed z-50 bottom-6 right-5 md:bottom-8 md:right-8 outline-none"
+      initial={{ opacity: 0, y: 24, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-      tabIndex={0}
-      style={{ outline: "none" }}
+      style={{ focusVisible: 'none' }}
     >
-      <motion.div
-        className="shadow-xl rounded-full bg-gradient-to-br from-pink-400 via-fuchsia-500 to-indigo-500 p-0.5"
-        whileHover={{ scale: 1.08, boxShadow: "0 8px 32px 0 rgba(99,102,241,0.25)" }}
-        whileTap={{ scale: 0.97 }}
-        transition={{ type: "spring", stiffness: 400, damping: 20 }}
-        style={{ position: "relative" }}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.55rem',
+          padding: '0.5rem 0.85rem 0.5rem 0.55rem',
+          background: 'var(--nm-surface)',
+          border: '1px solid var(--nm-border)',
+          borderRadius: '99px',
+          boxShadow:
+            '0 0 28px rgba(220,38,38,0.18), 6px 6px 18px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light)',
+          cursor: 'pointer',
+          userSelect: 'none',
+        }}
       >
-        <div className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-zinc-900/90" style={{ color: '#fff' }}>
-          <WandSparkles size={28} aria-hidden="true" />
+        {/* Icon bubble */}
+        <div
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--nm-accent), var(--nm-accent-2))',
+            boxShadow: '0 0 16px rgba(220,38,38,0.45)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <MessageCircle size={16} color="#fff" aria-hidden />
         </div>
 
-        <AnimatePresence>
-          {showLabel && (
-            <motion.div
-              className="absolute left-1/2 -top-4 -translate-x-1/2 -translate-y-full pointer-events-none"
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300, damping: 18 }}
-              style={{ zIndex: 100 }}
-            >
-              <div className="px-4 py-2 rounded-full bg-zinc-900/90 text-pink-200 font-semibold text-base shadow-lg border border-pink-400/20 whitespace-nowrap select-none">
-                {label}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+        {/* Label */}
+        <div style={{ lineHeight: 1.15 }}>
+          <div
+            style={{
+              fontFamily: "'Outfit', ui-sans-serif, system-ui, sans-serif",
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              color: 'var(--nm-text)',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {ASSISTANT.name}
+          </div>
+          <div
+            className="hud-text"
+            style={{
+              fontSize: '0.52rem',
+              color: 'var(--nm-text-muted)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            AI COPILOT
+          </div>
+        </div>
+
+        {/* Arrow */}
+        <ArrowUpRight
+          size={14}
+          aria-hidden
+          style={{ color: 'var(--nm-accent)', flexShrink: 0, marginLeft: 2 }}
+        />
+      </div>
     </motion.button>
-  );
+  )
 }
