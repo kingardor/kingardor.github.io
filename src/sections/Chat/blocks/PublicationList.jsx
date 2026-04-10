@@ -13,12 +13,13 @@ export default function PublicationList({ data }) {
         PUBLISHED WRITING
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        {pubs.map((p, i) => (
-          <a
+        {pubs.map((p, i) => {
+          const Tag = p.url ? 'a' : 'div'
+          const linkProps = p.url ? { href: p.url, target: '_blank', rel: 'noreferrer' } : {}
+          return (
+          <Tag
             key={i}
-            href={p.url}
-            target="_blank"
-            rel="noreferrer"
+            {...linkProps}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -51,8 +52,9 @@ export default function PublicationList({ data }) {
               {p.title}
             </span>
             <span style={{ color: 'var(--nm-text-muted)', fontSize: '0.7rem', marginLeft: 'auto', flexShrink: 0 }}>↗</span>
-          </a>
-        ))}
+          </Tag>
+          )
+        })}
       </div>
     </div>
   )

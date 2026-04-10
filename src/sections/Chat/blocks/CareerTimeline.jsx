@@ -41,14 +41,16 @@ export default function CareerTimeline({ data }) {
   const career = data?.career ?? []
   if (!career.length) return null
 
+  const currentYear = new Date().getFullYear()
   const chartData = career.map((c, i) => ({
     ...c,
     offset:   c.start_year - BASE_YEAR,
-    duration: Math.max(0.5, c.end_year - c.start_year),
+    duration: Math.max(0.5, (c.end_year ?? currentYear) - c.start_year),
     colorIdx: i,
   }))
 
-  const tickYears = [2020, 2021, 2022, 2023, 2024, 2025, 2026]
+  const endYear = Math.max(currentYear, ...career.map(c => c.end_year ?? currentYear))
+  const tickYears = Array.from({ length: endYear - BASE_YEAR + 2 }, (_, k) => BASE_YEAR + k)
 
   return (
     <div style={{ marginTop: '0.75rem' }}>
@@ -67,7 +69,7 @@ export default function CareerTimeline({ data }) {
         >
           <XAxis
             type="number"
-            domain={[0, 2026 - BASE_YEAR + 1]}
+            domain={[0, endYear - BASE_YEAR + 1]}
             ticks={tickYears.map(y => y - BASE_YEAR)}
             tickFormatter={v => BASE_YEAR + v}
             tick={{ fill: colors.textMuted, fontSize: 9 }}

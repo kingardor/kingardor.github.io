@@ -13,12 +13,13 @@ export default function HonoursList({ data }) {
         HONOURS & RECOGNITION
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        {honours.map((h, i) => (
-          <a
+        {honours.map((h, i) => {
+          const Tag = h.url ? 'a' : 'div'
+          const linkProps = h.url ? { href: h.url, target: '_blank', rel: 'noreferrer' } : {}
+          return (
+          <Tag
             key={i}
-            href={h.url}
-            target="_blank"
-            rel="noreferrer"
+            {...linkProps}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -37,8 +38,9 @@ export default function HonoursList({ data }) {
             <span style={{ color: 'var(--nm-accent)', fontSize: '0.9rem', flexShrink: 0 }}>★</span>
             <span style={{ color: 'var(--nm-text)', fontSize: '0.78rem', lineHeight: 1.4 }}>{h.title}</span>
             <span style={{ color: 'var(--nm-text-muted)', fontSize: '0.7rem', marginLeft: 'auto', flexShrink: 0 }}>↗</span>
-          </a>
-        ))}
+          </Tag>
+          )
+        })}
       </div>
     </div>
   )
