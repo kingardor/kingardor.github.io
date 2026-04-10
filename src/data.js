@@ -1,4 +1,8 @@
-export const ASSISTANT = { name: "Veronica" };
+export const ASSISTANT = {
+  name: "Veronica",
+  acronym: "Versatile Online Intelligent Cognitive Agent",
+  initials: ["V", "O", "I", "C", "A"],
+};
 
 export const CHAT_SUGGESTIONS = [
   "Give me a 10-sec intro",

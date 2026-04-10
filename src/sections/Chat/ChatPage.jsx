@@ -125,10 +125,8 @@ function EmptyState({ onSuggest }) {
         <h1 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(1.8rem, 6vw, 2.8rem)', color: 'var(--nm-text)', letterSpacing: '-0.04em', lineHeight: 1 }}>
           {ASSISTANT.name}
         </h1>
-        <div className="hud-text mt-2 flex items-center justify-center gap-2" style={{ fontSize: '0.62rem', color: 'var(--nm-accent)', letterSpacing: '0.16em' }}>
-          <span>AI COPILOT</span>
-          <span style={{ color: 'var(--nm-text-dim)' }}>·</span>
-          <span style={{ color: 'var(--nm-text-muted)' }}>ALWAYS ON</span>
+        <div className="hud-text mt-2" style={{ fontSize: '0.56rem', color: 'var(--nm-text-muted)', letterSpacing: '0.1em', textAlign: 'center' }}>
+          {ASSISTANT.acronym.toUpperCase()}
         </div>
       </motion.div>
 
@@ -314,8 +312,8 @@ function ChatHeader({ loading }) {
               <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 700, fontSize: '0.85rem', color: 'var(--nm-text)', letterSpacing: '-0.01em' }}>
                 {ASSISTANT.name}
               </div>
-              <div className="hud-text" style={{ fontSize: '0.48rem', color: 'var(--nm-text-muted)', letterSpacing: '0.1em' }}>
-                AI COPILOT
+              <div className="hud-text" style={{ fontSize: '0.42rem', color: 'var(--nm-text-muted)', letterSpacing: '0.08em' }}>
+                {ASSISTANT.acronym.toUpperCase()}
               </div>
             </div>
           </div>
