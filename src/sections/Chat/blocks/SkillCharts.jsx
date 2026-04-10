@@ -83,7 +83,7 @@ export default function SkillCharts({ data }) {
               />
               <Tooltip
                 contentStyle={{ background: colors.surface, border: `1px solid ${colors.border}`, borderRadius: 6, fontSize: 11 }}
-                formatter={(v, _, { payload }) => [`${v} yr${v !== 1 ? 's' : ''} · ${payload.level}`, 'Experience']}
+                formatter={(v, _, { payload }) => [`${v} yr${v !== 1 ? 's' : ''} · ${payload.level ?? ''}`, 'Experience']}
                 cursor={{ fill: 'rgba(255,255,255,0.04)' }}
               />
               <Bar dataKey="years" radius={[0, 4, 4, 0]} maxBarSize={14}>

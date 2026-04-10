@@ -28,7 +28,7 @@ function CustomTooltip({ active, payload }) {
       borderRadius: 6, padding: '0.5rem 0.75rem', fontSize: 11,
       maxWidth: 220,
     }}>
-      <div style={{ fontWeight: 700, marginBottom: 2, color: '#fff' }}>{entry.role}</div>
+      <div style={{ fontWeight: 700, marginBottom: 2, color: 'var(--nm-text)' }}>{entry.role}</div>
       <div style={{ color: colors.accent, marginBottom: 4 }}>{entry.company}</div>
       <div style={{ color: colors.textMuted, fontSize: 10 }}>{entry.period}</div>
     </div>

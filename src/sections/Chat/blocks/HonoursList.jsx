@@ -31,8 +31,8 @@ export default function HonoursList({ data }) {
               textDecoration: 'none',
               transition: 'border-color 0.15s',
             }}
-            onMouseEnter={e => e.currentTarget.style.borderRightColor = 'var(--nm-accent)'}
-            onMouseLeave={e => e.currentTarget.style.borderRightColor = 'var(--nm-border)'}
+            onMouseEnter={e => { e.currentTarget.style.borderTopColor = 'var(--nm-accent)'; e.currentTarget.style.borderRightColor = 'var(--nm-accent)'; e.currentTarget.style.borderBottomColor = 'var(--nm-accent)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderTopColor = 'var(--nm-border)'; e.currentTarget.style.borderRightColor = 'var(--nm-border)'; e.currentTarget.style.borderBottomColor = 'var(--nm-border)' }}
           >
             <span style={{ color: 'var(--nm-accent)', fontSize: '0.9rem', flexShrink: 0 }}>★</span>
             <span style={{ color: 'var(--nm-text)', fontSize: '0.78rem', lineHeight: 1.4 }}>{h.title}</span>
