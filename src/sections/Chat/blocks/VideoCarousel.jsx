@@ -13,7 +13,14 @@ function timeAgo(isoStr) {
 
 export default function VideoCarousel({ data }) {
   const items = data?.items ?? []
-  if (!items.length) return null
+  if (!items.length) {
+    if (data?.error) return (
+      <div style={{ marginTop: '0.5rem', color: 'var(--nm-text-muted)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
+        [ YouTube feed unavailable ]
+      </div>
+    )
+    return null
+  }
 
   return (
     <div style={{ marginTop: '0.75rem' }}>

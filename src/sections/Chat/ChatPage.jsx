@@ -405,7 +405,6 @@ function InputBar({ value, onChange, onSubmit, loading, onStop }) {
                 caretColor: 'var(--nm-accent)',
                 fontFamily: 'Inter, sans-serif',
               }}
-              style2={{ '::placeholder': { color: 'var(--nm-text-muted)' } }}
               autoComplete="off"
               spellCheck={false}
             />
