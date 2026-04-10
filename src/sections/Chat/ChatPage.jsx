@@ -475,6 +475,7 @@ export default function ChatPage() {
   const [loading, setLoading] = React.useState(false)
   const [toolStatus, setToolStatus] = React.useState(null)
   const streamRef = React.useRef(null)
+  const assistantIdxRef = React.useRef(-1)
   const lastSeedRef = React.useRef('')
   const seededOnceRef = React.useRef(false)
   const endRef = React.useRef(null)
@@ -504,9 +505,10 @@ export default function ChatPage() {
 
   const appendUser     = text => setMessages(m => [...m, { role: 'user', content: text, thinking: '', blocks: [] }])
   const beginAssistant = () => {
-    let idx = -1
-    setMessages(m => { idx = m.length; return [...m, { role: 'model', content: '', thinking: '', blocks: [] }] })
-    return () => idx
+    setMessages(m => {
+      assistantIdxRef.current = m.length
+      return [...m, { role: 'model', content: '', thinking: '', blocks: [] }]
+    })
   }
 
   const send = React.useCallback(async (text, { skipAppendUser = false } = {}) => {
@@ -518,14 +520,14 @@ export default function ChatPage() {
     setInput('')
     setLoading(true)
     setToolStatus(null)
-    const getIdx = beginAssistant()
+    beginAssistant()
     const turnsHistory = prepareHistory(messages.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
     const handle = openSSE({
       base: API_BASE,
       text: q,
       history: turnsHistory,
       onEvent: (event) => {
-        const idx = getIdx()
+        const idx = assistantIdxRef.current
         if (event.t === 'text') {
           setMessages(m => {
             const n = m.slice()
@@ -633,7 +635,7 @@ export default function ChatPage() {
                       content={m.content}
                       thinking={m.thinking}
                       blocks={m.blocks}
-                      isTyping={loading && i === messages.length - 1 && !m.content}
+                      isTyping={loading && i === messages.length - 1}
                       toolStatus={toolStatus}
                     />
               )}
