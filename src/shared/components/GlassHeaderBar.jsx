@@ -7,14 +7,17 @@ export default function GlassHeaderBar() {
 
   return (
     <>
-      {/* Base glass layer */}
+      {/* Base glass layer — excluded from data-transitioning to avoid backdrop-filter repaint every frame */}
       <div
         className="absolute inset-0 pointer-events-none rounded-2xl"
         aria-hidden="true"
+        data-no-transition
         style={{
           background: 'var(--glass-bg)',
-          backdropFilter: 'blur(32px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          willChange: 'backdrop-filter',
+          transform: 'translateZ(0)',
         }}
       />
 

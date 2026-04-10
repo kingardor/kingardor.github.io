@@ -13,6 +13,9 @@ function StarLens({ visible }) {
   const { viewport } = useThree()
 
   useFrame((state, delta) => {
+    // Skip all GPU work in light mode
+    if (!visible) return
+
     const { gl, camera, pointer, viewport: vp } = state
     const v = vp.getCurrentViewport(camera, [0, 0, 15])
 

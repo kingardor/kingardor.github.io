@@ -85,6 +85,13 @@ html, body, #root {
     border-color 0.35s ease !important;
 }
 
+/* Elements with backdrop-filter must opt out — animating background-color
+   while blur is active forces a full GPU repaint every frame. */
+[data-transitioning] [data-no-transition],
+[data-transitioning] [data-no-transition] * {
+  transition: none !important;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
 }
