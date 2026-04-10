@@ -1,90 +1,65 @@
-/* eslint-disable react/no-unknown-property */
-import * as THREE from 'three'
-import { useRef, useState, useEffect } from 'react'
-import { Canvas, createPortal, useFrame } from '@react-three/fiber'
-import { useFBO, useGLTF, Stars, MeshTransmissionMaterial } from '@react-three/drei'
-// Stars is used inside createPortal (captured into FBO for refraction, not rendered directly)
 import { useTheme } from '../contexts/ThemeContext'
-
-function BarMesh() {
-  const ref = useRef()
-  const buffer = useFBO()
-  const [bgScene] = useState(() => new THREE.Scene())
-  const { nodes } = useGLTF('/assets/3d/bar.glb')
-  const geoWidthRef = useRef(1)
-
-  useEffect(() => {
-    const geo = nodes['Cube']?.geometry
-    if (!geo) return
-    geo.computeBoundingBox()
-    const bb = geo.boundingBox
-    geoWidthRef.current = bb.max.x - bb.min.x || 1
-  }, [nodes])
-
-  useFrame((state) => {
-    const { gl, viewport: vp, camera } = state
-    const v = vp.getCurrentViewport(camera, [0, 0, 15])
-
-    // Center in the header canvas
-    ref.current.position.set(0, 0, 15)
-
-    // Scale to fill ~95% of canvas width
-    const desired = (v.width * 0.95) / geoWidthRef.current
-    ref.current.scale.setScalar(Math.min(desired, 0.25))
-
-    gl.setRenderTarget(buffer)
-    gl.render(bgScene, camera)
-    gl.setRenderTarget(null)
-  })
-
-  return (
-    <>
-      {createPortal(
-        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={0.6} />,
-        bgScene
-      )}
-      {/* Glass bar mesh — canvas is transparent everywhere else */}
-      <mesh ref={ref} geometry={nodes['Cube']?.geometry} rotation-x={Math.PI / 2}>
-        <MeshTransmissionMaterial
-          buffer={buffer.texture}
-          ior={1.15}
-          thickness={10}
-          transmission={1}
-          roughness={0}
-          chromaticAberration={0.05}
-          anisotropy={0.01}
-          color="#ffffff"
-          attenuationColor="#ffffff"
-          attenuationDistance={0.25}
-        />
-      </mesh>
-    </>
-  )
-}
 
 export default function GlassHeaderBar() {
   const { theme } = useTheme()
 
-  // Light mode: CSS glass fallback
-  if (theme === 'light') {
-    return (
+  const isDark = theme !== 'light'
+
+  return (
+    <>
+      {/* Base glass layer */}
       <div
         className="absolute inset-0 pointer-events-none rounded-2xl"
         aria-hidden="true"
         style={{
           background: 'var(--glass-bg)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          backdropFilter: 'blur(32px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
         }}
       />
-    )
-  }
 
-  return (
-    <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden" aria-hidden="true">
-      <Canvas camera={{ position: [0, 0, 20], fov: 15 }} gl={{ alpha: true }}>
-        <BarMesh />
-      </Canvas>
-    </div>
+      {/* Top-edge highlight — the signature "glass pane" glint */}
+      <div
+        className="absolute pointer-events-none rounded-2xl"
+        aria-hidden="true"
+        style={{
+          inset: 0,
+          background: isDark
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 40%)'
+            : 'linear-gradient(180deg, rgba(255,255,255,0.60) 0%, transparent 40%)',
+        }}
+      />
+
+      {/* Chromatic shimmer — slow sweep across the top edge */}
+      <div
+        className="absolute pointer-events-none overflow-hidden rounded-2xl"
+        aria-hidden="true"
+        style={{ inset: 0 }}
+      >
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: '-60%',
+          width: '40%',
+          height: '1px',
+          background: isDark
+            ? 'linear-gradient(90deg, transparent, rgba(220,38,38,0.7), rgba(219,39,119,0.5), rgba(255,255,255,0.6), transparent)'
+            : 'linear-gradient(90deg, transparent, rgba(220,38,38,0.4), rgba(219,39,119,0.3), rgba(255,255,255,0.8), transparent)',
+          animation: 'glassShimmer 5s ease-in-out infinite',
+        }} />
+      </div>
+
+      {/* Bottom-edge shadow line */}
+      <div
+        className="absolute pointer-events-none rounded-2xl"
+        aria-hidden="true"
+        style={{
+          inset: 0,
+          background: isDark
+            ? 'linear-gradient(0deg, rgba(0,0,0,0.18) 0%, transparent 30%)'
+            : 'linear-gradient(0deg, rgba(0,0,0,0.04) 0%, transparent 30%)',
+        }}
+      />
+    </>
   )
 }

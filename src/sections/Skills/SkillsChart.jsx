@@ -101,12 +101,12 @@ function Chip({ skill, active, onEnter, onLeave, iconSize }) {
       onMouseLeave={onLeave}
     >
       {skill.icon && (
-        <span style={{ color: isActive ? 'var(--nm-text)' : 'var(--nm-text-dim)', transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center' }}>
+        <span style={{ color: isActive ? 'var(--nm-text)' : 'var(--nm-text-muted)', transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center' }}>
           <SiIcon icon={skill.icon} size={iconSize} />
         </span>
       )}
       <span style={{
-        color: isActive ? 'var(--nm-text)' : 'var(--nm-text-dim)',
+        color: isActive ? 'var(--nm-text)' : 'var(--nm-text-muted)',
         textShadow: isActive ? '0 0 40px rgba(220,38,38,1), 0 0 80px rgba(220,38,38,0.5)' : 'none',
         transform: isActive ? 'scale(1.06)' : 'scale(1)',
         display: 'inline-block',
@@ -236,7 +236,7 @@ function TapeRow({ row, index }) {
 
 export default function SkillsChart() {
   return (
-    <Section id="skills" className="py-20 overflow-hidden">
+    <Section id="skills" className="py-12 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

@@ -52,7 +52,7 @@ export default function ChatBar({ onSubmit }) {
       {/* Veronica label */}
       <div
         className="hud-text text-center mb-2.5"
-        style={{ fontSize: '0.58rem', color: 'rgba(255,255,255,0.25)' }}
+        style={{ fontSize: '0.58rem', color: 'var(--nm-text-subtle)' }}
       >
         ↳&nbsp;
         <span style={{ color: 'rgba(220,38,38,0.8)', fontWeight: 600 }}>{ASSISTANT.name}</span>
@@ -64,10 +64,10 @@ export default function ChatBar({ onSubmit }) {
         <div
           className="relative flex items-center gap-2 sm:gap-3 rounded-2xl px-3 sm:px-5 py-3"
           style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'var(--nm-surface)',
+            border: '1px solid var(--nm-border)',
             backdropFilter: 'blur(20px)',
-            boxShadow: '0 0 60px rgba(220,38,38,0.1), 0 4px 32px rgba(0,0,0,0.5)',
+            boxShadow: '0 0 60px rgba(220,38,38,0.1), 0 4px 32px rgba(0,0,0,0.25)',
           }}
         >
           {/* Ghost text with cursor */}
@@ -76,7 +76,7 @@ export default function ChatBar({ onSubmit }) {
               value={text}
               onChange={e => setText(e.target.value)}
               className="absolute inset-0 bg-transparent outline-none text-[16px]"
-              style={{ color: 'rgba(255,255,255,0.85)', caretColor: 'transparent', fontFamily: 'Inter, sans-serif' }}
+              style={{ color: 'var(--nm-text)', caretColor: 'transparent', fontFamily: 'Inter, sans-serif' }}
               aria-label={`Ask ${ASSISTANT.name}`}
               autoComplete="off"
               spellCheck={false}
@@ -85,7 +85,7 @@ export default function ChatBar({ onSubmit }) {
             {!text && (
               <span
                 className="pointer-events-none text-[16px]"
-                style={{ color: 'rgba(255,255,255,0.22)', fontFamily: 'Inter, sans-serif', userSelect: 'none' }}
+                style={{ color: 'var(--nm-text-muted)', fontFamily: 'Inter, sans-serif', userSelect: 'none' }}
               >
                 {ghost}
                 <span

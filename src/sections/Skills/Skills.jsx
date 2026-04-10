@@ -165,16 +165,10 @@ export default function Skills() {
   const inView  = useInView(gridRef, { once: true, amount: 0.15 })
 
   return (
-    <Section id="skills-list" className="pt-16 pb-4">
+    <Section id="skills-list" className="pt-8 pb-4">
 
       {/* Section heading */}
       <div className="mb-10">
-        <p
-          className="hud-text mb-3"
-          style={{ fontSize: '0.7rem', color: 'var(--nm-text-muted)' }}
-        >
-          05 &mdash;&mdash;&mdash;&mdash;
-        </p>
         <h2
           style={{
             fontFamily: "'Outfit', ui-sans-serif, system-ui, sans-serif",

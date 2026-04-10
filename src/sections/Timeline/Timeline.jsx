@@ -160,7 +160,7 @@ function Chapter({ role, index, total }) {
 /* ─── Section ───────────────────────────────────────────────────────────── */
 export default function Timeline() {
   return (
-    <Section id="timeline" className="py-20">
+    <Section id="timeline" className="py-12">
 
       {/* Heading */}
       <motion.div

@@ -314,21 +314,12 @@ canvas {
   to   { transform: translateX(0); }
 }
 
-/* ─── Fluid glass header blob animations ──────────────────────────── */
-@keyframes fluidBlob1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  30%      { transform: translate(40px, 8px) scale(1.15); }
-  60%      { transform: translate(-20px, -4px) scale(0.9); }
-}
-@keyframes fluidBlob2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25%      { transform: translate(-50px, 6px) scale(1.1); }
-  70%      { transform: translate(30px, -8px) scale(0.95); }
-}
-@keyframes fluidBlob3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  40%      { transform: translate(20px, 4px) scale(1.2); }
-  80%      { transform: translate(-30px, -6px) scale(0.85); }
+/* ─── Glass header shimmer ─────────────────────────────────────────── */
+@keyframes glassShimmer {
+  0%   { left: -60%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { left: 120%; opacity: 0; }
 }
 
 /* ═══════════════════════════════════════════════
