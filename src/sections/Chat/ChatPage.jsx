@@ -7,11 +7,23 @@ import { ASSISTANT, CHAT_SUGGESTIONS } from '../../data'
 import parseSearch from '../../shared/utils/parseSearch'
 import { openSSE } from '../../shared/utils/openSSE'
 import ChatBackground from '../../shared/components/ChatBackground'
+import ThinkingBlock from './components/ThinkingBlock'
+import ChatBlocks    from './blocks/ChatBlocks'
 
 const API_BASE = 'https://veronica-proxy-vercel.vercel.app'
 const HISTORY_KEY = 'chat:history:v1'
 const SEED_KEY = 'chat:seed'
 const MAX_TURNS = 10
+
+const TOOL_STATUS_LABELS = {
+  get_youtube_videos:  'SCANNING VIDEOS...',
+  get_projects:        'LOADING PROJECTS...',
+  get_skills:          'READING SKILL MAP...',
+  get_career_timeline: 'FETCHING TIMELINE...',
+  get_bio:             'PULLING BIO...',
+  get_publications:    'FINDING ARTICLES...',
+  get_honours:         'CHECKING HONOURS...',
+}
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
 function isHardReload() {
@@ -23,7 +35,9 @@ function isHardReload() {
 }
 function prepareHistory(history) {
   const arr = Array.isArray(history) ? history : []
-  const base = (arr.length && arr[arr.length - 1]?.role === 'user') ? arr.slice(0, -1) : arr.slice()
+  // Strip blocks and thinking — only prose content goes to API
+  const clean = arr.map(m => ({ role: m.role, content: m.content || '' }))
+  const base = (clean.length && clean[clean.length - 1]?.role === 'user') ? clean.slice(0, -1) : clean.slice()
   const userIdxs = []
   for (let i = 0; i < base.length; i++) if (base[i]?.role === 'user') userIdxs.push(i)
   if (userIdxs.length <= MAX_TURNS) return base
@@ -44,11 +58,11 @@ function VIcon({ size = 18, color = 'currentColor' }) {
 }
 
 /* ─── Typing indicator ───────────────────────────────────────────────────── */
-function TypingIndicator() {
+function TypingIndicator({ label = 'COMPUTING' }) {
   return (
     <span className="inline-flex items-center gap-2">
       <span className="hud-text" style={{ fontSize: '0.58rem', color: 'var(--nm-text-muted)', letterSpacing: '0.12em' }}>
-        COMPUTING
+        {label}
       </span>
       <span className="inline-flex items-center gap-1">
         {[0, 1, 2].map(i => (
@@ -83,6 +97,24 @@ const mdComponents = {
   h3:         ({ children })           => <h3 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 700, fontSize: '1em',    color: 'var(--nm-text)', margin: '0.6em 0 0.3em' }}>{children}</h3>,
   hr:         ()                       => <hr style={{ border: 'none', borderTop: '1px solid var(--nm-border)', margin: '0.75em 0' }} />,
   blockquote: ({ children })           => <blockquote style={{ borderLeft: '2px solid var(--nm-accent)', paddingLeft: '0.75em', color: 'var(--nm-text-muted)', margin: '0.5em 0' }}>{children}</blockquote>,
+  table: ({ children }) => (
+    <div style={{ overflowX: 'auto', margin: '0.5em 0' }}>
+      <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '0.82rem' }}>{children}</table>
+    </div>
+  ),
+  thead: ({ children }) => <thead>{children}</thead>,
+  tbody: ({ children }) => <tbody>{children}</tbody>,
+  tr: ({ children }) => <tr style={{ borderBottom: '1px solid var(--nm-border)' }}>{children}</tr>,
+  th: ({ children }) => (
+    <th style={{ padding: '0.4em 0.75em', textAlign: 'left', color: 'var(--nm-text)', fontWeight: 700, background: 'var(--nm-surface-2)', whiteSpace: 'nowrap' }}>
+      {children}
+    </th>
+  ),
+  td: ({ children }) => (
+    <td style={{ padding: '0.35em 0.75em', color: 'var(--nm-text-muted)', borderBottom: '1px solid var(--nm-border)' }}>
+      {children}
+    </td>
+  ),
   code: ({ inline, children, ...p }) =>
     inline
       ? <code {...p} style={{ background: 'var(--nm-surface-2)', color: 'var(--nm-accent)', padding: '0.1em 0.4em', borderRadius: 4, fontFamily: 'var(--font-mono)', fontSize: '0.85em' }}>{children}</code>
@@ -220,7 +252,7 @@ function UserMessage({ content }) {
   )
 }
 
-function AIMessage({ content, isTyping }) {
+function AIMessage({ content, thinking, blocks, isTyping, toolStatus }) {
   return (
     <motion.div
       className="flex items-end gap-2"
@@ -231,7 +263,7 @@ function AIMessage({ content, isTyping }) {
       {/* Avatar */}
       <div
         style={{
-          width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+          width: 30, height: 30, borderRadius: '50%', flexShrink: 0, alignSelf: 'flex-start', marginTop: 4,
           background: 'linear-gradient(135deg, var(--nm-accent), var(--nm-accent-2))',
           boxShadow: '0 0 12px rgba(220,38,38,0.35)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -243,7 +275,7 @@ function AIMessage({ content, isTyping }) {
       {/* Bubble */}
       <div
         style={{
-          maxWidth: '80%',
+          maxWidth: '85%',
           padding: '0.65rem 1rem',
           background: 'var(--nm-surface)',
           border: '1px solid var(--nm-border)',
@@ -256,10 +288,18 @@ function AIMessage({ content, isTyping }) {
           boxShadow: '4px 4px 14px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light)',
         }}
       >
-        {isTyping
-          ? <TypingIndicator />
-          : <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>{content}</ReactMarkdown>
-        }
+        {isTyping && !content ? (
+          <TypingIndicator label={toolStatus || 'COMPUTING'} />
+        ) : (
+          <>
+            <ThinkingBlock text={thinking} />
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+              {content}
+            </ReactMarkdown>
+            {isTyping && <TypingIndicator label={toolStatus || 'COMPUTING'} />}
+            <ChatBlocks blocks={blocks} />
+          </>
+        )}
       </div>
     </motion.div>
   )
@@ -433,6 +473,7 @@ export default function ChatPage() {
   })
   const [input, setInput] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [toolStatus, setToolStatus] = React.useState(null)
   const streamRef = React.useRef(null)
   const lastSeedRef = React.useRef('')
   const seededOnceRef = React.useRef(false)
@@ -452,6 +493,7 @@ export default function ChatPage() {
     try { streamRef.current?.close?.() } catch {}
     streamRef.current = null
     setLoading(false)
+    setToolStatus(null)
     setMessages(m => {
       if (!m.length) return m
       const last = m[m.length - 1]
@@ -460,9 +502,12 @@ export default function ChatPage() {
     })
   }, [])
 
-  const appendUser    = text => setMessages(m => [...m, { role: 'user', content: text }])
-  const beginAssistant = () => { let idx = -1; setMessages(m => (idx = m.length, [...m, { role: 'model', content: '' }])); return () => idx }
-  const patchAssistant = (idx, chunk) => setMessages(m => { const n = m.slice(); const cur = n[idx] || { role: 'model', content: '' }; n[idx] = { ...cur, content: (cur.content || '') + chunk }; return n })
+  const appendUser     = text => setMessages(m => [...m, { role: 'user', content: text, thinking: '', blocks: [] }])
+  const beginAssistant = () => {
+    let idx = -1
+    setMessages(m => { idx = m.length; return [...m, { role: 'model', content: '', thinking: '', blocks: [] }] })
+    return () => idx
+  }
 
   const send = React.useCallback(async (text, { skipAppendUser = false } = {}) => {
     const q = (text || '').trim()
@@ -472,13 +517,43 @@ export default function ChatPage() {
     if (!skipAppendUser) appendUser(q)
     setInput('')
     setLoading(true)
+    setToolStatus(null)
     const getIdx = beginAssistant()
-    const turnsHistory = prepareHistory(messages.concat({ role: 'user', content: q }))
+    const turnsHistory = prepareHistory(messages.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
     const handle = openSSE({
-      base: API_BASE, text: q, history: turnsHistory,
-      onMessage: data => { if (data === '[DONE]') { stop(); return }; patchAssistant(getIdx(), data) },
-      onDone:    () => { streamRef.current = null; setLoading(false) },
-      onError:   () => { streamRef.current = null; setLoading(false); stop() },
+      base: API_BASE,
+      text: q,
+      history: turnsHistory,
+      onEvent: (event) => {
+        const idx = getIdx()
+        if (event.t === 'text') {
+          setMessages(m => {
+            const n = m.slice()
+            const cur = n[idx] || { role: 'model', content: '', thinking: '', blocks: [] }
+            n[idx] = { ...cur, content: (cur.content || '') + event.v }
+            return n
+          })
+        } else if (event.t === 'thinking') {
+          setMessages(m => {
+            const n = m.slice()
+            const cur = n[idx] || { role: 'model', content: '', thinking: '', blocks: [] }
+            n[idx] = { ...cur, thinking: (cur.thinking || '') + event.v }
+            return n
+          })
+        } else if (event.t === 'tool') {
+          setToolStatus(TOOL_STATUS_LABELS[event.name] || 'PROCESSING...')
+        } else if (event.t === 'block') {
+          setMessages(m => {
+            const n = m.slice()
+            const cur = n[idx] || { role: 'model', content: '', thinking: '', blocks: [] }
+            n[idx] = { ...cur, blocks: [...(cur.blocks || []), { type: event.name, data: event.data }] }
+            return n
+          })
+          setToolStatus(null)
+        }
+      },
+      onDone:  () => { streamRef.current = null; setLoading(false); setToolStatus(null) },
+      onError: () => { streamRef.current = null; setLoading(false); setToolStatus(null); stop() },
     })
     streamRef.current = handle
   }, [loading, messages, stop])
@@ -553,7 +628,14 @@ export default function ChatPage() {
               {messages.map((m, i) =>
                 m.role === 'user'
                   ? <UserMessage key={i} content={m.content} />
-                  : <AIMessage  key={i} content={m.content} isTyping={loading && i === messages.length - 1 && !m.content} />
+                  : <AIMessage
+                      key={i}
+                      content={m.content}
+                      thinking={m.thinking}
+                      blocks={m.blocks}
+                      isTyping={loading && i === messages.length - 1 && !m.content}
+                      toolStatus={toolStatus}
+                    />
               )}
             </AnimatePresence>
             <div ref={endRef} style={{ height: 1 }} />
