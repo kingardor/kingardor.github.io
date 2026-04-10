@@ -1,8 +1,9 @@
 /* eslint-disable react/no-unknown-property */
 import * as THREE from 'three'
 import { useRef, useState, useEffect } from 'react'
-import { Canvas, createPortal, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, createPortal, useFrame } from '@react-three/fiber'
 import { useFBO, useGLTF, Stars, MeshTransmissionMaterial } from '@react-three/drei'
+// Stars is used inside createPortal (captured into FBO for refraction, not rendered directly)
 import { useTheme } from '../contexts/ThemeContext'
 
 function BarMesh() {
@@ -11,7 +12,6 @@ function BarMesh() {
   const [bgScene] = useState(() => new THREE.Scene())
   const { nodes } = useGLTF('/assets/3d/bar.glb')
   const geoWidthRef = useRef(1)
-  const { viewport } = useThree()
 
   useEffect(() => {
     const geo = nodes['Cube']?.geometry
@@ -43,12 +43,7 @@ function BarMesh() {
         <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={0.6} />,
         bgScene
       )}
-      {/* Fullscreen backdrop showing the captured star scene */}
-      <mesh scale={[viewport.width, viewport.height, 1]}>
-        <planeGeometry />
-        <meshBasicMaterial map={buffer.texture} />
-      </mesh>
-      {/* Glass bar mesh */}
+      {/* Glass bar mesh — canvas is transparent everywhere else */}
       <mesh ref={ref} geometry={nodes['Cube']?.geometry} rotation-x={Math.PI / 2}>
         <MeshTransmissionMaterial
           buffer={buffer.texture}
