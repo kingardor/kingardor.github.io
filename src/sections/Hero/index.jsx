@@ -52,11 +52,22 @@ function StatPill({ kpi, label }) {
 export default function Hero({ onSubmit }) {
   const { theme } = useTheme()
   const isLight = theme === 'light'
+  const sectionRef = React.useRef(null)
+
+  // Lock height to the initial window.innerHeight in pixels so iOS Safari's
+  // address-bar show/hide can never trigger an object-cover recalculation.
+  React.useLayoutEffect(() => {
+    if (sectionRef.current) {
+      sectionRef.current.style.height = window.innerHeight + 'px'
+    }
+  }, [])
+
   return (
     <section
+      ref={sectionRef}
       id="top"
       className="relative w-full overflow-hidden"
-      style={{ height: '100svh', minHeight: '-webkit-fill-available', background: '#000' }}
+      style={{ height: '100svh', background: '#000' }}
     >
       {/* 1. Full-bleed photo — face shows in upper portion */}
       <picture className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
@@ -70,8 +81,6 @@ export default function Hero({ onSubmit }) {
           style={{
             filter: 'brightness(0.58) saturate(0.75) contrast(1.08)',
             objectPosition: 'center 18%',
-            transform: 'translateZ(0)',
-            willChange: 'transform',
           }}
         />
       </picture>
