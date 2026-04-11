@@ -252,7 +252,7 @@ function UserMessage({ content }) {
   )
 }
 
-function AIMessage({ content, thinking, blocks, isTyping, toolStatus }) {
+function AIMessage({ content, thinking, blocks }) {
   return (
     <motion.div
       className="flex items-end gap-2"
@@ -288,22 +288,47 @@ function AIMessage({ content, thinking, blocks, isTyping, toolStatus }) {
           boxShadow: '4px 4px 14px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light)',
         }}
       >
-        {isTyping && !content && !thinking ? (
-          /* No thinking yet — show tool status or generic computing pulse */
-          <TypingIndicator label={toolStatus || 'COMPUTING'} />
-        ) : (
-          <>
-            {/* Thinking: live (expanded) while streaming, collapsed once text arrives */}
-            <ThinkingBlock text={thinking} isLive={isTyping && !content && !!thinking} />
-            {content && (
-              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                {isTyping ? content.replace(/([^\n])\n([^\n])/g, '$1 $2') : content}
-              </ReactMarkdown>
-            )}
-            {isTyping && !!content && <TypingIndicator label={toolStatus || 'COMPUTING'} />}
-            <ChatBlocks blocks={blocks} />
-          </>
-        )}
+        <ThinkingBlock text={thinking} />
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+          {content}
+        </ReactMarkdown>
+        <ChatBlocks blocks={blocks} />
+      </div>
+    </motion.div>
+  )
+}
+
+/* ── Loading bubble shown while the full response is being fetched ── */
+function LoadingBubble({ toolStatus }) {
+  return (
+    <motion.div
+      className="flex items-end gap-2"
+      initial={{ opacity: 0, x: -20, y: 8 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      exit={{ opacity: 0, x: -10, y: 4 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div
+        style={{
+          width: 30, height: 30, borderRadius: '50%', flexShrink: 0, alignSelf: 'flex-start', marginTop: 4,
+          background: 'linear-gradient(135deg, var(--nm-accent), var(--nm-accent-2))',
+          boxShadow: '0 0 12px rgba(220,38,38,0.35)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <VIcon size={13} color="#fff" />
+      </div>
+      <div
+        style={{
+          padding: '0.65rem 1rem',
+          background: 'var(--nm-surface)',
+          border: '1px solid var(--nm-border)',
+          borderLeft: '2px solid var(--nm-accent)',
+          borderRadius: '0.25rem 1rem 1rem 1rem',
+          boxShadow: '4px 4px 14px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light)',
+        }}
+      >
+        <TypingIndicator label={toolStatus || 'COMPUTING'} />
       </div>
     </motion.div>
   )
@@ -478,7 +503,7 @@ export default function ChatPage() {
   const [loading, setLoading] = React.useState(false)
   const [toolStatus, setToolStatus] = React.useState(null)
   const streamRef = React.useRef(null)
-  const assistantIdxRef = React.useRef(-1)
+  const pendingRef = React.useRef({ content: '', thinking: '', blocks: [] })
   const lastSeedRef = React.useRef('')
   const seededOnceRef = React.useRef(false)
   const endRef = React.useRef(null)
@@ -488,31 +513,19 @@ export default function ChatPage() {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }, [messages])
 
-  const tailContent = messages.length ? messages[messages.length - 1]?.content || '' : ''
+  // Scroll when loading starts (shows the typing indicator)
   React.useEffect(() => {
     if (loading) endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
-  }, [tailContent, loading])
+  }, [loading])
 
   const stop = React.useCallback(() => {
     try { streamRef.current?.close?.() } catch {}
     streamRef.current = null
     setLoading(false)
     setToolStatus(null)
-    setMessages(m => {
-      if (!m.length) return m
-      const last = m[m.length - 1]
-      if (last.role === 'model' && !last.content) return m.slice(0, -1)
-      return m
-    })
   }, [])
 
-  const appendUser     = text => setMessages(m => [...m, { role: 'user', content: text, thinking: '', blocks: [] }])
-  const beginAssistant = () => {
-    setMessages(m => {
-      assistantIdxRef.current = m.length
-      return [...m, { role: 'model', content: '', thinking: '', blocks: [] }]
-    })
-  }
+  const appendUser = text => setMessages(m => [...m, { role: 'user', content: text, thinking: '', blocks: [] }])
 
   const send = React.useCallback(async (text, { skipAppendUser = false } = {}) => {
     const q = (text || '').trim()
@@ -523,42 +536,33 @@ export default function ChatPage() {
     setInput('')
     setLoading(true)
     setToolStatus(null)
-    beginAssistant()
+    // Reset buffer — accumulate silently, render only on done
+    pendingRef.current = { content: '', thinking: '', blocks: [] }
     const turnsHistory = prepareHistory(messages.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
     const handle = openSSE({
       base: API_BASE,
       text: q,
       history: turnsHistory,
       onEvent: (event) => {
-        const idx = assistantIdxRef.current
         if (event.t === 'text') {
-          setMessages(m => {
-            const n = m.slice()
-            const cur = n[idx] || { role: 'model', content: '', thinking: '', blocks: [] }
-            n[idx] = { ...cur, content: (cur.content || '') + event.v }
-            return n
-          })
+          pendingRef.current.content += event.v
         } else if (event.t === 'thinking') {
-          setMessages(m => {
-            const n = m.slice()
-            const cur = n[idx] || { role: 'model', content: '', thinking: '', blocks: [] }
-            n[idx] = { ...cur, thinking: (cur.thinking || '') + event.v }
-            return n
-          })
+          pendingRef.current.thinking += event.v
         } else if (event.t === 'tool') {
           setToolStatus(TOOL_STATUS_LABELS[event.name] || 'PROCESSING...')
         } else if (event.t === 'block') {
-          setMessages(m => {
-            const n = m.slice()
-            const cur = n[idx] || { role: 'model', content: '', thinking: '', blocks: [] }
-            n[idx] = { ...cur, blocks: [...(cur.blocks || []), { type: event.name, data: event.data }] }
-            return n
-          })
+          pendingRef.current.blocks.push({ type: event.name, data: event.data })
           setToolStatus(null)
         }
       },
-      onDone:  () => { streamRef.current = null; setLoading(false); setToolStatus(null) },
-      onError: () => { streamRef.current = null; setLoading(false); setToolStatus(null); stop() },
+      onDone: () => {
+        streamRef.current = null
+        setLoading(false)
+        setToolStatus(null)
+        const { content, thinking, blocks } = pendingRef.current
+        setMessages(m => [...m, { role: 'model', content, thinking, blocks }])
+      },
+      onError: () => { streamRef.current = null; setLoading(false); setToolStatus(null) },
     })
     streamRef.current = handle
   }, [loading, messages, stop])
@@ -638,10 +642,9 @@ export default function ChatPage() {
                       content={m.content}
                       thinking={m.thinking}
                       blocks={m.blocks}
-                      isTyping={loading && i === messages.length - 1}
-                      toolStatus={toolStatus}
                     />
               )}
+              {loading && <LoadingBubble key="loading" toolStatus={toolStatus} />}
             </AnimatePresence>
             <div ref={endRef} style={{ height: 1 }} />
           </div>
