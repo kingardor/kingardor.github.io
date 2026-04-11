@@ -299,7 +299,7 @@ function AIMessage({ content, thinking, blocks }) {
 }
 
 /* ── Loading bubble shown while the full response is being fetched ── */
-function LoadingBubble({ toolStatus }) {
+function LoadingBubble({ toolStatus, thinking }) {
   return (
     <motion.div
       className="flex items-end gap-2"
@@ -320,6 +320,7 @@ function LoadingBubble({ toolStatus }) {
       </div>
       <div
         style={{
+          maxWidth: '85%',
           padding: '0.65rem 1rem',
           background: 'var(--nm-surface)',
           border: '1px solid var(--nm-border)',
@@ -328,7 +329,10 @@ function LoadingBubble({ toolStatus }) {
           boxShadow: '4px 4px 14px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light)',
         }}
       >
-        <TypingIndicator label={toolStatus || 'COMPUTING'} />
+        {thinking
+          ? <ThinkingBlock text={thinking} isLive />
+          : <TypingIndicator label={toolStatus || 'COMPUTING'} />
+        }
       </div>
     </motion.div>
   )
@@ -502,6 +506,7 @@ export default function ChatPage() {
   const [input, setInput] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [toolStatus, setToolStatus] = React.useState(null)
+  const [liveThinking, setLiveThinking] = React.useState('')
   const streamRef = React.useRef(null)
   const pendingRef = React.useRef({ content: '', thinking: '', blocks: [] })
   const lastSeedRef = React.useRef('')
@@ -523,6 +528,7 @@ export default function ChatPage() {
     streamRef.current = null
     setLoading(false)
     setToolStatus(null)
+    setLiveThinking('')
   }, [])
 
   const appendUser = text => setMessages(m => [...m, { role: 'user', content: text, thinking: '', blocks: [] }])
@@ -536,6 +542,7 @@ export default function ChatPage() {
     setInput('')
     setLoading(true)
     setToolStatus(null)
+    setLiveThinking('')
     // Reset buffer — accumulate silently, render only on done
     pendingRef.current = { content: '', thinking: '', blocks: [] }
     const turnsHistory = prepareHistory(messages.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
@@ -548,6 +555,7 @@ export default function ChatPage() {
           pendingRef.current.content += event.v
         } else if (event.t === 'thinking') {
           pendingRef.current.thinking += event.v
+          setLiveThinking(t => t + event.v)
         } else if (event.t === 'tool') {
           setToolStatus(TOOL_STATUS_LABELS[event.name] || 'PROCESSING...')
         } else if (event.t === 'block') {
@@ -559,10 +567,11 @@ export default function ChatPage() {
         streamRef.current = null
         setLoading(false)
         setToolStatus(null)
+        setLiveThinking('')
         const { content, thinking, blocks } = pendingRef.current
         setMessages(m => [...m, { role: 'model', content, thinking, blocks }])
       },
-      onError: () => { streamRef.current = null; setLoading(false); setToolStatus(null) },
+      onError: () => { streamRef.current = null; setLoading(false); setToolStatus(null); setLiveThinking('') },
     })
     streamRef.current = handle
   }, [loading, messages, stop])
@@ -644,7 +653,7 @@ export default function ChatPage() {
                       blocks={m.blocks}
                     />
               )}
-              {loading && <LoadingBubble key="loading" toolStatus={toolStatus} />}
+              {loading && <LoadingBubble key="loading" toolStatus={toolStatus} thinking={liveThinking} />}
             </AnimatePresence>
             <div ref={endRef} style={{ height: 1 }} />
           </div>
