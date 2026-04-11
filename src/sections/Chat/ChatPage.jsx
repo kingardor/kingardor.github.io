@@ -288,15 +288,19 @@ function AIMessage({ content, thinking, blocks, isTyping, toolStatus }) {
           boxShadow: '4px 4px 14px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light)',
         }}
       >
-        {isTyping && !content ? (
+        {isTyping && !content && !thinking ? (
+          /* No thinking yet — show tool status or generic computing pulse */
           <TypingIndicator label={toolStatus || 'COMPUTING'} />
         ) : (
           <>
-            <ThinkingBlock text={thinking} />
-            <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-              {content}
-            </ReactMarkdown>
-            {isTyping && <TypingIndicator label={toolStatus || 'COMPUTING'} />}
+            {/* Thinking: live (expanded) while streaming, collapsed once text arrives */}
+            <ThinkingBlock text={thinking} isLive={isTyping && !content && !!thinking} />
+            {content && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                {content}
+              </ReactMarkdown>
+            )}
+            {isTyping && !!content && <TypingIndicator label={toolStatus || 'COMPUTING'} />}
             <ChatBlocks blocks={blocks} />
           </>
         )}
