@@ -297,7 +297,7 @@ function AIMessage({ content, thinking, blocks, isTyping, toolStatus }) {
             <ThinkingBlock text={thinking} isLive={isTyping && !content && !!thinking} />
             {content && (
               <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                {content}
+                {isTyping ? content.replace(/([^\n])\n([^\n])/g, '$1 $2') : content}
               </ReactMarkdown>
             )}
             {isTyping && !!content && <TypingIndicator label={toolStatus || 'COMPUTING'} />}
