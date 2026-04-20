@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Section, K } from '../../shared/components/Primitives'
+import { Section, K, SectionHeading } from '../../shared/components/Primitives'
 
 const INFO_TILES = [
   {
@@ -36,29 +36,11 @@ export default function About() {
   return (
     <Section id="about" className="pt-16">
       {/* Section heading */}
-      <motion.div
-        ref={ref}
-        variants={containerVariants}
-        initial="hidden"
-        animate={inView ? 'show' : 'hidden'}
-        className="mb-10 text-center"
-      >
-        <motion.h2
-          variants={itemVariants}
-          className="text-4xl sm:text-5xl font-black tracking-tight"
-          style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--nm-text)' }}
-        >
-          About
-        </motion.h2>
-        <motion.div
-          variants={itemVariants}
-          className="mt-4 h-px w-full"
-          style={{ background: 'linear-gradient(90deg, transparent, var(--nm-accent), transparent)' }}
-        />
-      </motion.div>
+      <SectionHeading title="About" />
 
       {/* Editorial bio */}
       <motion.div
+        ref={ref}
         variants={containerVariants}
         initial="hidden"
         animate={inView ? 'show' : 'hidden'}

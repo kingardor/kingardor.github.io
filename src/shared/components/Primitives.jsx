@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { ExternalLink } from 'lucide-react'
 
 export const cn = (...c) => c.filter(Boolean).join(' ')
 
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { staggerContainer } from '../../utils/motion'
 
 export const Section = ({ id, className, children }) => (
@@ -75,3 +75,41 @@ export const SocialButton = ({ href, icon, label }) => (
     <span className="sr-only">{label}</span>
   </a>
 )
+
+/**
+ * SectionHeading — clip-reveal h2 with animated accent bar.
+ * Use at the top of each section to replace bare <h2> tags.
+ */
+export function SectionHeading({ title, className }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+
+  return (
+    <div ref={ref} className={cn('mb-10 sm:mb-12', className)}>
+      {/* Overflow clip creates the curtain-lift mask */}
+      <div style={{ overflow: 'hidden' }}>
+        <motion.h2
+          initial={{ y: '105%', opacity: 0 }}
+          animate={inView ? { y: 0, opacity: 1 } : {}}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+          className="text-4xl sm:text-5xl font-black tracking-tight"
+          style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--nm-text)', lineHeight: 1.05 }}
+        >
+          {title}
+        </motion.h2>
+      </div>
+      {/* Accent bar scales in from left */}
+      <motion.div
+        className="mt-3 h-px"
+        style={{
+          background: 'linear-gradient(90deg, var(--nm-accent), rgba(220,38,38,0.3) 50%, transparent)',
+          maxWidth: '10rem',
+          transformOrigin: 'left center',
+        }}
+        initial={{ scaleX: 0 }}
+        animate={inView ? { scaleX: 1 } : {}}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+      />
+    </div>
+  )
+}

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Section } from '../../shared/components/Primitives'
+import { Section, SectionHeading } from '../../shared/components/Primitives'
 import { Brain, Camera, DatabaseZap, Cpu } from 'lucide-react'
 
 /* ─── Data ─────────────────────────────────────────────────────────────── */
@@ -168,27 +168,7 @@ export default function Skills() {
     <Section id="skills-list" className="pt-8 pb-4">
 
       {/* Section heading */}
-      <div className="mb-10">
-        <h2
-          style={{
-            fontFamily: "'Outfit', ui-sans-serif, system-ui, sans-serif",
-            fontWeight: 800,
-            fontSize: 'clamp(2rem, 5vw, 3rem)',
-            lineHeight: 1.05,
-            color: 'var(--nm-text)',
-            marginBottom: '1rem',
-          }}
-        >
-          Core Skills
-        </h2>
-        <hr
-          style={{
-            border: 'none',
-            borderTop: '1px solid var(--nm-border)',
-            width: '100%',
-          }}
-        />
-      </div>
+      <SectionHeading title="Core Skills" />
 
       {/* Skill tiles grid */}
       <motion.div

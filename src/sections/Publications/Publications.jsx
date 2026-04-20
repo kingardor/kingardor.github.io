@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { Section } from '../../shared/components/Primitives'
+import { motion } from 'framer-motion'
+import { Section, SectionHeading } from '../../shared/components/Primitives'
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
 import { MEDIUM_POSTS } from '../../data'
 
@@ -97,8 +97,6 @@ function BlogCard({ item, index }) {
 }
 
 export default function Publications() {
-  const headRef = useRef(null)
-  const headInView = useInView(headRef, { once: true, margin: '-60px' })
   const railRef = useRef(null)
 
   const posts = MEDIUM_POSTS
@@ -113,39 +111,10 @@ export default function Publications() {
     el.scrollBy({ left: dir * amount, behavior: 'smooth' })
   }
 
-  const headVariants = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.1 } },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 18 } },
-  }
-
   return (
     <Section id="writing" className="pt-16">
       {/* Section heading */}
-      <motion.div
-        ref={headRef}
-        variants={headVariants}
-        initial="hidden"
-        animate={headInView ? 'show' : 'hidden'}
-        className="mb-8"
-      >
-        <motion.h2
-          variants={itemVariants}
-          className="text-4xl sm:text-5xl font-black tracking-tight"
-          style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--nm-text)' }}
-        >
-          Writing
-        </motion.h2>
-        <motion.div
-          variants={itemVariants}
-          className="mt-4 h-px w-full"
-          style={{ background: 'linear-gradient(90deg, var(--nm-accent), transparent)' }}
-        />
-      </motion.div>
+      <SectionHeading title="Writing" />
 
       {/* Carousel */}
       <div className="relative">

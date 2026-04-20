@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Section } from '../../shared/components/Primitives'
+import { Section, SectionHeading } from '../../shared/components/Primitives'
 
 const TALK = {
   title:       'NVIDIA GTC 2025',
@@ -25,18 +25,7 @@ export default function Talks() {
   return (
     <Section id="talks" className="pt-16 pb-8">
       {/* ── Heading ── */}
-      <div className="mb-10">
-        <h2
-          className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-none"
-          style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, color: 'var(--nm-text)' }}
-        >
-          Invited Talks
-        </h2>
-        <div
-          className="mt-4 h-px w-full"
-          style={{ background: 'linear-gradient(to right, var(--nm-accent) 0%, var(--nm-border) 40%, transparent 100%)' }}
-        />
-      </div>
+      <SectionHeading title="Invited Talks" />
 
       {/* ── Card ── */}
       <motion.div

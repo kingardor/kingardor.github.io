@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Section } from '../../shared/components/Primitives'
+import { Section, SectionHeading } from '../../shared/components/Primitives'
 import { NOW_ROLES, PAST_ROLES } from '../../data'
 
 const ALL_ROLES = [
@@ -163,24 +163,7 @@ export default function Timeline() {
     <Section id="timeline" className="py-12">
 
       {/* Heading */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-16"
-      >
-        <h2
-          className="text-4xl sm:text-5xl font-black tracking-tight"
-          style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--nm-text)' }}
-        >
-          Career
-        </h2>
-        <div
-          className="mt-4 h-px w-full"
-          style={{ background: 'linear-gradient(90deg, var(--nm-accent), transparent)' }}
-        />
-      </motion.div>
+      <SectionHeading title="Career" />
 
       {/* Chapters */}
       <div className="flex flex-col gap-0">

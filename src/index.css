@@ -71,6 +71,11 @@ html, body, #root {
   text-size-adjust: 100%;
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   color: var(--nm-text);
+}
+
+/* html gets the canvas background — body/#root stay transparent so the
+   fixed BgFX canvas at z-index:-10 is visible through the page layers */
+html {
   background: var(--nm-bg);
 }
 
@@ -338,3 +343,16 @@ canvas {
 .light .text-zinc-300 { color: var(--nm-text-muted); }
 .light .border-white\/10 { border-color: var(--nm-border); }
 .light .bg-zinc-900\/60 { background: var(--glass-bg); }
+
+/* ─── Custom cursor — desktop only (set by CustomCursor.jsx) ─────────── */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+/* ─── Disable film grain on mobile — saves compositing layer ─────────── */
+@media (max-width: 767px) {
+  .grain-overlay {
+    display: none;
+  }
+}

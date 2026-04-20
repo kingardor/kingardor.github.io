@@ -1,5 +1,5 @@
 import React from 'react'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import ChatBar from './ChatBar'
 import ScrollDown from './ScrollDown'
 import { HIGHLIGHTS } from '../../data'
@@ -10,24 +10,29 @@ function GrainOverlay() {
   return <div className="grain-overlay" aria-hidden style={{ zIndex: 4 }} />
 }
 
-/* ─── Word reveal ─── */
-function WordReveal({ text, delay = 0, className = '', style = {} }) {
+/* ─── Character reveal — each letter rises in with stagger ─── */
+function CharReveal({ text, delay = 0, className = '', style = {}, charDelay = 0.04 }) {
   return (
-    <>
-      {text.split(' ').map((word, i) => (
-        <div key={i} style={{ overflow: 'hidden', display: 'inline-block', marginRight: '0.22em' }}>
-          <motion.span
-            initial={{ y: '110%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: delay + i * 0.1 }}
-            style={{ display: 'inline-block', ...style }}
-            className={className}
-          >
-            {word}
-          </motion.span>
-        </div>
+    // Wrap all chars in one inline-flex so only the WORD is a flex item
+    // in the parent container — prevents per-character gap application
+    <span style={{ display: 'inline-flex', whiteSpace: 'nowrap' }}>
+      {[...text].map((char, i) => (
+        <motion.span
+          key={i}
+          initial={{ y: 48, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{
+            duration: 0.7,
+            ease: [0.22, 1, 0.36, 1],
+            delay: delay + i * charDelay,
+          }}
+          style={{ display: 'inline-block', ...style }}
+          className={className}
+        >
+          {char === ' ' ? '\u00A0' : char}
+        </motion.span>
       ))}
-    </>
+    </span>
   )
 }
 
@@ -53,14 +58,21 @@ export default function Hero({ onSubmit }) {
   const { theme } = useTheme()
   const isLight = theme === 'light'
   const sectionRef = React.useRef(null)
+  const imgRef = React.useRef(null)
 
-  // Lock height to the initial window.innerHeight in pixels so iOS Safari's
-  // address-bar show/hide can never trigger an object-cover recalculation.
+  // Lock height to initial window.innerHeight — prevents iOS Safari address-bar jitter
   React.useLayoutEffect(() => {
     if (sectionRef.current) {
       sectionRef.current.style.height = window.innerHeight + 'px'
     }
   }, [])
+
+  // Photo parallax: subtly zooms in as user scrolls away from hero
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  })
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1, 1.09])
 
   return (
     <section
@@ -69,10 +81,14 @@ export default function Hero({ onSubmit }) {
       className="relative w-full overflow-hidden"
       style={{ height: '100svh', background: '#000' }}
     >
-      {/* 1. Full-bleed photo — face shows in upper portion */}
-      <picture className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
+      {/* 1. Full-bleed photo with parallax zoom */}
+      <motion.picture
+        className="absolute inset-0 h-full w-full"
+        style={{ zIndex: 0, scale: imgScale }}
+      >
         <source srcSet="/hero.webp" type="image/webp" />
         <img
+          ref={imgRef}
           src="/hero.webp"
           alt="Akash James"
           loading="eager"
@@ -83,9 +99,9 @@ export default function Hero({ onSubmit }) {
             objectPosition: 'center 18%',
           }}
         />
-      </picture>
+      </motion.picture>
 
-      {/* 2. Strong bottom gradient — keeps lower zone dark for text */}
+      {/* 2. Strong bottom gradient */}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -136,14 +152,14 @@ export default function Hero({ onSubmit }) {
         }}
       />
 
-      {/* 6. Main content — centered, pinned to bottom */}
+      {/* 6. Main content */}
       <div
         className="relative flex flex-col justify-end items-center w-full h-full"
         style={{ zIndex: 10 }}
       >
         <div className="w-full max-w-4xl mx-auto px-6 sm:px-10 pb-12 sm:pb-16 flex flex-col items-center gap-0 text-center">
 
-          {/* Status badges row */}
+          {/* Status badges */}
           <motion.div
             className="flex items-center justify-center gap-3 sm:gap-5 mb-5"
             initial={{ opacity: 0 }}
@@ -166,31 +182,29 @@ export default function Hero({ onSubmit }) {
             </div>
           </motion.div>
 
-          {/* ── Name ── */}
+          {/* ── Name: character-by-character reveal ── */}
           <div
-            className="flex items-baseline justify-center gap-[0.22em] leading-[0.88] tracking-[-0.04em] mb-5"
-            style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 900, fontSize: 'clamp(2.8rem, 10vw, 8rem)' }}
+            className="flex flex-wrap items-baseline justify-center leading-[0.88] tracking-[-0.04em] mb-5"
+            style={{
+              fontFamily: 'Outfit, sans-serif',
+              fontWeight: 900,
+              fontSize: 'clamp(2.8rem, 10vw, 8rem)',
+              gap: '0 0.22em',
+              perspective: '800px',
+            }}
           >
-            <div style={{ overflow: 'hidden' }}>
-              <motion.span
-                initial={{ y: '110%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
-                style={{ display: 'inline-block', color: '#ffffff' }}
-              >
-                AKASH
-              </motion.span>
-            </div>
-            <div style={{ overflow: 'hidden' }}>
-              <motion.span
-                initial={{ y: '110%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
-                style={{ display: 'inline-block', color: 'var(--nm-accent)', textShadow: '0 0 80px rgba(220,38,38,0.45)' }}
-              >
-                JAMES
-              </motion.span>
-            </div>
+            {/* AKASH — white */}
+            <CharReveal
+              text="AKASH"
+              delay={0.3}
+              style={{ color: '#ffffff' }}
+            />
+            {/* JAMES — red accent, starts after a gap */}
+            <CharReveal
+              text="JAMES"
+              delay={0.62}
+              style={{ color: 'var(--nm-accent)', textShadow: '0 0 80px rgba(220,38,38,0.45)' }}
+            />
           </div>
 
           {/* Thin divider */}
@@ -199,7 +213,7 @@ export default function Hero({ onSubmit }) {
             style={{ background: 'rgba(255,255,255,0.12)', width: '100%', maxWidth: '28rem' }}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.85 }}
           />
 
           {/* Stats row */}
@@ -207,9 +221,8 @@ export default function Hero({ onSubmit }) {
             className="mb-6 w-full"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 1.0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 1.05 }}
           >
-            {/* 2×2 grid on mobile, single row on sm+ */}
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-y-3 sm:gap-y-0">
               {HIGHLIGHTS.map((h, i) => (
                 <React.Fragment key={h.title}>

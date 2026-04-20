@@ -86,3 +86,28 @@ export const slideIn = (direction, type, delay, duration) => {
         },
     };
 };
+
+/**
+ * Clip reveal — element slides up from behind a clip edge (curtain-lift effect).
+ * Use inside a container with overflow:hidden.
+ */
+export const clipReveal = (delay = 0, duration = 0.85) => ({
+  hidden: { y: '105%', opacity: 0 },
+  show: {
+    y: 0,
+    opacity: 1,
+    transition: { duration, ease: [0.22, 1, 0.36, 1], delay },
+  },
+})
+
+/**
+ * Parallax fade-in — larger Y offset + slower ease for dramatic section entrance.
+ */
+export const parallaxFadeIn = (yOffset = 60, delay = 0, duration = 0.9) => ({
+  hidden: { y: yOffset, opacity: 0 },
+  show: {
+    y: 0,
+    opacity: 1,
+    transition: { duration, ease: [0.22, 1, 0.36, 1], delay },
+  },
+})

@@ -54,6 +54,7 @@ export default function Header() {
                   )}
                   style={{
                     color: active === s.href.slice(1) ? 'var(--nm-text)' : 'var(--nm-text-muted)',
+                    transition: 'color 0.2s ease',
                   }}
                 >
                   {s.label}

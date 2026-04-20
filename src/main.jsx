@@ -3,17 +3,20 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { ThemeProvider } from './shared/contexts/ThemeContext'
+import { LenisProvider } from './shared/components/SmoothScroll'
 
 const loader = document.getElementById('loader')
 const rootEl = document.getElementById('root')
 
 const isPrerendered = rootEl.hasChildNodes()
-const MIN_MS = 1700  // always show the full loading animation
+const MIN_MS = 1700
 
 const app = (
   <StrictMode>
     <ThemeProvider>
-      <App />
+      <LenisProvider>
+        <App />
+      </LenisProvider>
     </ThemeProvider>
   </StrictMode>
 )

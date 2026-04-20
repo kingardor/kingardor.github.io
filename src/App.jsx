@@ -11,6 +11,7 @@ class BgFXBoundary extends Component {
 }
 import { LINKS } from './data'
 import useHashPath from './shared/hooks/useHashPath'
+import { useLenis } from './shared/components/SmoothScroll'
 import useSiteViews from './shared/hooks/useSiteViews'
 import Header from './sections/Header/Header'
 import Hero from './sections/Hero/index'
@@ -24,6 +25,7 @@ import Publications from './sections/Publications/Publications'
 import Honours from './sections/Honours/Honours'
 import Contact from './sections/Contact/Contact'
 import ChatFAB from './shared/components/ChatFAB'
+import CustomCursor from './shared/components/CustomCursor'
 
 const Projects = React.lazy(() => import('./sections/Projects'));
 const YouTube = React.lazy(() => import('./sections/YouTube/YouTube'));
@@ -39,7 +41,20 @@ const goChat = (prompt) => {
 export default function App() {
   const views = useSiteViews()
   const path = useHashPath()
+  const lenisRef = useLenis()
   const [showFAB, setShowFAB] = useState(false);
+
+  // Stop Lenis on the chat page — it conflicts with the chat's native
+  // window scrollIntoView calls for auto-scrolling new messages.
+  useEffect(() => {
+    const lenis = lenisRef?.current
+    if (!lenis) return
+    if (path.startsWith('/chat')) {
+      lenis.stop()
+    } else {
+      lenis.start()
+    }
+  }, [path, lenisRef])
 
   useEffect(() => {
     if (path.startsWith('/chat')) {
@@ -61,6 +76,7 @@ export default function App() {
 
   return (
     <>
+      <CustomCursor />
       <BgFXBoundary><BgFX /></BgFXBoundary>
       {path.startsWith('/chat') ? (
         <Suspense fallback={<div className="text-zinc-400">Loading chat...</div>}>
@@ -68,7 +84,7 @@ export default function App() {
         </Suspense>
       ) : (
         <>
-          <main className="min-h-screen scroll-smooth text-zinc-100 antialiased">
+          <main className="min-h-screen text-zinc-100 antialiased">
             <Header />
             <Hero onSubmit={goChat} />
             <Highlights />

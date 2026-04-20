@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Section } from '../../shared/components/Primitives'
+import { Section, SectionHeading } from '../../shared/components/Primitives'
 import { Trophy, ArrowUpRight } from 'lucide-react'
 import { HONOURS } from '../../data'
 
@@ -70,37 +70,10 @@ function HonourCard({ honour, index }) {
 }
 
 export default function Honours() {
-  const headRef = useRef(null)
-  const headInView = useInView(headRef, { once: true, margin: '-60px' })
-
-  const headVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 18 } },
-  }
-
   return (
     <Section id="honours" className="pt-16">
       {/* Section heading */}
-      <motion.div
-        ref={headRef}
-        initial="hidden"
-        animate={headInView ? 'show' : 'hidden'}
-        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
-        className="mb-8"
-      >
-        <motion.h2
-          variants={headVariants}
-          className="text-4xl sm:text-5xl font-black tracking-tight"
-          style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--nm-text)' }}
-        >
-          Honours
-        </motion.h2>
-        <motion.div
-          variants={headVariants}
-          className="mt-4 h-px w-full"
-          style={{ background: 'linear-gradient(90deg, var(--nm-accent), transparent)' }}
-        />
-      </motion.div>
+      <SectionHeading title="Honours" />
 
       {/* Award cards */}
       <div className="flex flex-col gap-3">
