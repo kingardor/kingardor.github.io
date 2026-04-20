@@ -415,15 +415,15 @@ function ChatHeader({ loading }) {
 function InputBar({ value, onChange, onSubmit, loading, onStop }) {
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-40"
-      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.5rem)' }}
+      className="fixed inset-x-0 bottom-0 z-40 pointer-events-none"
+      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 1.25rem)' }}
     >
       {/* Fade scrim above input */}
       <div
-        className="pointer-events-none absolute inset-x-0 -top-16 h-16"
-        style={{ background: 'linear-gradient(to bottom, transparent, var(--nm-bg))' }}
+        className="absolute inset-x-0 -top-20 h-20"
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.55))' }}
       />
-      <div className="mx-auto max-w-3xl px-4 pb-4">
+      <div className="mx-auto max-w-3xl px-4 pointer-events-auto">
         <form onSubmit={onSubmit}>
           <div
             className="nm-bar relative flex items-center gap-3 px-4 py-3"
