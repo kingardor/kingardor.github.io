@@ -569,7 +569,10 @@ export default function ChatPage() {
         setToolStatus(null)
         setLiveThinking('')
         const { content, thinking, blocks } = pendingRef.current
-        setMessages(m => [...m, { role: 'model', content, thinking, blocks }])
+        // Single newlines between word chars are streaming token-boundary artifacts — normalise to space.
+        // Double newlines (paragraph breaks) and list markers are unaffected because \w never matches '-'/'*'/'#'.
+        const normalised = content.replace(/(\w)\n(\w)/g, '$1 $2')
+        setMessages(m => [...m, { role: 'model', content: normalised, thinking, blocks }])
       },
       onError: () => { streamRef.current = null; setLoading(false); setToolStatus(null); setLiveThinking('') },
     })
