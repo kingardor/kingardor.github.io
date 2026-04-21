@@ -170,19 +170,38 @@
         animation: loaderGlow 2s ease-in-out 0.75s infinite;
       }
 
-      .loader-tagline {
+      .loader-terminal {
         font-family: 'JetBrains Mono', ui-monospace, monospace;
-        font-size: 0.65rem;
-        letter-spacing: 0.35em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.32);
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.35);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: min(320px, 82vw);
         position: relative;
         z-index: 1;
+        margin: 0;
+      }
+
+      .loader-line {
         overflow: hidden;
         white-space: nowrap;
-        margin: 0;
         clip-path: inset(0 100% 0 0);
-        animation: loaderType 0.8s steps(12) 0.55s forwards;
+        animation: loaderType 0.45s steps(22) forwards;
+        opacity: 0;
+        animation-fill-mode: both;
+      }
+      .loader-line.l1 { animation-delay: 0.35s; }
+      .loader-line.l2 { animation-delay: 0.65s; }
+      .loader-line.l3 { animation-delay: 0.95s; }
+      .loader-line.l4 { animation-delay: 1.15s; }
+      .loader-line.l5 { animation-delay: 1.35s; color: rgba(255,255,255,0.55); }
+      .loader-line .ok { color: #22c55e; }
+
+      @keyframes loaderType {
+        from { clip-path: inset(0 100% 0 0); opacity: 1; }
+        to   { clip-path: inset(0 0% 0 0);   opacity: 1; }
       }
 
       .loader-bar-wrap {
@@ -229,10 +248,6 @@
         to   { opacity: 1; transform: translateY(0) scale(1); }
       }
 
-      @keyframes loaderType {
-        to { clip-path: inset(0 0% 0 0); }
-      }
-
       @keyframes loaderBar {
         from { width: 0; }
         to   { width: 100%; }
@@ -273,7 +288,13 @@
 
     <div id="loader" aria-hidden="true">
       <p class="loader-logo">AJ<span class="dot">.</span></p>
-      <p class="loader-tagline">AI Architect</p>
+      <div class="loader-terminal">
+        <div class="loader-line l1">&gt; init VERONICA.core</div>
+        <div class="loader-line l2">&gt; decrypting dossier.......</div>
+        <div class="loader-line l3">&gt; persona ........... <span class="ok">LOCKED</span></div>
+        <div class="loader-line l4">&gt; telemetry ......... <span class="ok">ONLINE</span></div>
+        <div class="loader-line l5">&gt; greetings, visitor. stand by.</div>
+      </div>
       <div class="loader-bar-wrap">
         <div class="loader-bar-fill"></div>
       </div>
