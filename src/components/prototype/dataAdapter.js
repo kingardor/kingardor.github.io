@@ -40,13 +40,12 @@ const career = allRoles.map((r, i) => {
 /* ── Honours ── */
 const honours = RAW_HONOURS.map(h => {
   const k = h.title.split(':')[0].toUpperCase().trim();
-  return { k, t: h.title };
+  return { k, t: h.title, href: h.url || null };
 });
-// Add ambassador if not already covered
 honours.push(
-  { k: 'NVIDIA',   t: 'Jetson AI Ambassador · Deep Learning Institute instructor' },
-  { k: 'SPEAKING', t: 'GTC · NeurIPS meetups · AI Engineer Summit · 20+ conferences' }, // TODO: confirm count
-  { k: 'CREATOR',  t: 'YouTube channel on applied AI' },
+  { k: 'NVIDIA',   t: 'Jetson AI Ambassador · Deep Learning Institute instructor', href: null },
+  { k: 'SPEAKING', t: 'GTC · NeurIPS meetups · AI Engineer Summit · 20+ conferences', href: null },
+  { k: 'CREATOR',  t: 'YouTube channel on applied AI', href: null },
 );
 
 /* ── Projects: pin Veronica first, then GitHub repos ── */
@@ -78,9 +77,13 @@ const writing = MEDIUM_POSTS.map((p, i) => ({
 }));
 
 /* ── Videos: use YT_VIDEOS static list as fallback skeleton ── */
+const ytThumb = (url) => {
+  const m = url?.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+  return m ? `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg` : null;
+};
 const staticVideos = {
-  featured: { num: '01', title: 'Latest video', url: YT_VIDEOS[0] || null, thumb: null },
-  strip: YT_VIDEOS.slice(1).map((url, i) => ({ num: String(i + 2).padStart(2, '0'), title: '', url, thumb: null })),
+  featured: { num: '01', title: '', url: YT_VIDEOS[0] || null, thumb: ytThumb(YT_VIDEOS[0]) },
+  strip: YT_VIDEOS.slice(1).map((url, i) => ({ num: String(i + 2).padStart(2, '0'), title: '', url, thumb: ytThumb(url) })),
 };
 
 /* ── Socials ── */

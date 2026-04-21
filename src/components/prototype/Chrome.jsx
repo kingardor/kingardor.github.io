@@ -31,9 +31,11 @@ export function TopNav({ onAsk }) {
           </a>
         ))}
       </div>
-      <button className="ask-btn hot" onClick={onAsk}>
-        <span className="v">V</span> ASK VERONICA
-      </button>
+      {scrolled && (
+        <button className="ask-btn hot" onClick={onAsk}>
+          <span className="v">V</span> ASK VERONICA
+        </button>
+      )}
     </nav>
   );
 }

@@ -49,9 +49,7 @@ export function Career({ bg = { rain: true }, accent = '#ef2b3a' }) {
             <div className="career-title">A brief history<br/>of building.</div>
           </div>
           <div className="career-progress" ref={barRef}>
-            <span>{String(slideIdx + 1).padStart(2,'0')} / {String(total).padStart(2,'0')}</span>
             <div className="bar" />
-            <span>SCRUB</span>
           </div>
         </div>
         <div className="career-track" ref={trackRef}>
@@ -66,20 +64,6 @@ export function Career({ bg = { rain: true }, accent = '#ef2b3a' }) {
                 <p className="career-blurb">{r.blurb}</p>
                 <div className="career-tags">
                   {r.tags.map(t => <span className="career-tag" key={t}>{t}</span>)}
-                </div>
-              </div>
-              <div className="career-right">
-                <div className="career-frame">
-                  <span className="corner-target tl" />
-                  <span className="corner-target tr" />
-                  <span className="corner-target bl" />
-                  <span className="corner-target br" />
-                  {r.live
-                    ? <span className="label live">LIVE · TRANSMITTING</span>
-                    : <span className="label">ARCHIVE · CLASSIFIED</span>}
-                  <div className="stripes" />
-                  <div className="caption">{r.capt}</div>
-                  <div className="big-year"><span>{r.year}</span></div>
                 </div>
               </div>
             </div>
@@ -285,15 +269,19 @@ export function Honours() {
           </div>
         </div>
         <div className="honours-grid">
-          {DATA.honours.map((h, i) => (
-            <div className="honour reveal" key={i} style={{ transitionDelay: `${i * 60}ms` }}>
-              <div className="sigil"><span className="star">★</span></div>
-              <div className="body">
-                <div className="k">{h.k}</div>
-                <div className="t">{h.t}</div>
-              </div>
-            </div>
-          ))}
+          {DATA.honours.map((h, i) => {
+            const Tag = h.href ? 'a' : 'div';
+            const linkProps = h.href ? { href: h.href, target: '_blank', rel: 'noreferrer' } : {};
+            return (
+              <Tag className="honour reveal hot" key={i} style={{ transitionDelay: `${i * 60}ms` }} {...linkProps}>
+                <div className="sigil"><span className="star">★</span></div>
+                <div className="body">
+                  <div className="k">{h.k}</div>
+                  <div className="t">{h.t}</div>
+                </div>
+              </Tag>
+            );
+          })}
         </div>
       </div>
     </section>

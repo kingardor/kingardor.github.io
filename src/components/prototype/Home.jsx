@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Hud, Reticle, Boot } from './Hud.jsx';
+import { Hud, Reticle } from './Hud.jsx';
 import { Hero, Marquee, Manifesto } from './Hero.jsx';
 import { Career, Skills, Projects, Videos, Writing, Honours, Transmission } from './Sections.jsx';
 import { TopNav } from './Chrome.jsx';
@@ -30,15 +30,9 @@ function toVideoItem(v, i) {
 }
 
 export default function Home() {
-  const [booting, setBooting] = useState(true);
   const [projects, setProjects] = useState(null);
   const [videos, setVideos] = useState(null);
   useReveal();
-
-  useEffect(() => {
-    document.body.style.overflow = booting ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [booting]);
 
   // Fetch GitHub projects
   useEffect(() => {
@@ -76,7 +70,6 @@ export default function Home() {
 
   return (
     <>
-      {booting && <Boot onDone={() => setBooting(false)} />}
       <Reticle />
       <Hud />
       <div className="grain" />
