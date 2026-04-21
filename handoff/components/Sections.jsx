@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { DATA } from './dataAdapter.js';
+import { DATA } from '../data.js';
 import { DataRainBG, AuroraBG } from './Backgrounds.jsx';
 
 export function Career({ bg = { rain: true }, accent = '#ef2b3a' }) {
@@ -49,7 +49,9 @@ export function Career({ bg = { rain: true }, accent = '#ef2b3a' }) {
             <div className="career-title">A brief history<br/>of building.</div>
           </div>
           <div className="career-progress" ref={barRef}>
+            <span>{String(slideIdx + 1).padStart(2,'0')} / {String(total).padStart(2,'0')}</span>
             <div className="bar" />
+            <span>SCRUB</span>
           </div>
         </div>
         <div className="career-track" ref={trackRef}>
@@ -66,6 +68,20 @@ export function Career({ bg = { rain: true }, accent = '#ef2b3a' }) {
                   {r.tags.map(t => <span className="career-tag" key={t}>{t}</span>)}
                 </div>
               </div>
+              <div className="career-right">
+                <div className="career-frame">
+                  <span className="corner-target tl" />
+                  <span className="corner-target tr" />
+                  <span className="corner-target bl" />
+                  <span className="corner-target br" />
+                  {r.live
+                    ? <span className="label live">LIVE · TRANSMITTING</span>
+                    : <span className="label">ARCHIVE · CLASSIFIED</span>}
+                  <div className="stripes" />
+                  <div className="caption">{r.capt}</div>
+                  <div className="big-year"><span>{r.year}</span></div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -80,14 +96,16 @@ export function Skills() {
     <section className="skills" id="skills" data-screen-label="04 Skills">
       <div className="wrap">
         <div className="skills-head reveal">
-          <div className="kicker"><span className="accent">ARSENAL</span> · 002</div>
-          <div className="title">The stack,<br/>spoken aloud.</div>
+          <div>
+            <div className="kicker"><span className="accent">ARSENAL</span> · 002</div>
+            <div className="title">The stack,<br/>spoken aloud.</div>
+          </div>
         </div>
         <p className="skills-sentence reveal">
           {words.map((w, i) => {
             const clean = w.replace(/[.,]/g, '');
             const isKey = DATA.keyWords.includes(clean);
-            return <span key={i} className={`word ${isKey ? 'is-key' : ''}`}>{w} </span>;
+            return <span key={i} className={`word ${isKey ? 'is-key' : ''}`}>{w}</span>;
           })}
         </p>
         <div className="skills-grid">
@@ -108,9 +126,7 @@ export function Skills() {
   );
 }
 
-/* Projects accepts an optional `projects` prop that overrides DATA.projects (for live fetch) */
-export function Projects({ projects: propProjects }) {
-  const projects = propProjects || DATA.projects;
+export function Projects() {
   const onMove = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
@@ -120,17 +136,20 @@ export function Projects({ projects: propProjects }) {
     <section className="projects" id="projects" data-screen-label="05 Projects">
       <div className="wrap">
         <div className="projects-head reveal">
-          <div className="kicker"><span className="accent">MISSION FILES</span> · 003</div>
-          <div className="title">Selected<br/>works.</div>
+          <div>
+            <div className="kicker"><span className="accent">MISSION FILES</span> · 003</div>
+            <div className="title">Selected<br/>works.</div>
+          </div>
+          <div className="caption">CLICK TO OPEN<br/>5 OF 50+ CLASSIFIED</div>
         </div>
         <div className="projects-grid">
-          {projects.map((p, i) => (
+          {DATA.projects.map((p, i) => (
             <a className={`project-card ${p.feature ? 'feature' : ''} reveal`} key={i}
                onMouseMove={onMove}
                href={p.href || '#'}
-               target={p.href && !p.href.startsWith('#') ? '_blank' : undefined}
-               rel={p.href && !p.href.startsWith('#') ? 'noreferrer' : undefined}
-               onClick={!p.href || p.href === '#' ? e => e.preventDefault() : undefined}
+               target={p.href ? '_blank' : undefined}
+               rel={p.href ? 'noreferrer' : undefined}
+               onClick={p.href ? undefined : e => e.preventDefault()}
                style={{ transitionDelay: `${i * 60}ms` }}>
               <div className="code">{p.code}{p.feature && ' · FEATURED'}</div>
               <div className="name">{p.name}</div>
@@ -141,7 +160,7 @@ export function Projects({ projects: propProjects }) {
               )}
               <div className="desc">{p.desc}</div>
               <div className="tags">
-                {(p.tags || []).map(t => <span className="tag" key={t}>{t}</span>)}
+                {p.tags.map(t => <span className="tag" key={t}>{t}</span>)}
               </div>
               <div className="open">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 9L9 3M9 3H4M9 3V8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="square"/></svg>
@@ -155,19 +174,19 @@ export function Projects({ projects: propProjects }) {
   );
 }
 
-/* Videos accepts an optional `videos` prop that overrides DATA.videos (for live fetch) */
-export function Videos({ videos: propVideos }) {
-  const videosData = propVideos || DATA.videos;
+export function Videos() {
   const [active, setActive] = useState(0);
-  const allVideos = [videosData.featured, ...(videosData.strip || [])].filter(Boolean);
-  const cur = allVideos[active] || allVideos[0];
-  if (!cur) return null;
+  const videos = [DATA.videos.featured, ...DATA.videos.strip];
+  const cur = videos[active];
   return (
     <section className="videos" id="videos" data-screen-label="06 Videos">
       <div className="wrap">
         <div className="videos-head reveal">
-          <div className="kicker"><span className="accent">SIGNALS</span> · 004</div>
-          <div className="title">Live from<br/>the workshop.</div>
+          <div>
+            <div className="kicker"><span className="accent">SIGNALS</span> · 004</div>
+            <div className="title">Live from<br/>the workshop.</div>
+          </div>
+          <div className="meta">AKASH JAMES · YOUTUBE<br/>12K+ SUBSCRIBERS</div>
         </div>
         <div className="crt-stage reveal hot">
           <div className="screen" style={{
@@ -184,33 +203,24 @@ export function Videos({ videos: propVideos }) {
           </div>
           <div className="rec">REC · CH {cur.num}</div>
           <div className="play">
-            <a
-              className="play-btn"
-              href={cur.url || '#'}
-              target={cur.url ? '_blank' : undefined}
-              rel={cur.url ? 'noreferrer' : undefined}
-              aria-label="Play"
-            >
+            <button className="play-btn" aria-label="Play">
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M9 6L22 14L9 22V6Z" fill="currentColor"/></svg>
-            </a>
+            </button>
           </div>
           <div className="title-bar">{cur.title}</div>
         </div>
         <div className="video-strip">
-          {allVideos.map((v, i) => (
+          {videos.map((v, i) => (
             <button
               key={i}
               className={`video-thumb ${active === i ? 'active' : ''}`}
               onClick={() => setActive(i)}
               style={{ background: 'transparent', padding: 0 }}>
-              {v.thumb
-                ? <div className="img" style={{ backgroundImage: `url(${v.thumb})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-                : <div className="img" style={{
-                    background:
-                      `radial-gradient(circle at ${20 + i * 13}% ${30 + i * 11}%, rgba(239,43,58,0.2), transparent 60%),` +
-                      'repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 6px, transparent 6px 12px)'
-                  }} />
-              }
+              <div className="img" style={{
+                background:
+                  `radial-gradient(circle at ${20 + i * 13}% ${30 + i * 11}%, rgba(239,43,58,0.2), transparent 60%),` +
+                  'repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 6px, transparent 6px 12px)'
+              }} />
               <div className="num">#{v.num}</div>
             </button>
           ))}
@@ -225,8 +235,11 @@ export function Writing() {
     <section className="writing" id="writing" data-screen-label="07 Writing">
       <div className="wrap">
         <div className="writing-head reveal">
-          <div className="kicker"><span className="accent">FIELD NOTES</span> · 005</div>
-          <div className="title">Writing.</div>
+          <div>
+            <div className="kicker"><span className="accent">FIELD NOTES</span> · 005</div>
+            <div className="title">Writing.</div>
+          </div>
+          <div className="kicker">FROM THE <span className="accent">BLOG</span></div>
         </div>
         <div className="writing-list">
           {DATA.writing.map((w, i) => (
@@ -234,7 +247,7 @@ export function Writing() {
                href={w.href || '#'}
                target={w.href ? '_blank' : undefined}
                rel={w.href ? 'noreferrer' : undefined}
-               onClick={!w.href ? e => e.preventDefault() : undefined}
+               onClick={w.href ? undefined : e => e.preventDefault()}
                style={{ transitionDelay: `${i * 50}ms` }}>
               <span className="idx">#{w.idx}</span>
               <span className="title-line">{w.title}</span>
@@ -252,23 +265,21 @@ export function Honours() {
     <section className="honours" id="honours" data-screen-label="08 Honours">
       <div className="wrap">
         <div className="writing-head reveal">
-          <div className="kicker"><span className="accent">HONOURS</span> · 006</div>
-          <div className="title">Notable.</div>
+          <div>
+            <div className="kicker"><span className="accent">HONOURS</span> · 006</div>
+            <div className="title">Notable.</div>
+          </div>
         </div>
         <div className="honours-grid">
-          {DATA.honours.map((h, i) => {
-            const Tag = h.href ? 'a' : 'div';
-            const linkProps = h.href ? { href: h.href, target: '_blank', rel: 'noreferrer' } : {};
-            return (
-              <Tag className="honour reveal hot" key={i} style={{ transitionDelay: `${i * 60}ms` }} {...linkProps}>
-                <div className="sigil"><span className="star">★</span></div>
-                <div className="body">
-                  <div className="k">{h.k}</div>
-                  <div className="t">{h.t}</div>
-                </div>
-              </Tag>
-            );
-          })}
+          {DATA.honours.map((h, i) => (
+            <div className="honour reveal" key={i} style={{ transitionDelay: `${i * 60}ms` }}>
+              <div className="sigil"><span className="star">★</span></div>
+              <div className="body">
+                <div className="k">{h.k}</div>
+                <div className="t">{h.t}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -299,14 +310,15 @@ export function Transmission({ onAsk, bg = { aurora: true }, accent = '#ef2b3a' 
           {DATA.socials.map((s, i) => (
             <a key={i}
                href={s.href || '#'}
-               target={s.href && !s.href.startsWith('mailto') ? '_blank' : undefined}
-               rel={s.href && !s.href.startsWith('mailto') ? 'noreferrer' : undefined}
+               target={s.href ? '_blank' : undefined}
+               rel={s.href ? 'noreferrer' : undefined}
+               onClick={s.href ? undefined : e => e.preventDefault()}
                className="hot">{s.k} · {s.v}</a>
           ))}
         </div>
       </div>
       <footer>
-        <div className="wrap">© {new Date().getFullYear()} AKASH JAMES · BUILT WITH VERONICA</div>
+        <div className="wrap">© 2026 AKASH JAMES · BUILT WITH VERONICA · DESIGN 02.26</div>
       </footer>
     </section>
   );

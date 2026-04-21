@@ -1,83 +1,11 @@
-import { useRef, useEffect, useState } from 'react';
-import { DATA } from './dataAdapter.js';
+import { useRef, useEffect } from 'react';
+import { DATA } from '../data.js';
 import { GridMeshBG } from './Backgrounds.jsx';
-import { CHAT_SUGGESTIONS } from '../../data.js';
-
-const SEED_KEY = 'chat:seed';
-
-function HeroChatPill() {
-  const [text, setText] = useState('');
-  const [ghost, setGhost] = useState('');
-  const [phase, setPhase] = useState('typing');
-  const [idx, setIdx] = useState(0);
-  const suggestions = CHAT_SUGGESTIONS || ['Ask me anything...'];
-
-  useEffect(() => {
-    const s = suggestions[idx] || '';
-    let t;
-    if (phase === 'typing') {
-      if (ghost.length < s.length) t = setTimeout(() => setGhost(s.slice(0, ghost.length + 1)), 22);
-      else t = setTimeout(() => setPhase('pause'), 1200);
-    } else if (phase === 'pause') {
-      t = setTimeout(() => setPhase('deleting'), 300);
-    } else if (phase === 'deleting') {
-      if (ghost.length) t = setTimeout(() => setGhost(s.slice(0, ghost.length - 1)), 10);
-      else { setIdx(i => (i + 1) % suggestions.length); setPhase('typing'); }
-    }
-    return () => clearTimeout(t);
-  }, [ghost, phase, idx, suggestions]);
-
-  const submit = (e) => {
-    e.preventDefault();
-    const q = text.trim();
-    if (q) {
-      try { sessionStorage.setItem(SEED_KEY, q); } catch {}
-      location.hash = `/chat?q=${encodeURIComponent(q)}`;
-    } else {
-      location.hash = '/chat';
-    }
-  };
-
-  return (
-    <div className="hero-chat reveal in d4">
-      <span className="hero-chat-corner tl" />
-      <span className="hero-chat-corner tr" />
-      <span className="hero-chat-corner bl" />
-      <span className="hero-chat-corner br" />
-      <div className="hero-chat-label">VERONICA · AI COPILOT · STANDBY</div>
-      <form className="hero-chat-form" onSubmit={submit}>
-        <div className="hero-chat-bar">
-          <div className="hero-chat-sigil">V</div>
-          <div className="hero-chat-input-wrap">
-            <input
-              className="hero-chat-input hot"
-              value={text}
-              onChange={e => setText(e.target.value)}
-              autoComplete="off"
-              spellCheck={false}
-              aria-label="Ask Veronica"
-            />
-            {!text && (
-              <span className="hero-chat-ghost" aria-hidden>
-                {ghost}<span className="hero-chat-cursor" />
-              </span>
-            )}
-          </div>
-          <button type="submit" className="hero-chat-submit hot" aria-label="Send">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
-            </svg>
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
 
 function AnimChar({ ch, delay }) {
   return (
     <span className="ch" style={{ animationDelay: `${delay}ms` }}>
-      {ch === ' ' ? ' ' : ch}
+      {ch === ' ' ? '\u00A0' : ch}
     </span>
   );
 }
@@ -99,16 +27,26 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       <div className="hero-photo" />
       <div className="hero-scan" />
       <div className="wrap hero-content">
+        <div className="hero-status reveal in">
+          <span className="dot green" /> OPEN TO OUTRAGEOUS WORK
+          <span style={{ color: 'rgba(255,255,255,0.15)' }}>│</span>
+          <span className="dot" /> AI ARCHITECT · DIRECTOR OF AI
+        </div>
         <h1 className="hero-name">
           <span className="line">{renderWord('AKASH', 200)}</span>
           <span className="line red">{renderWord('JAMES', 700)}</span>
         </h1>
         <div className="hero-meta">
           <p className="hero-tag reveal in d3">
-            {DATA.profile.tagline}
+            <strong>AI systems that ship.</strong> Vision, voice, language — at scale, on the edge, and everywhere in between.
           </p>
+          <div className="hero-location reveal in d4">
+            <div>SAN FRANCISCO, CA</div>
+            <div className="val">PST · UTC-8</div>
+            <div style={{ marginTop: 8 }}>DIRECTOR OF AI</div>
+            <div className="val">MyBlue.ai</div>
+          </div>
         </div>
-        <HeroChatPill />
       </div>
       <button className="hero-scroll hot" onClick={scrollTo('manifesto')}
         style={{ background: 'transparent', border: 'none', color: 'inherit' }}>
@@ -156,6 +94,7 @@ export function Manifesto() {
       <div className="wrap">
         <div className="manifesto-header reveal">
           <div className="manifesto-label">MANIFESTO · 001</div>
+          <div className="kicker">AKASH JAMES · <span className="accent">ON THE CRAFT</span></div>
         </div>
         <div className="manifesto-body" ref={ref}>
           {DATA.manifesto.map((w, i) => (

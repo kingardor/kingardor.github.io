@@ -70,6 +70,10 @@ export default function Home() {
 
   return (
     <>
+      <button className="veronica-fab hot" onClick={goChat} aria-label="Ask Veronica">
+        <span className="veronica-fab-v">V</span>
+        <span className="veronica-fab-label">ASK VERONICA</span>
+      </button>
       <Reticle />
       <Hud />
       <div className="grain" />

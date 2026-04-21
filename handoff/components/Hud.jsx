@@ -20,10 +20,12 @@ export function Hud() {
       <span className="corner br" />
       <div className="tick-row top">
         <span><span className="tick">●</span> VERONICA · STANDBY</span>
+        <span>AJ//PORTFOLIO · v02.26</span>
         <span>{time}</span>
       </div>
       <div className="tick-row bot">
         <span>LAT 37.7749° · LON -122.4194°</span>
+        <span>SIGNAL · <span className="tick">STRONG</span></span>
         <span>SCROLL TO DECODE</span>
       </div>
       <div className="scanline" />
