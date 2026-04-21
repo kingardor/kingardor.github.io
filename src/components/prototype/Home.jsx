@@ -1,0 +1,98 @@
+import { useState, useEffect } from 'react';
+import { Hud, Reticle, Boot } from './Hud.jsx';
+import { Hero, Marquee, Manifesto } from './Hero.jsx';
+import { Career, Skills, Projects, Videos, Writing, Honours, Transmission } from './Sections.jsx';
+import { TopNav } from './Chrome.jsx';
+import { useReveal } from './hooks.js';
+import { DATA } from './dataAdapter.js';
+import { fetchGithubProjects } from '../../shared/utils/fetchGithubProjects.js';
+
+const API_BASE = 'https://veronica-proxy-vercel.vercel.app';
+
+function toVideoItem(v, i) {
+  if (typeof v === 'string') {
+    const idMatch = v.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+    const id = idMatch ? idMatch[1] : null;
+    return {
+      num: String(i + 1).padStart(2, '0'),
+      title: '',
+      url: v,
+      thumb: id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null,
+    };
+  }
+  const id = v.id || (v.url?.match(/(?:v=|youtu\.be\/)([^&?/]+)/)?.[1]);
+  return {
+    num: String(i + 1).padStart(2, '0'),
+    title: v.title || '',
+    url: v.url || null,
+    thumb: id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null,
+  };
+}
+
+export default function Home() {
+  const [booting, setBooting] = useState(true);
+  const [projects, setProjects] = useState(null);
+  const [videos, setVideos] = useState(null);
+  useReveal();
+
+  useEffect(() => {
+    document.body.style.overflow = booting ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [booting]);
+
+  // Fetch GitHub projects
+  useEffect(() => {
+    fetchGithubProjects('kingardor', 6).then(repos => {
+      if (!repos.length) return;
+      const ghCards = repos.map((p, i) => ({
+        code: `PRJ · ${String(i + 2).padStart(2, '0')}`,
+        name: p.name,
+        desc: p.desc,
+        tags: p.tags.map(t => t.toUpperCase()),
+        href: p.url,
+      }));
+      // Keep Veronica card pinned first
+      setProjects([DATA.projects[0], ...ghCards]);
+    }).catch(() => {});
+  }, []);
+
+  // Fetch YouTube feed via Veronica proxy
+  useEffect(() => {
+    fetch(`${API_BASE}/api/youtube-feed?d=${Date.now()}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.items?.length) {
+          const items = data.items.map(toVideoItem);
+          setVideos({
+            featured: items[0],
+            strip: items.slice(1),
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const goChat = () => { location.hash = '/chat'; };
+
+  return (
+    <>
+      {booting && <Boot onDone={() => setBooting(false)} />}
+      <Reticle />
+      <Hud />
+      <div className="grain" />
+      <TopNav onAsk={goChat} />
+      <main>
+        <Hero bg={{ grid: true }} accent="#ef2b3a" />
+        <Marquee />
+        <Manifesto />
+        <Career bg={{ rain: true }} accent="#ef2b3a" />
+        <Skills />
+        <Projects projects={projects || undefined} />
+        <Videos videos={videos || undefined} />
+        <Writing />
+        <Honours />
+        <Transmission onAsk={goChat} bg={{ aurora: true }} accent="#ef2b3a" />
+      </main>
+    </>
+  );
+}
