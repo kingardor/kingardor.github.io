@@ -66,11 +66,13 @@
    ═══════════════════════════════════════════════ */
 html, body {
   min-height: 100svh;
-  overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   color: var(--nm-text);
+}
+html {
+  overflow-x: hidden;
 }
 
 /* html gets the canvas background — body/#root stay transparent so the
@@ -391,10 +393,6 @@ html, body, #root {
   font-family: var(--body);
   -webkit-font-smoothing: antialiased;
 }
-html, body {
-  overflow-x: hidden;
-}
-
 body {
   min-height: 100vh;
   cursor: none;
