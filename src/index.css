@@ -64,7 +64,7 @@
 /* ═══════════════════════════════════════════════
    GLOBAL BASE
    ═══════════════════════════════════════════════ */
-html, body, #root {
+html, body {
   min-height: 100svh;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
@@ -390,6 +390,8 @@ html, body, #root {
   color: var(--ink);
   font-family: var(--body);
   -webkit-font-smoothing: antialiased;
+}
+html, body {
   overflow-x: hidden;
 }
 
