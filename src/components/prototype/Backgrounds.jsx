@@ -119,7 +119,7 @@ export function DataRainBG({ enabled = true, accent = '#ef2b3a' }) {
     if (cols.current.length !== nCols) {
       cols.current = new Array(nCols).fill(0).map(() => ({
         y: Math.random() * -s.h,
-        speed: 0.3 + Math.random() * 1.2,
+        speed: 1.5 + Math.random() * 3,
       }));
     }
 
