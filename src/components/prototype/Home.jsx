@@ -90,7 +90,7 @@ export default function Home() {
         <Hero bg={{ grid: false }} accent="#ef2b3a" />
         <Marquee />
         <Manifesto />
-        <Career bg={{ rain: false }} accent="#ef2b3a" />
+        <Career bg={{ rain: true }} accent="#ef2b3a" />
         <Skills />
         <Projects projects={projects || undefined} />
         <Videos videos={videos || undefined} />
