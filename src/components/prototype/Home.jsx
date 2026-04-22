@@ -32,7 +32,15 @@ function toVideoItem(v, i) {
 export default function Home() {
   const [projects, setProjects] = useState(null);
   const [videos, setVideos] = useState(null);
+  const [showFab, setShowFab] = useState(false);
   useReveal();
+
+  useEffect(() => {
+    const onScroll = () => setShowFab(window.scrollY > window.innerHeight * 0.8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Fetch GitHub projects
   useEffect(() => {
@@ -70,7 +78,7 @@ export default function Home() {
 
   return (
     <>
-      <button className="veronica-fab hot" onClick={goChat} aria-label="Ask Veronica">
+      <button className={`veronica-fab hot${showFab ? ' fab-visible' : ''}`} onClick={goChat} aria-label="Ask Veronica">
         <span className="veronica-fab-v">V</span>
         <span className="veronica-fab-label">ASK VERONICA</span>
       </button>

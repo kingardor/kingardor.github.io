@@ -2,6 +2,27 @@ import { useRef, useState, useEffect } from 'react';
 import { DATA } from './dataAdapter.js';
 import { DataRainBG, AuroraBG } from './Backgrounds.jsx';
 
+function SmartThumb({ id, thumb, style }) {
+  const initial = id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : (thumb || '');
+  const [src, setSrc] = useState(initial);
+  if (!src) return null;
+  return (
+    <img
+      src={src}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', ...style }}
+      onLoad={e => { if (id && e.target.naturalWidth <= 120) setSrc(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`); }}
+      onError={() => { if (id) setSrc(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`); }}
+    />
+  );
+}
+
+function getYTId(url) {
+  return url?.match(/(?:v=|youtu\.be\/)([^&?/]+)/)?.[1] || null;
+}
+
 export function Career({ bg = { rain: true }, accent = '#ef2b3a' }) {
   const wrapRef = useRef(null);
   const trackRef = useRef(null);
@@ -55,7 +76,7 @@ export function Career({ bg = { rain: true }, accent = '#ef2b3a' }) {
         <div className="career-track" ref={trackRef}>
           {DATA.career.map((r, i) => (
             <div className="career-slide" key={i}>
-              <div className="ghost-year">{r.yearShort}</div>
+              <div className="ghost-year">{r.year}</div>
               <div className="career-left">
                 <div className="career-num">CH · {r.num}</div>
                 <h3 className="career-role">{r.role}</h3>
@@ -159,9 +180,16 @@ export function Projects({ projects: propProjects }) {
 export function Videos({ videos: propVideos }) {
   const videosData = propVideos || DATA.videos;
   const [active, setActive] = useState(0);
+  const [playing, setPlaying] = useState(false);
   const allVideos = [videosData.featured, ...(videosData.strip || [])].filter(Boolean);
   const cur = allVideos[active] || allVideos[0];
+
+  useEffect(() => { setPlaying(false); }, [active]);
+
   if (!cur) return null;
+
+  const curId = getYTId(cur.url);
+
   return (
     <section className="videos" id="videos" data-screen-label="06 Videos">
       <div className="wrap">
@@ -169,42 +197,58 @@ export function Videos({ videos: propVideos }) {
           <div className="kicker"><span className="accent">SIGNALS</span> · 004</div>
           <div className="title">Live from<br/>the workshop.</div>
         </div>
-        <div className="crt-stage reveal hot">
-          <div className="screen" style={{
-            background:
-              'radial-gradient(circle at 30% 40%, rgba(239,43,58,0.15), transparent 50%),' +
-              'radial-gradient(circle at 70% 60%, rgba(255,77,122,0.15), transparent 50%),' +
-              'repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0 12px, transparent 12px 24px)'
-          }} />
-          <div className="scanlines" />
-          <div className="chroma" />
-          <div className="hud-overlay">
-            <span className="corner tl" /><span className="corner tr" />
-            <span className="corner bl" /><span className="corner br" />
-          </div>
-          <div className="rec">REC · CH {cur.num}</div>
-          <div className="play">
-            <a
-              className="play-btn"
-              href={cur.url || '#'}
-              target={cur.url ? '_blank' : undefined}
-              rel={cur.url ? 'noreferrer' : undefined}
-              aria-label="Play"
-            >
-              <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M9 6L22 14L9 22V6Z" fill="currentColor"/></svg>
-            </a>
-          </div>
-          <div className="title-bar">{cur.title}</div>
+        <div className="crt-stage reveal">
+          {playing && curId ? (
+            <iframe
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none', zIndex: 2 }}
+              src={`https://www.youtube.com/embed/${curId}?autoplay=1`}
+              title={cur.title || 'YouTube video'}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <>
+              {curId
+                ? <SmartThumb id={curId} thumb={cur.thumb} />
+                : <div className="screen" style={{
+                    background:
+                      'radial-gradient(circle at 30% 40%, rgba(239,43,58,0.15), transparent 50%),' +
+                      'radial-gradient(circle at 70% 60%, rgba(255,77,122,0.15), transparent 50%),' +
+                      'repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0 12px, transparent 12px 24px)'
+                  }} />
+              }
+              <div className="scanlines" />
+              <div className="chroma" />
+              <div className="hud-overlay">
+                <span className="corner tl" /><span className="corner tr" />
+                <span className="corner bl" /><span className="corner br" />
+              </div>
+              <div className="rec">REC · CH {cur.num}</div>
+              <div className="play">
+                <button
+                  className="play-btn hot"
+                  onClick={() => curId ? setPlaying(true) : cur.url && window.open(cur.url, '_blank')}
+                  aria-label="Play"
+                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', border: 'none', cursor: 'pointer' }}
+                >
+                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M9 6L22 14L9 22V6Z" fill="currentColor"/></svg>
+                </button>
+              </div>
+              {cur.title && <div className="title-bar">{cur.title}</div>}
+            </>
+          )}
         </div>
         <div className="video-strip">
-          {allVideos.map((v, i) => (
+          {allVideos.map((v, i) => {
+            const vId = getYTId(v.url);
+            return (
             <button
               key={i}
               className={`video-thumb ${active === i ? 'active' : ''}`}
               onClick={() => setActive(i)}
               style={{ background: 'transparent', padding: 0 }}>
-              {v.thumb
-                ? <div className="img" style={{ backgroundImage: `url(${v.thumb})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+              {vId
+                ? <SmartThumb id={vId} thumb={v.thumb} />
                 : <div className="img" style={{
                     background:
                       `radial-gradient(circle at ${20 + i * 13}% ${30 + i * 11}%, rgba(239,43,58,0.2), transparent 60%),` +
@@ -213,7 +257,7 @@ export function Videos({ videos: propVideos }) {
               }
               <div className="num">#{v.num}</div>
             </button>
-          ))}
+          )})}
         </div>
       </div>
     </section>

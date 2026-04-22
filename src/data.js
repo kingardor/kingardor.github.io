@@ -12,10 +12,6 @@ export const CHAT_SUGGESTIONS = [
   "How can I contact you?"
 ];
 
-export const COUNTER = {
-  workspace: 'akashjamesdev',
-  counter:   'aj-visits'
-};
 
 export const LINKS = {
   linkedin: 'https://linkedin.com/in/akashjames',
@@ -26,12 +22,6 @@ export const LINKS = {
   email: 'mailto:akashjamesofficial@gmail.com'
 };
 
-export const HIGHLIGHTS = [
-  { kpi: '3',    title: 'AI platforms',            sub: 'built 0→1, end-to-end' },
-  { kpi: '50+',  title: 'production use-cases',    sub: 'designed & shipped' },
-  { kpi: '10+',  title: 'multimodal platforms',    sub: 'vision · language · audio' },
-  { kpi: '1',    title: 'product acquisition',     sub: 'outcome: acquired' },
-]
 
 export const NOW_ROLES = [
   {
@@ -86,15 +76,6 @@ export const YT_VIDEOS = [
   'https://www.youtube.com/watch?v=J0fhEByPzVQ',
 ];
 
-export const SECTION_LINKS = [
-  { href: '#about', label: 'About' },
-  { href: '#skills', label: 'Skills' },
-  { href: '#projects', label: 'Projects' },
-  { href: '#videos', label: 'Videos' },
-  { href: '#writing', label: 'Writing' },
-  { href: '#honours', label: 'Honours' },
-  { href: '#contact', label: 'Contact' },
-];
 
 export const MEDIUM_POSTS = [
   { title: 'Blaze through your setup with Z by HP Data Science Stack Manager', url: 'https://akash-james.medium.com/simplifying-data-science-workflows-an-overview-of-z-by-hp-data-science-stack-manager-5084d681bf48' },
