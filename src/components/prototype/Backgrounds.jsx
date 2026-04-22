@@ -144,14 +144,6 @@ export function DataRainBG({ enabled = true, accent = '#ef2b3a' }) {
       }
     }
     ctx.globalAlpha = 1;
-
-    const scanY = ((t * 120) % (s.h + 200)) - 100;
-    const grd = ctx.createLinearGradient(0, scanY - 40, 0, scanY + 40);
-    grd.addColorStop(0, 'rgba(239,43,58,0)');
-    grd.addColorStop(0.5, 'rgba(239,43,58,0.18)');
-    grd.addColorStop(1, 'rgba(239,43,58,0)');
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, scanY - 40, s.w, 80);
   }, [enabled, accent]);
 
   return <canvas ref={ref} className="bg-canvas" aria-hidden />;
