@@ -209,7 +209,7 @@ export function Videos({ videos: propVideos }) {
           ) : (
             <>
               {curId
-                ? <SmartThumb id={curId} thumb={cur.thumb} />
+                ? <SmartThumb key={curId} id={curId} thumb={cur.thumb} />
                 : <div className="screen" style={{
                     background:
                       'radial-gradient(circle at 30% 40%, rgba(239,43,58,0.15), transparent 50%),' +
@@ -243,12 +243,12 @@ export function Videos({ videos: propVideos }) {
             const vId = getYTId(v.url);
             return (
             <button
-              key={i}
+              key={vId || String(i)}
               className={`video-thumb ${active === i ? 'active' : ''}`}
               onClick={() => setActive(i)}
               style={{ background: 'transparent', padding: 0 }}>
               {vId
-                ? <SmartThumb id={vId} thumb={v.thumb} />
+                ? <SmartThumb key={vId} id={vId} thumb={v.thumb} />
                 : <div className="img" style={{
                     background:
                       `radial-gradient(circle at ${20 + i * 13}% ${30 + i * 11}%, rgba(239,43,58,0.2), transparent 60%),` +
