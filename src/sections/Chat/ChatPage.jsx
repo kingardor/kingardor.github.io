@@ -342,8 +342,7 @@ function LoadingBubble({ toolStatus, thinking }) {
 function ChatHeader({ loading }) {
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50"
-      style={{ paddingTop: '1rem', paddingBottom: '0.5rem' }}
+      style={{ flexShrink: 0, paddingTop: '1rem', paddingBottom: '0.5rem', position: 'relative', zIndex: 10 }}
       data-no-transition
     >
       <div className="mx-auto max-w-3xl px-4">
@@ -415,15 +414,9 @@ function ChatHeader({ loading }) {
 function InputBar({ value, onChange, onSubmit, loading, onStop }) {
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-40 pointer-events-none"
-      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 1.25rem)' }}
+      style={{ flexShrink: 0, paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)', paddingTop: '0.5rem', position: 'relative', zIndex: 10 }}
     >
-      {/* Fade scrim above input */}
-      <div
-        className="absolute inset-x-0 -top-20 h-20"
-        style={{ background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.55))' }}
-      />
-      <div className="mx-auto max-w-3xl px-4 pointer-events-auto">
+      <div className="mx-auto max-w-3xl px-4">
         <form onSubmit={onSubmit}>
           <div
             className="nm-bar relative flex items-center gap-3 px-4 py-3"
@@ -512,16 +505,21 @@ export default function ChatPage() {
   const lastSeedRef = React.useRef('')
   const seededOnceRef = React.useRef(false)
   const endRef = React.useRef(null)
+  const scrollAreaRef = React.useRef(null)
+
+  const scrollToBottom = React.useCallback(() => {
+    const el = scrollAreaRef.current
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }, [])
 
   React.useEffect(() => {
     try { sessionStorage.setItem(HISTORY_KEY, JSON.stringify(messages)) } catch {}
-    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
-  }, [messages])
+    scrollToBottom()
+  }, [messages, scrollToBottom])
 
-  // Scroll when loading starts (shows the typing indicator)
   React.useEffect(() => {
-    if (loading) endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
-  }, [loading])
+    if (loading) scrollToBottom()
+  }, [loading, scrollToBottom])
 
   const stop = React.useCallback(() => {
     try { streamRef.current?.close?.() } catch {}
@@ -611,65 +609,65 @@ export default function ChatPage() {
   const isEmpty = messages.length === 0
 
   return (
-    <div className="min-h-screen" style={{ background: 'transparent', color: 'var(--nm-text)' }}>
+    <div style={{ height: '100svh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'transparent', color: 'var(--nm-text)', position: 'relative' }}>
       {/* Reactive galaxy background */}
       <ChatBackground chaos={loading} />
 
-      {/* Dim overlay — keeps text legible over the particle field */}
+      {/* Dim overlay */}
       <div
         aria-hidden="true"
         style={{
-          position: 'fixed', inset: 0, zIndex: 2,
+          position: 'absolute', inset: 0, zIndex: 1,
           pointerEvents: 'none',
           background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.38) 50%, rgba(0,0,0,0.65) 100%)',
         }}
       />
 
-      <ChatHeader loading={loading} />
+      <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <ChatHeader loading={loading} />
 
-      {/* Message area */}
-      <div
-        className="mx-auto max-w-3xl px-4"
-        style={{
-          position: 'relative', zIndex: 3,
-          paddingTop: 'calc(4.5rem + 1rem)',   /* clear fixed header */
-          paddingBottom: '7rem',                /* clear fixed input */
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        {isEmpty ? (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <EmptyState onSuggest={q => send(q)} />
+        {/* Scrollable message area */}
+        <div
+          ref={scrollAreaRef}
+          style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
+        >
+          <div
+            className="mx-auto max-w-3xl px-4 py-4"
+            style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}
+          >
+            {isEmpty ? (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <EmptyState onSuggest={q => send(q)} />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                <AnimatePresence initial={false}>
+                  {messages.map((m, i) =>
+                    m.role === 'user'
+                      ? <UserMessage key={i} content={m.content} />
+                      : <AIMessage
+                          key={i}
+                          content={m.content}
+                          thinking={m.thinking}
+                          blocks={m.blocks}
+                        />
+                  )}
+                  {loading && <LoadingBubble key="loading" toolStatus={toolStatus} thinking={liveThinking} />}
+                </AnimatePresence>
+                <div ref={endRef} style={{ height: 1 }} />
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            <AnimatePresence initial={false}>
-              {messages.map((m, i) =>
-                m.role === 'user'
-                  ? <UserMessage key={i} content={m.content} />
-                  : <AIMessage
-                      key={i}
-                      content={m.content}
-                      thinking={m.thinking}
-                      blocks={m.blocks}
-                    />
-              )}
-              {loading && <LoadingBubble key="loading" toolStatus={toolStatus} thinking={liveThinking} />}
-            </AnimatePresence>
-            <div ref={endRef} style={{ height: 1 }} />
-          </div>
-        )}
+        </div>
+
+        <InputBar
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onSubmit={e => { e.preventDefault(); send(input) }}
+          loading={loading}
+          onStop={stop}
+        />
       </div>
-
-      <InputBar
-        value={input}
-        onChange={e => setInput(e.target.value)}
-        onSubmit={e => { e.preventDefault(); send(input) }}
-        loading={loading}
-        onStop={stop}
-      />
     </div>
   )
 }
