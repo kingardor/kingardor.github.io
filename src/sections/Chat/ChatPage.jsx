@@ -626,9 +626,11 @@ export default function ChatPage() {
       <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
         <ChatHeader loading={loading} />
 
-        {/* Scrollable message area — min-height:0 is required for overflow-y:auto to activate in a flex column */}
+        {/* Scrollable message area — min-height:0 required for overflow-y:auto in flex column;
+            data-lenis-prevent stops Lenis intercepting wheel/trackpad events on this element */}
         <div
           ref={scrollAreaRef}
+          data-lenis-prevent
           style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}
         >
           <div
