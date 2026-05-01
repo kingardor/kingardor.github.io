@@ -626,10 +626,10 @@ export default function ChatPage() {
       <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
         <ChatHeader loading={loading} />
 
-        {/* Scrollable message area */}
+        {/* Scrollable message area — min-height:0 is required for overflow-y:auto to activate in a flex column */}
         <div
           ref={scrollAreaRef}
-          style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
+          style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}
         >
           <div
             className="mx-auto max-w-3xl px-4 py-4"
