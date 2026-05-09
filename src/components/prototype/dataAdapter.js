@@ -133,8 +133,8 @@ export const DATA = {
   ],
 
   skillsSentence:
-    'I architect in PyTorch and TensorRT, orchestrate agents with CrewAI and LangGraph, run agentic RAG over Qdrant, push inference through DeepStream on Jetson hardware, fine-tune with LoRA, and have strong opinions about quantization.',
-  keyWords: ['PyTorch', 'TensorRT', 'CrewAI', 'LangGraph', 'Qdrant', 'DeepStream', 'LoRA'],
+    'My work spans the full stack — vision pipelines squeezed to int8 with TensorRT and DeepStream on Jetson hardware, multi-agent systems wired through CrewAI and LangGraph, hybrid RAG indexed in Qdrant, models adapted with LoRA, and inference APIs shipped through FastAPI. The tool is always secondary to whether it hits prod.',
+  keyWords: ['TensorRT', 'DeepStream', 'Jetson', 'CrewAI', 'LangGraph', 'Qdrant', 'LoRA', 'FastAPI'],
 
   skillGroups: [
     { idx: '01', name: 'Vision & Edge',  items: ['DeepStream', 'TensorRT', 'OpenCV', 'ONNX', 'CUDA', 'Jetson'],     huge: 'V' },
