@@ -89,7 +89,7 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
   };
   const renderWord = (word, startDelay, cls = '') => (
     <span className={`word ${cls}`}>
-      {[...word].map((c, i) => <AnimChar key={i} ch={c} delay={startDelay + i * 40} />)}
+      {[...word].map((c, i) => <AnimChar key={i} ch={c} delay={startDelay + i * 22} />)}
     </span>
   );
 
@@ -101,7 +101,7 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       <div className="wrap hero-content">
         <h1 className="hero-name">
           <span className="line">{renderWord('AKASH', 200)}</span>
-          <span className="line red">{renderWord('JAMES', 700)}</span>
+          <span className="line red">{renderWord('JAMES', 420)}</span>
         </h1>
         <div className="hero-meta">
           <p className="hero-tag reveal in d3">
@@ -164,7 +164,7 @@ export function Manifesto() {
         </div>
         <div className="manifesto-stats">
           {DATA.stats.map((s, i) => (
-            <div className="stat reveal" key={i} style={{ transitionDelay: `${i * 80}ms` }}>
+            <div className="stat reveal" key={i} style={{ transitionDelay: `${i * 40}ms` }}>
               <div className="stat-num">{s.num}</div>
               <div className="stat-label">{s.label}</div>
               <div className="stat-sub">{s.sub}</div>

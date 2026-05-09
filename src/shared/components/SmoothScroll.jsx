@@ -14,10 +14,9 @@ export function LenisProvider({ children }) {
 
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: isMobile ? 0 : 0.1,
-      duration: isMobile ? 0 : 1.2,
-      smoothWheel: !isMobile,
-      smoothTouch: false,  // Never override native touch momentum
+      lerp: 1,
+      smoothWheel: false,
+      smoothTouch: false,
       orientation: 'vertical',
       gestureOrientation: 'vertical',
     })

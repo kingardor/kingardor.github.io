@@ -296,13 +296,13 @@ section { position: relative; }
 .rule { height: 1px; background: var(--line); width: 100%; }
 
 /* ── Reveal utility ── */
-.reveal { opacity: 0; transform: translateY(30px); transition: opacity .9s ease, transform .9s cubic-bezier(.22,1,.36,1); }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity .5s ease, transform .5s cubic-bezier(.22,1,.36,1); }
 .reveal.in { opacity: 1; transform: translateY(0); }
-.reveal.d1 { transition-delay: 0.08s; }
-.reveal.d2 { transition-delay: 0.16s; }
-.reveal.d3 { transition-delay: 0.24s; }
-.reveal.d4 { transition-delay: 0.32s; }
-.reveal.d5 { transition-delay: 0.4s; }
+.reveal.d1 { transition-delay: 0.05s; }
+.reveal.d2 { transition-delay: 0.10s; }
+.reveal.d3 { transition-delay: 0.15s; }
+.reveal.d4 { transition-delay: 0.20s; }
+.reveal.d5 { transition-delay: 0.25s; }
 
 /* ── Boot sequence ── */
 .boot {
@@ -412,7 +412,7 @@ section { position: relative; }
 .hero-name .ch {
   display: inline-block;
   transform: translateY(110%);
-  animation: charRise 1s cubic-bezier(.22,1,.36,1) forwards;
+  animation: charRise 0.65s cubic-bezier(.22,1,.36,1) forwards;
 }
 .hero-name .red .ch {
   color: var(--accent);

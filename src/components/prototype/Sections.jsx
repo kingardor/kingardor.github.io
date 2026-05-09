@@ -113,7 +113,7 @@ export function Skills() {
         </p>
         <div className="skills-grid">
           {DATA.skillGroups.map((g, i) => (
-            <div className="skill-cell reveal" key={i} style={{ transitionDelay: `${i * 80}ms` }}>
+            <div className="skill-cell reveal" key={i} style={{ transitionDelay: `${i * 40}ms` }}>
               <div className="bar" />
               <div className="idx">GRP · {g.idx}</div>
               <div className="name">{g.name}</div>
@@ -152,7 +152,7 @@ export function Projects({ projects: propProjects }) {
                target={p.href && !p.href.startsWith('#') ? '_blank' : undefined}
                rel={p.href && !p.href.startsWith('#') ? 'noreferrer' : undefined}
                onClick={!p.href || p.href === '#' ? e => e.preventDefault() : undefined}
-               style={{ transitionDelay: `${i * 60}ms` }}>
+               style={{ transitionDelay: `${i * 32}ms` }}>
               <div className="code">{p.code}{p.feature && ' · FEATURED'}</div>
               <div className="name">{p.name}</div>
               {p.feature && (
@@ -279,7 +279,7 @@ export function Writing() {
                target={w.href ? '_blank' : undefined}
                rel={w.href ? 'noreferrer' : undefined}
                onClick={!w.href ? e => e.preventDefault() : undefined}
-               style={{ transitionDelay: `${i * 50}ms` }}>
+               style={{ transitionDelay: `${i * 28}ms` }}>
               <span className="idx">#{w.idx}</span>
               <span className="title-line">{w.title}</span>
               <span className="go">{w.tag} <span>→</span></span>
@@ -304,7 +304,7 @@ export function Honours() {
             const Tag = h.href ? 'a' : 'div';
             const linkProps = h.href ? { href: h.href, target: '_blank', rel: 'noreferrer' } : {};
             return (
-              <Tag className="honour reveal hot" key={i} style={{ transitionDelay: `${i * 60}ms` }} {...linkProps}>
+              <Tag className="honour reveal hot" key={i} style={{ transitionDelay: `${i * 32}ms` }} {...linkProps}>
                 <div className="sigil"><span className="star">★</span></div>
                 <div className="body">
                   <div className="k">{h.k}</div>
