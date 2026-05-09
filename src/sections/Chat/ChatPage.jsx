@@ -570,9 +570,7 @@ export default function ChatPage() {
         setLoading(false)
         setToolStatus(null)
         setLiveThinking('')
-        setChatPhase('complete')
-        clearTimeout(phaseTimerRef.current)
-        phaseTimerRef.current = setTimeout(() => setChatPhase('idle'), 1800)
+        setChatPhase('idle')
         const { content, thinking, blocks } = pendingRef.current
         // Single newlines between word chars are streaming token-boundary artifacts — normalise to space.
         // Double newlines (paragraph breaks) and list markers are unaffected because \w never matches '-'/'*'/'#'.
