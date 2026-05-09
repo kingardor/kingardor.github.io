@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { DATA } from './dataAdapter.js';
 import { DataRainBG, AuroraBG } from './Backgrounds.jsx';
 
@@ -319,25 +319,139 @@ export function Honours() {
   );
 }
 
-export function Transmission({ onAsk, bg = { aurora: true }, accent = '#ef2b3a' }) {
+/* ── ScrambleText: scrambles into final text when trigger fires ── */
+function ScrambleText({ text, className, trigger }) {
+  const [display, setDisplay] = useState(text);
+  const fired = useRef(false);
+  useEffect(() => {
+    if (!trigger || fired.current) return;
+    fired.current = true;
+    const CHARS = '!<>[]{}—_*#$@/\\?ABCDEFGHIJKLMNOPQRSTUVWXYZ01';
+    let frame = 0;
+    const STEPS = 22;
+    const tick = () => {
+      setDisplay(
+        text.split('').map((ch, i) => {
+          if (ch === ' ' || ch === '.') return ch;
+          if (i < Math.floor((frame / STEPS) * text.length * 1.4)) return ch;
+          return CHARS[Math.floor(Math.random() * CHARS.length)];
+        }).join('')
+      );
+      frame++;
+      if (frame <= STEPS) requestAnimationFrame(tick);
+      else setDisplay(text);
+    };
+    const id = setTimeout(() => requestAnimationFrame(tick), 300);
+    return () => clearTimeout(id);
+  }, [trigger, text]);
+  return <span className={className}>{display}</span>;
+}
+
+/* ── TypewriterKicker: types text when visible ── */
+function TypewriterKicker({ text }) {
+  const [display, setDisplay] = useState('');
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let timer;
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      let i = 0;
+      timer = setInterval(() => {
+        setDisplay(text.slice(0, i + 1));
+        i++;
+        if (i >= text.length) clearInterval(timer);
+      }, 38);
+    }, { threshold: 0.3 });
+    io.observe(el);
+    return () => { io.disconnect(); clearInterval(timer); };
+  }, [text]);
+  return <span ref={ref}>{display}<span className="cursor-blink">▌</span></span>;
+}
+
+/* ── MagneticButton: element follows cursor on hover ── */
+function MagneticButton({ tag: Tag = 'a', children, className, style, ...props }) {
+  const ref = useRef(null);
+  const onMove = (e) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const dx = (e.clientX - (r.left + r.width / 2)) * 0.32;
+    const dy = (e.clientY - (r.top + r.height / 2)) * 0.32;
+    el.style.transform = `translate(${dx}px, ${dy}px)`;
+  };
+  const onLeave = () => { if (ref.current) ref.current.style.transform = ''; };
   return (
-    <section className="transmission" id="contact" data-screen-label="09 Contact">
+    <Tag ref={ref} className={className} style={{ transition: 'transform 0.4s cubic-bezier(.22,1,.36,1)', ...style }}
+      onMouseMove={onMove} onMouseLeave={onLeave} {...props}>
+      {children}
+    </Tag>
+  );
+}
+
+/* ── ClickSpark: burst of particles on click ── */
+function ClickSpark({ children, className, ...props }) {
+  const ref = useRef(null);
+  const spark = (e) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('span');
+      p.className = 'spark-particle';
+      const angle = (i / 8) * 360;
+      p.style.cssText = `left:${x}px;top:${y}px;--angle:${angle}deg`;
+      el.appendChild(p);
+      setTimeout(() => p.remove(), 600);
+    }
+    props.onClick?.(e);
+  };
+  return (
+    <div ref={ref} className={`spark-host ${className || ''}`} style={{ position: 'relative', display: 'inline-flex' }}>
+      {React.cloneElement(children, { onClick: spark })}
+    </div>
+  );
+}
+
+export function Transmission({ onAsk, bg = { aurora: true }, accent = '#ef2b3a' }) {
+  const [visible, setVisible] = useState(false);
+  const sectionRef = useRef(null);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); io.disconnect(); }
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="transmission" id="contact" data-screen-label="09 Contact">
       {bg.aurora && <AuroraBG accent={accent} />}
       <div className="wrap transmission-inner">
-        <div className="label reveal">ESTABLISHING TRANSMISSION</div>
+        <div className="label reveal">
+          <TypewriterKicker text="ESTABLISHING TRANSMISSION" />
+        </div>
         <h2 className="headline reveal d1">
           Let's build<br/>something<br/>
-          <span className="red">outrageous.</span>
+          <ScrambleText text="outrageous." className="red" trigger={visible} />
         </h2>
-        <div className="reveal d2" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a className="cta hot" href={`mailto:${DATA.contactEmail}`}>
-            <span>OPEN CHANNEL</span>
-            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 11L11 3M11 3H5M11 3V9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="square" fill="none"/></svg>
-          </a>
-          <button className="cta hot" onClick={onAsk}
+        <div className="reveal d2" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+          <ClickSpark>
+            <MagneticButton tag="a" className="cta hot" href={`mailto:${DATA.contactEmail}`}>
+              <span>OPEN CHANNEL</span>
+              <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 11L11 3M11 3H5M11 3V9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="square" fill="none"/></svg>
+            </MagneticButton>
+          </ClickSpark>
+          <MagneticButton tag="button" className="cta ghost hot" onClick={onAsk}
             style={{ background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink)', boxShadow: 'none' }}>
             <span>OR ASK VERONICA</span>
-          </button>
+          </MagneticButton>
         </div>
         <div className="socials reveal d3">
           {DATA.socials.map((s, i) => (

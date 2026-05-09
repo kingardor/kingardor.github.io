@@ -98,12 +98,12 @@ const socials = [
 export const DATA = {
   profile: {
     name: 'AKASH JAMES',
-    role: 'AI ARCHITECT · DIRECTOR OF AI',
-    org: NOW_ROLES[0]?.org || 'MyBlue.ai',
-    location: 'SAN FRANCISCO, CA', // TODO: confirm location
-    tz: 'PST · UTC-8',             // TODO: confirm timezone
-    status: 'OPEN TO OUTRAGEOUS WORK', // TODO: confirm status line
-    tagline: 'Vision, voice, language — at scale, on the edge, and everywhere in between.', // TODO: confirm tagline
+    role: 'AI ARCHITECT · FOUNDING DIRECTOR @ BLUE',
+    org: NOW_ROLES[0]?.org || 'BLUE',
+    location: 'BENGALURU, INDIA',
+    tz: 'IST · UTC+5:30',
+    status: 'OPEN TO OUTRAGEOUS WORK',
+    tagline: 'GPU to prod. Agents that close loops. Vision at the edge and everywhere in between.',
   },
 
   contactEmail: 'akashjamesofficial@gmail.com',
@@ -117,35 +117,30 @@ export const DATA = {
     { num: '∞',   label: 'COFFEE UNITS',     sub: 'Required fuel' },
   ],
 
-  // TODO: rewrite manifesto in Akash's own voice before shipping
   manifesto: [
-    { txt: 'I design AI' },
-    { txt: 'that behaves' },
-    { txt: 'less like a feature' },
-    { txt: 'and more like' },
-    { txt: 'a collaborator', accent: true },
-    { txt: '—' },
-    { txt: 'systems that reason,' },
-    { txt: 'that watch,' },
-    { txt: 'that listen,' },
-    { txt: 'that decide.' },
+    { txt: 'I build AI' },
+    { txt: 'that ships.' },
+    { txt: 'Not demos—' },
+    { txt: 'production systems', accent: true },
+    { txt: 'that hit the latency target,' },
+    { txt: 'that scale,' },
+    { txt: 'that earn revenue.' },
     { txt: 'Eight years' },
-    { txt: 'teaching machines' },
-    { txt: 'to see the world', accent: true },
-    { txt: 'and occasionally' },
-    { txt: 'to talk back.' },
+    { txt: 'on GPUs,' },
+    { txt: 'on Jetson hardware,' },
+    { txt: 'on the bleeding edge', accent: true },
+    { txt: 'of what\'s possible.' },
   ],
 
-  // TODO: confirm skillsSentence and keyWords
   skillsSentence:
-    'I work primarily in PyTorch and TensorRT, ship agents with LangGraph and DSPy, index reality in Qdrant, stream inference through DeepStream, squeeze models with CUDA, and let Claude do the typing.',
-  keyWords: ['PyTorch', 'TensorRT', 'LangGraph', 'DSPy', 'Qdrant', 'DeepStream', 'CUDA', 'Claude'],
+    'I architect in PyTorch and TensorRT, orchestrate agents with CrewAI and LangGraph, run agentic RAG over Qdrant, push inference through DeepStream on Jetson hardware, fine-tune with LoRA, and have strong opinions about quantization.',
+  keyWords: ['PyTorch', 'TensorRT', 'CrewAI', 'LangGraph', 'Qdrant', 'DeepStream', 'LoRA'],
 
   skillGroups: [
-    { idx: '01', name: 'Vision & Edge',  items: ['DeepStream', 'TensorRT', 'Triton', 'ONNX', 'OpenCV', 'CUDA'],     huge: 'V' },
-    { idx: '02', name: 'Agents & LLMs',  items: ['LangGraph', 'DSPy', 'OpenRouter', 'vLLM', 'RAG', 'Tool Use'],      huge: 'A' },
-    { idx: '03', name: 'Modeling',       items: ['PyTorch', 'TensorFlow', 'JAX', 'Transformers', 'Diffusion', 'RL'], huge: 'M' },
-    { idx: '04', name: 'Infra',          items: ['AWS', 'GCP', 'Kubernetes', 'FastAPI', 'Qdrant', 'Redis'],          huge: 'I' },
+    { idx: '01', name: 'Vision & Edge',  items: ['DeepStream', 'TensorRT', 'OpenCV', 'ONNX', 'CUDA', 'Jetson'],     huge: 'V' },
+    { idx: '02', name: 'Agents & LLMs',  items: ['CrewAI', 'LangGraph', 'LoRA', 'RAG', 'OpenRouter', 'Tool Use'],   huge: 'A' },
+    { idx: '03', name: 'Modeling',       items: ['PyTorch', 'TensorFlow', 'Transformers', 'Diffusion', 'JAX', 'RL'], huge: 'M' },
+    { idx: '04', name: 'Infra',          items: ['FastAPI', 'Docker', 'Qdrant', 'Redis', 'AWS', 'Kubernetes'],       huge: 'I' },
   ],
 
   career,

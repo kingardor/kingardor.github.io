@@ -1316,7 +1316,22 @@ section { position: relative; }
   letter-spacing: -0.05em;
   margin: 0 0 40px;
 }
-.transmission .headline .red { color: var(--accent); }
+.transmission .headline .red {
+  color: var(--accent);
+  display: inline-block;
+  position: relative;
+}
+.transmission .headline:hover .red {
+  animation: glitchWord 0.4s ease forwards;
+}
+@keyframes glitchWord {
+  0%   { text-shadow: none; transform: none; }
+  15%  { text-shadow: 3px 0 #0ff, -3px 0 #f0f; transform: skewX(-4deg); }
+  30%  { text-shadow: -2px 0 #0ff, 2px 0 #f0f; transform: skewX(3deg); }
+  50%  { text-shadow: 2px 2px #f0f; transform: skewX(-2deg); }
+  70%  { text-shadow: -1px 0 #0ff; transform: none; }
+  100% { text-shadow: none; transform: none; }
+}
 .transmission .cta {
   display: inline-flex; align-items: center; gap: 14px;
   padding: 18px 32px;
@@ -1325,10 +1340,33 @@ section { position: relative; }
   font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em;
   font-weight: 700;
   border-radius: 4px;
-  box-shadow: 0 0 40px rgba(239,43,58,0.4);
-  transition: transform 0.2s ease;
+  box-shadow: 0 0 40px rgba(239,43,58,0.4), 0 0 80px rgba(239,43,58,0.15);
+  cursor: pointer;
 }
-.transmission .cta:hover { transform: scale(1.03); }
+.transmission .cta.ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  box-shadow: none;
+}
+.transmission .cta.ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Click spark particles ── */
+.spark-host { overflow: visible !important; }
+.spark-particle {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: sparkFly 0.55s ease-out forwards;
+  --angle: 0deg;
+}
+@keyframes sparkFly {
+  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-48px); }
+}
 .transmission .socials {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
   margin-top: 40px;
