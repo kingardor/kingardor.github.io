@@ -345,13 +345,13 @@ section { position: relative; }
   position: relative;
   min-height: 100svh;
   overflow: hidden;
-  display: flex; flex-direction: column; justify-content: flex-end;
+  display: flex; flex-direction: column; justify-content: center;
 }
 .hero-photo {
   position: absolute; inset: 0;
   background-image: url('/hero.webp');
   background-size: cover;
-  background-position: 22% 18%;
+  background-position: center 18%;
   filter: brightness(0.5) saturate(0.75) contrast(1.1);
   z-index: 0;
   transform: scale(1.02);
@@ -378,9 +378,9 @@ section { position: relative; }
 
 .hero-content {
   position: relative; z-index: 3;
-  padding: 0 0 clamp(100px, 14vh, 160px);
-  text-align: left;
-  display: flex; flex-direction: column; align-items: flex-start;
+  padding: clamp(60px, 10vh, 120px) 0 clamp(60px, 10vh, 120px);
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
 }
 .hero-status {
   display: flex; align-items: center; gap: 14px;
@@ -441,9 +441,9 @@ section { position: relative; }
   font-family: var(--body);
   font-size: clamp(14px, 1.5vw, 18px);
   line-height: 1.4;
-  max-width: 480px;
+  max-width: 560px;
   color: var(--muted);
-  text-align: left;
+  text-align: center;
 }
 .hero-tag strong { color: var(--ink); font-weight: 600; }
 
@@ -517,7 +517,7 @@ section { position: relative; }
 .hero-chat-corner.br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 .hero-chat-label {
   font-family: var(--mono); font-size: 9px; letter-spacing: 0.32em;
-  color: var(--accent); margin-bottom: 0; text-align: left;
+  color: var(--accent); margin-bottom: 0; text-align: center;
   padding: 10px 20px 0;
   opacity: 0.8;
 }
