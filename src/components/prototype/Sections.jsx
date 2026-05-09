@@ -417,6 +417,21 @@ function ClickSpark({ children, className, ...props }) {
   );
 }
 
+function OrbVisual() {
+  return (
+    <div className="orb-container" aria-hidden>
+      <div className="orb-ring orb-ring-3" />
+      <div className="orb-ring orb-ring-2" />
+      <div className="orb-ring orb-ring-1" />
+      <div className="orb-core" />
+      <span className="orb-data orb-data-1">GPU → PROD</span>
+      <span className="orb-data orb-data-2">8 YRS</span>
+      <span className="orb-data orb-data-3">3 PLATFORMS</span>
+      <span className="orb-data orb-data-4">1 EXIT</span>
+    </div>
+  );
+}
+
 export function Transmission({ onAsk, bg = { aurora: true }, accent = '#ef2b3a' }) {
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
@@ -433,34 +448,39 @@ export function Transmission({ onAsk, bg = { aurora: true }, accent = '#ef2b3a' 
   return (
     <section ref={sectionRef} className="transmission" id="contact" data-screen-label="09 Contact">
       {bg.aurora && <AuroraBG accent={accent} />}
-      <div className="wrap transmission-inner">
-        <div className="label reveal">
-          <TypewriterKicker text="ESTABLISHING TRANSMISSION" />
-        </div>
-        <h2 className="headline reveal d1">
-          Let's build<br/>something<br/>
-          <ScrambleText text="outrageous." className="red" trigger={visible} />
-        </h2>
-        <div className="reveal d2" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
-          <ClickSpark>
-            <MagneticButton tag="a" className="cta hot" href={`mailto:${DATA.contactEmail}`}>
-              <span>OPEN CHANNEL</span>
-              <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 11L11 3M11 3H5M11 3V9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="square" fill="none"/></svg>
+      <div className="wrap transmission-split">
+        <div className="transmission-left">
+          <div className="label reveal">
+            <TypewriterKicker text="ESTABLISHING TRANSMISSION" />
+          </div>
+          <h2 className="headline reveal d1">
+            Let's build<br/>something<br/>
+            <ScrambleText text="outrageous." className="red" trigger={visible} />
+          </h2>
+          <div className="cta-row reveal d2">
+            <ClickSpark>
+              <MagneticButton tag="a" className="cta hot" href={`mailto:${DATA.contactEmail}`}>
+                <span>OPEN CHANNEL</span>
+                <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 11L11 3M11 3H5M11 3V9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="square" fill="none"/></svg>
+              </MagneticButton>
+            </ClickSpark>
+            <MagneticButton tag="button" className="cta ghost hot" onClick={onAsk}
+              style={{ background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink)', boxShadow: 'none' }}>
+              <span>OR ASK VERONICA</span>
             </MagneticButton>
-          </ClickSpark>
-          <MagneticButton tag="button" className="cta ghost hot" onClick={onAsk}
-            style={{ background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink)', boxShadow: 'none' }}>
-            <span>OR ASK VERONICA</span>
-          </MagneticButton>
+          </div>
+          <div className="socials reveal d3">
+            {DATA.socials.map((s, i) => (
+              <a key={i}
+                 href={s.href || '#'}
+                 target={s.href && !s.href.startsWith('mailto') ? '_blank' : undefined}
+                 rel={s.href && !s.href.startsWith('mailto') ? 'noreferrer' : undefined}
+                 className="hot">{s.k} · {s.v}</a>
+            ))}
+          </div>
         </div>
-        <div className="socials reveal d3">
-          {DATA.socials.map((s, i) => (
-            <a key={i}
-               href={s.href || '#'}
-               target={s.href && !s.href.startsWith('mailto') ? '_blank' : undefined}
-               rel={s.href && !s.href.startsWith('mailto') ? 'noreferrer' : undefined}
-               className="hot">{s.k} · {s.v}</a>
-          ))}
+        <div className="transmission-right reveal d2">
+          <OrbVisual />
         </div>
       </div>
       <footer>

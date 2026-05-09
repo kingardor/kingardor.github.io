@@ -133,8 +133,8 @@ export const DATA = {
   ],
 
   skillsSentence:
-    'My work spans the full stack — vision pipelines squeezed to int8 with TensorRT and DeepStream on Jetson hardware, multi-agent systems wired through CrewAI and LangGraph, hybrid RAG indexed in Qdrant, models adapted with LoRA, and inference APIs shipped through FastAPI. The tool is always secondary to whether it hits prod.',
-  keyWords: ['TensorRT', 'DeepStream', 'Jetson', 'CrewAI', 'LangGraph', 'Qdrant', 'LoRA', 'FastAPI'],
+    "The tool is a detail. The outcome isn't. I architect the fastest path from concept to production AI — quantised vision models on Jetson edge hardware, agentic orchestration that closes loops without a human in the chain, hybrid RAG pipelines that retrieve at scale. Eight years on GPUs. Three platforms built from scratch. One acquisition. Now Founding Director at BLUE, operating at altitude. The bar hasn't moved: it ships, it scales, it earns.",
+  keyWords: ['Jetson', 'RAG', 'GPUs', 'BLUE'],
 
   skillGroups: [
     { idx: '01', name: 'Vision & Edge',  items: ['DeepStream', 'TensorRT', 'OpenCV', 'ONNX', 'CUDA', 'Jetson'],     huge: 'V' },

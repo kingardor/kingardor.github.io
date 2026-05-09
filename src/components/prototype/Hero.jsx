@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { DATA } from './dataAdapter.js';
 import { GridMeshBG } from './Backgrounds.jsx';
 import { CHAT_SUGGESTIONS } from '../../data.js';
+import { ElectricBorder } from './ElectricBorder.jsx';
 
 const SEED_KEY = 'chat:seed';
 
@@ -112,8 +113,14 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       </div>
       <button className="hero-scroll hot" onClick={scrollTo('manifesto')}
         style={{ background: 'transparent', border: 'none', color: 'inherit' }}>
-        SCROLL
-        <span className="line" />
+        <div className="scroll-sonar">
+          <div className="scroll-ring" />
+          <div className="scroll-ring" />
+          <div className="scroll-ring" />
+          <div className="scroll-dot" />
+        </div>
+        <div className="scroll-stem" />
+        <span className="scroll-label">SCROLL</span>
       </button>
     </section>
   );
@@ -163,13 +170,28 @@ export function Manifesto() {
           ))}
         </div>
         <div className="manifesto-stats">
-          {DATA.stats.map((s, i) => (
-            <div className="stat reveal" key={i} style={{ transitionDelay: `${i * 40}ms` }}>
-              <div className="stat-num">{s.num}</div>
-              <div className="stat-label">{s.label}</div>
-              <div className="stat-sub">{s.sub}</div>
-            </div>
-          ))}
+          {DATA.stats.map((s, i) => {
+            const isCoffee = s.label === 'COFFEE UNITS';
+            if (isCoffee) {
+              return (
+                <ElectricBorder key={i} color="#f59e0b" borderRadius={8} speed={0.9} chaos={0.1}
+                  className="reveal" style={{ transitionDelay: `${i * 40}ms` }}>
+                  <div className="stat" style={{ '--stat-accent': '#f59e0b', borderTop: 'none' }}>
+                    <div className="stat-num">{s.num}</div>
+                    <div className="stat-label">{s.label}</div>
+                    <div className="stat-sub">{s.sub}</div>
+                  </div>
+                </ElectricBorder>
+              );
+            }
+            return (
+              <div className="stat reveal" key={i} style={{ transitionDelay: `${i * 40}ms` }}>
+                <div className="stat-num">{s.num}</div>
+                <div className="stat-label">{s.label}</div>
+                <div className="stat-sub">{s.sub}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
