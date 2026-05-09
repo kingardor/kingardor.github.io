@@ -128,20 +128,10 @@ function EmptyState({ onSuggest }) {
   return (
     <motion.div
       className="flex flex-col items-center justify-center h-full py-12 text-center px-6"
-      style={{ position: 'relative' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Entropy background */}
-      <motion.div
-        style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden', opacity: 0 }}
-        animate={{ opacity: 0.13 }}
-        transition={{ delay: 1, duration: 2 }}
-      >
-        <Entropy size={520} orderColor="#ffffff" chaosColor="#ef2b3a" />
-      </motion.div>
-
       {/* Sigil */}
       <motion.div
         initial={{ scale: 0.7, opacity: 0 }}
@@ -620,6 +610,11 @@ export default function ChatPage() {
 
   return (
     <div style={{ height: '100svh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'transparent', color: 'var(--nm-text)', position: 'relative' }}>
+      {/* Entropy neural-net background — always visible regardless of message state */}
+      <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden', opacity: 0.28 }}>
+        <Entropy size={700} orderColor="#ffffff" chaosColor="#ef2b3a" />
+      </div>
+
       {/* Dim overlay */}
       <div
         aria-hidden="true"
