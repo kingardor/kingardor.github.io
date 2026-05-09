@@ -345,13 +345,13 @@ section { position: relative; }
   position: relative;
   min-height: 100svh;
   overflow: hidden;
-  display: flex; flex-direction: column; justify-content: center;
+  display: flex; flex-direction: column; justify-content: flex-end;
 }
 .hero-photo {
   position: absolute; inset: 0;
   background-image: url('/hero.webp');
   background-size: cover;
-  background-position: center 18%;
+  background-position: 58% 18%;
   filter: brightness(0.5) saturate(0.75) contrast(1.1);
   z-index: 0;
   transform: scale(1.02);
@@ -359,8 +359,8 @@ section { position: relative; }
 .hero-photo::after {
   content: ''; position: absolute; inset: 0;
   background:
-    linear-gradient(to bottom, rgba(10,10,13,0.2) 0%, rgba(10,10,13,0.6) 55%, rgba(10,10,13,1) 100%),
-    linear-gradient(to right, rgba(10,10,13,0.6), transparent 30%, transparent 70%, rgba(10,10,13,0.6));
+    linear-gradient(to bottom, rgba(10,10,13,0.15) 0%, rgba(10,10,13,0.5) 50%, rgba(10,10,13,0.95) 85%, rgba(10,10,13,1) 100%),
+    linear-gradient(to right, rgba(10,10,13,0.92) 0%, rgba(10,10,13,0.65) 32%, rgba(10,10,13,0.1) 55%, transparent 68%, rgba(10,10,13,0.25) 100%);
 }
 .hero-scan {
   position: absolute; left: 0; right: 0;
@@ -378,9 +378,9 @@ section { position: relative; }
 
 .hero-content {
   position: relative; z-index: 3;
-  padding: clamp(60px, 10vh, 120px) 0 clamp(60px, 10vh, 120px);
-  text-align: center;
-  display: flex; flex-direction: column; align-items: center;
+  padding: 0 0 clamp(100px, 14vh, 160px);
+  text-align: left;
+  display: flex; flex-direction: column; align-items: flex-start;
 }
 .hero-status {
   display: flex; align-items: center; gap: 14px;
@@ -441,9 +441,9 @@ section { position: relative; }
   font-family: var(--body);
   font-size: clamp(14px, 1.5vw, 18px);
   line-height: 1.4;
-  max-width: 560px;
+  max-width: 480px;
   color: var(--muted);
-  text-align: center;
+  text-align: left;
 }
 .hero-tag strong { color: var(--ink); font-weight: 600; }
 
@@ -517,7 +517,7 @@ section { position: relative; }
 .hero-chat-corner.br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 .hero-chat-label {
   font-family: var(--mono); font-size: 9px; letter-spacing: 0.32em;
-  color: var(--accent); margin-bottom: 0; text-align: center;
+  color: var(--accent); margin-bottom: 0; text-align: left;
   padding: 10px 20px 0;
   opacity: 0.8;
 }
