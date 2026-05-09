@@ -1,7 +1,13 @@
 import { useEffect, useRef } from 'react';
 
-export function Entropy({ className = '', size = 400, orderColor = '#ffffff', chaosColor = '#ef2b3a' }) {
+const N = 85; // particle count
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+export function Entropy({ phase = 'idle' }) {
   const canvasRef = useRef(null);
+  const phaseRef = useRef(phase);
+
+  useEffect(() => { phaseRef.current = phase; }, [phase]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -9,116 +15,121 @@ export function Entropy({ className = '', size = 400, orderColor = '#ffffff', ch
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-    canvas.style.width = `${size}px`;
-    canvas.style.height = `${size}px`;
-    ctx.scale(dpr, dpr);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let W = window.innerWidth, H = window.innerHeight;
 
-    class Particle {
-      constructor(x, y, order) {
-        this.x = x; this.y = y;
-        this.originalX = x; this.originalY = y;
-        this.size = 2;
-        this.order = order;
-        this.velocity = { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 };
-        this.influence = 0;
-        this.neighbors = [];
+    const setupCanvas = () => {
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = `${W}px`; canvas.style.height = `${H}px`;
+    };
+    setupCanvas();
+    window.addEventListener('resize', setupCanvas);
+
+    // Scatter particles across the full viewport
+    const pts = Array.from({ length: N }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      r: 1.5 + Math.random() * 1.5,
+    }));
+
+    // Smooth state floats — driven by phaseRef, no React re-renders
+    let energy = 0;    // 0=idle  →  1=loading
+    let errLvl = 0;    // 0=white →  1=all-red, frozen
+    let flash = 0;     // complete flash level (1→0)
+    let lastPhase = phase;
+    let raf;
+
+    const tick = () => {
+      const p = phaseRef.current;
+
+      // Detect phase transitions
+      if (p !== lastPhase) {
+        if (p === 'complete') flash = 1; // trigger big-connect flash
+        lastPhase = p;
       }
 
-      update() {
-        if (this.order) {
-          const dx = this.originalX - this.x, dy = this.originalY - this.y;
-          const ci = { x: 0, y: 0 };
-          this.neighbors.forEach(n => {
-            if (!n.order) {
-              const dist = Math.hypot(this.x - n.x, this.y - n.y);
-              const s = Math.max(0, 1 - dist / 100);
-              ci.x += n.velocity.x * s; ci.y += n.velocity.y * s;
-              this.influence = Math.max(this.influence, s);
-            }
-          });
-          this.x += dx * 0.05 * (1 - this.influence) + ci.x * this.influence;
-          this.y += dy * 0.05 * (1 - this.influence) + ci.y * this.influence;
-          this.influence *= 0.99;
+      // Interpolate state values toward targets
+      energy = lerp(energy, p === 'loading' ? 1 : 0, p === 'loading' ? 0.055 : 0.018);
+      errLvl = lerp(errLvl, p === 'error' ? 1 : 0, p === 'error' ? 0.032 : 0.02);
+      if (flash > 0.004) flash = lerp(flash, 0, 0.038); else flash = 0;
+
+      // ── Canvas setup ──
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+
+      // ── Update particles ──
+      const maxSpd = lerp(0.45, 3.2, energy);
+      const turb   = lerp(0.008, 0.22, energy);
+
+      pts.forEach(pt => {
+        if (errLvl > 0.05) {
+          // Decelerate to freeze in error
+          pt.vx *= (1 - 0.05 * errLvl);
+          pt.vy *= (1 - 0.05 * errLvl);
         } else {
-          this.velocity.x += (Math.random() - 0.5) * 0.5;
-          this.velocity.y += (Math.random() - 0.5) * 0.5;
-          this.velocity.x *= 0.95; this.velocity.y *= 0.95;
-          this.x += this.velocity.x; this.y += this.velocity.y;
-          if (this.x < size / 2 || this.x > size) this.velocity.x *= -1;
-          if (this.y < 0 || this.y > size) this.velocity.y *= -1;
-          this.x = Math.max(size / 2, Math.min(size, this.x));
-          this.y = Math.max(0, Math.min(size, this.y));
+          pt.vx += (Math.random() - 0.5) * turb;
+          pt.vy += (Math.random() - 0.5) * turb;
+          const spd = Math.hypot(pt.vx, pt.vy);
+          if (spd > maxSpd) { pt.vx *= maxSpd / spd; pt.vy *= maxSpd / spd; }
+        }
+        pt.x += pt.vx; pt.y += pt.vy;
+        // wrap edges
+        if (pt.x < -20) pt.x = W + 20; else if (pt.x > W + 20) pt.x = -20;
+        if (pt.y < -20) pt.y = H + 20; else if (pt.y > H + 20) pt.y = -20;
+      });
+
+      // ── Draw connections ──
+      const base      = lerp(90, 185, energy);
+      const threshold = base + flash * 900; // complete flash reaches everywhere
+      const maxAlpha  = lerp(0.11, 0.6, energy) + flash * 0.4;
+      const lw        = lerp(0.5, 1.4, energy) + flash * 1.2;
+
+      // Precompute per-frame color channel values (errorLvl is constant across a frame)
+      const cG  = Math.round(lerp(255, 43,  errLvl));
+      const cB  = Math.round(lerp(255, 58,  errLvl));
+
+      ctx.lineWidth = lw;
+      for (let i = 0; i < N - 1; i++) {
+        const a = pts[i];
+        for (let j = i + 1; j < N; j++) {
+          const b = pts[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 >= threshold * threshold) continue;
+          const d = Math.sqrt(d2);
+          const alpha = maxAlpha * (1 - d / threshold);
+          ctx.strokeStyle = `rgba(255,${cG},${cB},${alpha.toFixed(3)})`;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
 
-      draw() {
-        const alpha = this.order ? 0.8 - this.influence * 0.5 : 0.8;
-        const color = this.order ? orderColor : chaosColor;
-        const hex = Math.round(alpha * 255).toString(16).padStart(2, '0');
-        ctx.fillStyle = `${color}${hex}`;
+      // ── Draw particles ──
+      const ptAlpha = lerp(0.45, 1.0, energy) + flash * 0.05;
+      pts.forEach(pt => {
+        ctx.fillStyle = `rgba(255,${cG},${cB},${ptAlpha.toFixed(3)})`;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(pt.x, pt.y, pt.r + flash * 2, 0, Math.PI * 2);
         ctx.fill();
-      }
-    }
-
-    const gridSize = 25, spacing = size / gridSize;
-    const particles = [];
-    for (let i = 0; i < gridSize; i++) {
-      for (let j = 0; j < gridSize; j++) {
-        const x = spacing * i + spacing / 2, y = spacing * j + spacing / 2;
-        particles.push(new Particle(x, y, x < size / 2));
-      }
-    }
-
-    const updateNeighbors = () => {
-      particles.forEach(p => {
-        p.neighbors = particles.filter(o => o !== p && Math.hypot(p.x - o.x, p.y - o.y) < 100);
-      });
-    };
-    updateNeighbors();
-
-    let time = 0, animId;
-    const animate = () => {
-      ctx.clearRect(0, 0, size, size);
-      if (time % 30 === 0) updateNeighbors();
-
-      particles.forEach(p => {
-        p.update(); p.draw();
-        p.neighbors.forEach(n => {
-          const d = Math.hypot(p.x - n.x, p.y - n.y);
-          if (d < 50) {
-            const alpha = 0.18 * (1 - d / 50);
-            const hex = Math.round(alpha * 255).toString(16).padStart(2, '0');
-            ctx.strokeStyle = `#ffffff${hex}`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(n.x, n.y); ctx.stroke();
-          }
-        });
       });
 
-      // divider line
-      ctx.strokeStyle = '#ffffff20';
-      ctx.lineWidth = 0.5;
-      ctx.beginPath(); ctx.moveTo(size / 2, 0); ctx.lineTo(size / 2, size); ctx.stroke();
-
-      time++;
-      animId = requestAnimationFrame(animate);
+      raf = requestAnimationFrame(tick);
     };
-    animate();
 
-    return () => cancelAnimationFrame(animId);
-  }, [size, orderColor, chaosColor]);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', setupCanvas);
+    };
+  }, []); // runs once — phaseRef keeps it live
 
   return (
-    <div className={className} style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
-      <canvas
-        ref={canvasRef}
-        style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}
+    />
   );
 }

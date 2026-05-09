@@ -500,6 +500,8 @@ export default function ChatPage() {
   const [loading, setLoading] = React.useState(false)
   const [toolStatus, setToolStatus] = React.useState(null)
   const [liveThinking, setLiveThinking] = React.useState('')
+  const [chatPhase, setChatPhase] = React.useState('idle')
+  const phaseTimerRef = React.useRef(null)
   const streamRef = React.useRef(null)
   const pendingRef = React.useRef({ content: '', thinking: '', blocks: [] })
   const lastSeedRef = React.useRef('')
@@ -539,6 +541,8 @@ export default function ChatPage() {
     if (!skipAppendUser) appendUser(q)
     setInput('')
     setLoading(true)
+    clearTimeout(phaseTimerRef.current)
+    setChatPhase('loading')
     setToolStatus(null)
     setLiveThinking('')
     // Reset buffer — accumulate silently, render only on done
@@ -566,13 +570,22 @@ export default function ChatPage() {
         setLoading(false)
         setToolStatus(null)
         setLiveThinking('')
+        setChatPhase('complete')
+        clearTimeout(phaseTimerRef.current)
+        phaseTimerRef.current = setTimeout(() => setChatPhase('idle'), 1800)
         const { content, thinking, blocks } = pendingRef.current
         // Single newlines between word chars are streaming token-boundary artifacts — normalise to space.
         // Double newlines (paragraph breaks) and list markers are unaffected because \w never matches '-'/'*'/'#'.
         const normalised = content.replace(/(\w)\n(\w)/g, '$1 $2')
         setMessages(m => [...m, { role: 'model', content: normalised, thinking, blocks }])
       },
-      onError: () => { streamRef.current = null; setLoading(false); setToolStatus(null); setLiveThinking('') },
+      onError: () => {
+        streamRef.current = null
+        setLoading(false)
+        setToolStatus(null)
+        setLiveThinking('')
+        setChatPhase('error')
+      },
     })
     streamRef.current = handle
   }, [loading, messages, stop])
@@ -605,15 +618,14 @@ export default function ChatPage() {
   }, [seedFromAny])
 
   React.useEffect(() => () => { try { streamRef.current?.close?.() } catch {} }, [])
+  React.useEffect(() => () => clearTimeout(phaseTimerRef.current), [])
 
   const isEmpty = messages.length === 0
 
   return (
     <div style={{ height: '100svh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'transparent', color: 'var(--nm-text)', position: 'relative' }}>
-      {/* Entropy neural-net background — always visible regardless of message state */}
-      <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden', opacity: 0.28 }}>
-        <Entropy size={700} orderColor="#ffffff" chaosColor="#ef2b3a" />
-      </div>
+      {/* Neural-net background — full-screen, phase-reactive */}
+      <Entropy phase={chatPhase} />
 
       {/* Dim overlay */}
       <div
