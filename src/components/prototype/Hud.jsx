@@ -32,9 +32,10 @@ export function Hud() {
 }
 
 export function Reticle() {
+  const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
   const ref = useRef(null);
   useEffect(() => {
-    if (window.matchMedia('(max-width: 900px)').matches) return;
+    if (isTouch) return;
     const el = ref.current;
     if (!el) return;
     let raf;
@@ -63,6 +64,7 @@ export function Reticle() {
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);
+  if (isTouch) return null;
   return (
     <div ref={ref} className="reticle" aria-hidden>
       <span className="ring" />

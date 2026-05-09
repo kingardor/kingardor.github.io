@@ -112,7 +112,8 @@ export const DATA = {
   stats: [
     { num: '8+',  label: 'YEARS IN AI',      sub: 'Vision, NLP, agentic systems' },
     { num: '50+', label: 'SHIPPED MODELS',   sub: 'Prod-grade, not demos' },
-    { num: '3',   label: 'ECOSYSTEMS',       sub: 'NVIDIA · HF · OpenRouter' },
+    { num: '3',   label: 'PLATFORMS BUILT',   sub: 'IRIS · VAIA · myBLUE' },
+    { num: '1',   label: 'ACQUISITION',      sub: 'Exit achieved' },
     { num: '∞',   label: 'COFFEE UNITS',     sub: 'Required fuel' },
   ],
 
