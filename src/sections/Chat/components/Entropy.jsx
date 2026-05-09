@@ -1,15 +1,16 @@
 import { useEffect, useRef } from 'react';
 
-const N = 200;
-const SYNAPSE_PX = 130; // blue synapse zone width behind each wavefront
-const CYCLE_S   = 5.5;  // seconds for one full sweep cycle (idle)
+const N           = 200;
+const SYNAPSE_PX  = 140;  // blue trailing zone behind wavefront
+const SWEEP_S     = 5.0;  // seconds to sweep from edges to centre (idle speed)
+const HOLD_S      = 0.5;  // seconds to hold full connection after complete
+const FADE_S      = 1.4;  // seconds to dissolve connections back to idle
 
 function lerp(a, b, t) { return a + (b - a) * t; }
 
 export function Entropy({ phase = 'idle' }) {
   const canvasRef = useRef(null);
   const phaseRef  = useRef(phase);
-
   useEffect(() => { phaseRef.current = phase; }, [phase]);
 
   useEffect(() => {
@@ -23,62 +24,99 @@ export function Entropy({ phase = 'idle' }) {
 
     const setupCanvas = () => {
       W = window.innerWidth; H = window.innerHeight;
-      canvas.width  = W * dpr; canvas.height = H * dpr;
-      canvas.style.width  = `${W}px`; canvas.style.height = `${H}px`;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = `${W}px`; canvas.style.height = `${H}px`;
     };
     setupCanvas();
     window.addEventListener('resize', setupCanvas);
 
+    // Particles
     const pts = Array.from({ length: N }, () => ({
-      x:  Math.random() * W,
-      y:  Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      r:  1.2 + Math.random() * 1.2,
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+      r: 1.2 + Math.random() * 1.2,
+      flash: 0, flashDir: 0, // random idle spark
     }));
 
-    let energy  = 0;   // 0=idle → 1=loading
-    let errLvl  = 0;   // 0=normal → 1=full-red, frozen
-    let sweep   = 0;   // 0 → 1, repeating
-    let lastT   = performance.now();
+    // ── Internal state machine ──────────────────────────────────────────────
+    // mode: 'idle' | 'sweeping' | 'completing' | 'fading'
+    let mode       = 'idle';
+    let sweep      = 0;      // 0→1 (0=edges, 1=centre met)
+    let compTimer  = 0;      // time spent in completing/fading
+    let energy     = 0;      // 0=idle speed → 1=loading speed (particle movement)
+    let errLvl     = 0;
+    let prevPhase  = phase;
+    let lastT      = performance.now();
     let raf;
 
     const tick = (now) => {
-      const dt = Math.min((now - lastT) / 1000, 0.05); // seconds, capped
+      const dt = Math.min((now - lastT) / 1000, 0.05);
       lastT = now;
 
-      const p         = phaseRef.current;
-      const isLoading = p === 'loading';
-      const isError   = p === 'error';
+      const p       = phaseRef.current;
+      const isError = p === 'error';
 
-      energy = lerp(energy, isLoading ? 1 : 0, isLoading ? 0.055 : 0.018);
-      errLvl = lerp(errLvl, isError   ? 1 : 0, isError   ? 0.032 : 0.02);
-
-      // Sweep advances faster during loading (2× speed)
-      if (!isError) {
-        const sweepRate = lerp(1 / CYCLE_S, 2 / CYCLE_S, energy);
-        sweep += sweepRate * dt;
-        if (sweep >= 1) sweep -= 1; // loop
+      // ── Phase transitions ─────────────────────────────────────────────────
+      if (p !== prevPhase) {
+        if (p === 'loading') {
+          mode = 'sweeping'; sweep = 0; compTimer = 0;
+        } else if (prevPhase === 'loading' && !isError) {
+          // complete or idle after loading → snap to center then fade
+          mode = 'completing'; sweep = 1; compTimer = 0;
+        }
+        prevPhase = p;
       }
 
-      // Wavefront positions: left starts at 0→W/2, right at W→W/2
-      const leftFront  = sweep * (W / 2);
-      const rightFront = W - sweep * (W / 2);
+      // ── Mode progression ──────────────────────────────────────────────────
+      if (mode === 'sweeping') {
+        sweep = Math.min(sweep + dt / SWEEP_S, 1);
+        // if loading ended (detected above), completing takes over next tick
+      } else if (mode === 'completing') {
+        compTimer += dt;
+        if (compTimer >= HOLD_S) { mode = 'fading'; compTimer = 0; }
+      } else if (mode === 'fading') {
+        compTimer += dt;
+        if (compTimer >= FADE_S) { mode = 'idle'; sweep = 0; compTimer = 0; }
+      }
 
-      // Fade-in ramp: avoids hard flash when sweep resets (first 8% of cycle)
-      const fadeIn = Math.min(sweep / 0.08, 1);
+      // Fade multiplier for dissolving connections
+      const connOpacity = mode === 'fading'
+        ? 1 - compTimer / FADE_S
+        : (mode === 'completing' || mode === 'sweeping') ? 1 : 0;
+
+      // Lerp energy (particle speed) toward target
+      energy = lerp(energy, p === 'loading' ? 1 : 0, p === 'loading' ? 0.05 : 0.02);
+      errLvl = lerp(errLvl, isError ? 1 : 0, isError ? 0.032 : 0.02);
+
+      const errG = Math.round(lerp(255, 43,  errLvl));
+      const errB = Math.round(lerp(255, 58,  errLvl));
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, H);
 
-      // ── Update particles ──────────────────────────────────────────────────
-      const maxSpd = lerp(0.4, 3.0, energy);
-      const turb   = lerp(0.007, 0.20, energy);
-
+      // ── Random idle sparks ────────────────────────────────────────────────
+      if (mode === 'idle' && !isError) {
+        if (Math.random() < 0.05) {
+          const idx = Math.floor(Math.random() * N);
+          if (pts[idx].flash <= 0.05) { pts[idx].flash = 0.01; pts[idx].flashDir = 1; }
+        }
+      }
       pts.forEach(pt => {
-        if (errLvl > 0.05) {
-          pt.vx *= 1 - 0.05 * errLvl;
-          pt.vy *= 1 - 0.05 * errLvl;
+        if (pt.flashDir === 1) {
+          pt.flash += dt * 4;       // rise in ~0.25s
+          if (pt.flash >= 1) pt.flashDir = -1;
+        } else if (pt.flash > 0) {
+          pt.flash -= dt * 2;       // fade in ~0.5s
+          if (pt.flash < 0) pt.flash = 0;
+        }
+      });
+
+      // ── Update particle positions ─────────────────────────────────────────
+      const maxSpd = lerp(0.5, 3.0, energy);
+      const turb   = lerp(0.01, 0.22, energy);
+      pts.forEach(pt => {
+        if (isError && errLvl > 0.05) {
+          pt.vx *= 1 - 0.04 * errLvl; pt.vy *= 1 - 0.04 * errLvl;
         } else {
           pt.vx += (Math.random() - 0.5) * turb;
           pt.vy += (Math.random() - 0.5) * turb;
@@ -90,100 +128,102 @@ export function Entropy({ phase = 'idle' }) {
         if (pt.y < -20) pt.y = H + 20; else if (pt.y > H + 20) pt.y = -20;
       });
 
-      // ── Draw connections ──────────────────────────────────────────────────
-      const thresh     = lerp(80, 160, energy);
-      const maxConnAlpha = lerp(0.18, 0.60, energy) * fadeIn;
-      const lw         = lerp(0.5, 1.3, energy);
-      const errG = Math.round(lerp(255, 43, errLvl));
-      const errB = Math.round(lerp(255, 58, errLvl));
+      // ── Draw connections (only when sweeping / completing / fading) ───────
+      if (connOpacity > 0.005) {
+        const leftFront  = sweep * (W / 2);
+        const rightFront = W - sweep * (W / 2);
+        const thresh     = 130;
+        const maxA       = 0.50 * connOpacity;
 
-      ctx.lineWidth = lw;
+        ctx.lineWidth = 0.7;
+        for (let i = 0; i < N - 1; i++) {
+          const a = pts[i];
+          for (let j = i + 1; j < N; j++) {
+            const b = pts[j];
+            const dx = a.x - b.x, dy = a.y - b.y;
+            if (dx*dx + dy*dy >= thresh*thresh) continue;
+            const midX = (a.x + b.x) / 2;
+            const fromL = midX < leftFront;
+            const fromR = midX > rightFront;
+            if (!fromL && !fromR) continue;
+            const d     = Math.sqrt(dx*dx + dy*dy);
+            const baseA = maxA * (1 - d / thresh);
 
-      for (let i = 0; i < N - 1; i++) {
-        const a = pts[i];
-        for (let j = i + 1; j < N; j++) {
-          const b = pts[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 >= thresh * thresh) continue;
+            // Distance behind nearest wavefront
+            let behind = fromL ? leftFront - midX : midX - rightFront;
+            if (fromL && fromR) behind = Math.min(leftFront - midX, midX - rightFront);
 
-          const midX = (a.x + b.x) / 2;
-          const fromLeft  = midX < leftFront;
-          const fromRight = midX > rightFront;
-          if (!fromLeft && !fromRight) continue; // not yet swept — skip
-
-          const d     = Math.sqrt(d2);
-          const baseA = maxConnAlpha * (1 - d / thresh);
-
-          // Distance behind the nearest wavefront
-          let behind = Infinity;
-          if (fromLeft)  behind = Math.min(behind, leftFront  - midX);
-          if (fromRight) behind = Math.min(behind, midX - rightFront);
-
-          if (!isError && behind < SYNAPSE_PX) {
-            // ── Blue synapse zone ──────────────────────────
-            const t  = 1 - behind / SYNAPSE_PX; // 1=at front, 0=trailing edge
-            const sR = Math.round(lerp(255, 30,  t));
-            const sG = Math.round(lerp(255, 220, t));
-            const sB = Math.round(lerp(255, 255, t));
-            const sA = (baseA * (0.7 + t * 0.3)).toFixed(3);
-            ctx.strokeStyle = `rgba(${sR},${sG},${sB},${sA})`;
-          } else {
-            // ── Settled connection ─────────────────────────
-            ctx.strokeStyle = `rgba(255,${errG},${errB},${baseA.toFixed(3)})`;
+            if (!isError && mode === 'sweeping' && behind < SYNAPSE_PX) {
+              const t  = 1 - behind / SYNAPSE_PX;
+              const sR = Math.round(lerp(255, 30,  t));
+              const sG = Math.round(lerp(255, 220, t));
+              const sB = Math.round(lerp(255, 255, t));
+              ctx.strokeStyle = `rgba(${sR},${sG},${sB},${(baseA * (0.7 + t * 0.3)).toFixed(3)})`;
+            } else {
+              ctx.strokeStyle = `rgba(255,${errG},${errB},${baseA.toFixed(3)})`;
+            }
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
           }
-
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
 
       // ── Draw particles ────────────────────────────────────────────────────
+      const leftFront  = sweep * (W / 2);
+      const rightFront = W - sweep * (W / 2);
+
       pts.forEach(pt => {
-        const fromLeft  = pt.x < leftFront;
-        const fromRight = pt.x > rightFront;
-        const activated = fromLeft || fromRight;
+        let pR = 255, pG = errG, pB = errB;
+        let pA = 0.38;
+        let r  = pt.r;
 
-        if (!activated) {
-          // Pre-sweep: dim ghost dot
-          ctx.fillStyle = `rgba(255,255,255,${(0.18 * fadeIn).toFixed(3)})`;
-          ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.r * 0.7, 0, Math.PI * 2); ctx.fill();
-          return;
-        }
+        if (mode === 'idle' && !isError && pt.flash > 0) {
+          // ── Idle synapse spark ──────────────────────────────────────────
+          pR = Math.round(lerp(255, 30,  pt.flash));
+          pG = Math.round(lerp(255, 220, pt.flash));
+          pB = Math.round(lerp(255, 255, pt.flash));
+          pA = lerp(0.42, 1.0, pt.flash);
+          r  = pt.r + pt.flash * 2;
 
-        let behind = Infinity;
-        if (fromLeft)  behind = Math.min(behind, leftFront  - pt.x);
-        if (fromRight) behind = Math.min(behind, pt.x - rightFront);
+        } else if (connOpacity > 0.005 && !isError) {
+          // ── Sweep / complete / fading ───────────────────────────────────
+          const fromL = pt.x < leftFront;
+          const fromR = pt.x > rightFront;
 
-        if (!isError && behind < SYNAPSE_PX) {
-          const t  = 1 - behind / SYNAPSE_PX;
-          const pR = Math.round(lerp(255, 30,  t));
-          const pG = Math.round(lerp(255, 220, t));
-          const pB = Math.round(lerp(255, 255, t));
-          const pA = (lerp(0.55, 1.0, energy) + t * 0.25).toFixed(3);
-          ctx.fillStyle = `rgba(${pR},${pG},${pB},${pA})`;
-          ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.r + t * 1.5, 0, Math.PI * 2); ctx.fill();
+          if (!fromL && !fromR) {
+            pA = 0.18; // ghost dot ahead of wavefront
+          } else {
+            let behind = fromL ? leftFront - pt.x : pt.x - rightFront;
+            if (fromL && fromR) behind = Math.min(leftFront - pt.x, pt.x - rightFront);
+
+            if (mode === 'sweeping' && behind < SYNAPSE_PX) {
+              const t = 1 - behind / SYNAPSE_PX;
+              pR = Math.round(lerp(255, 30,  t));
+              pG = Math.round(lerp(255, 220, t));
+              pB = Math.round(lerp(255, 255, t));
+              pA = lerp(0.55, 1.0, t);
+              r  = pt.r + t * 1.5;
+            } else {
+              pA = 0.80 * connOpacity; // settled: bright while connected, fades with opacity
+            }
+          }
         } else {
-          const pA = (lerp(0.42, 0.92, energy) * fadeIn).toFixed(3);
-          ctx.fillStyle = `rgba(255,${errG},${errB},${pA})`;
-          ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2); ctx.fill();
+          // Normal idle dot (no flash)
+          pA = 0.38;
         }
+
+        ctx.fillStyle = `rgba(${pR},${pG},${pB},${Math.max(0, pA).toFixed(3)})`;
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, r, 0, Math.PI * 2); ctx.fill();
       });
 
       raf = requestAnimationFrame(tick);
     };
 
     raf = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', setupCanvas);
-    };
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', setupCanvas); };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}
-    />
+    <canvas ref={canvasRef} aria-hidden="true"
+      style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }} />
   );
 }
