@@ -11,7 +11,6 @@ import ChatBlocks    from './blocks/ChatBlocks'
 import { Entropy }   from './components/Entropy'
 
 const API_BASE = 'https://veronica-proxy-vercel.vercel.app'
-const HISTORY_KEY = 'chat:history:v1'
 const SEED_KEY = 'chat:seed'
 const MAX_TURNS = 10
 
@@ -26,13 +25,6 @@ const TOOL_STATUS_LABELS = {
 }
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
-function isHardReload() {
-  try {
-    const nav = performance.getEntriesByType?.('navigation')?.[0]
-    if (nav) return nav.type === 'reload'
-    return performance.navigation && performance.navigation.type === 1
-  } catch { return false }
-}
 function prepareHistory(history) {
   const arr = Array.isArray(history) ? history : []
   // Strip blocks and thinking — only prose content goes to API
@@ -490,12 +482,7 @@ function InputBar({ value, onChange, onSubmit, loading, onStop }) {
 
 /* ─── Main page ──────────────────────────────────────────────────────────── */
 export default function ChatPage() {
-  const [messages, setMessages] = React.useState(() => {
-    try {
-      if (isHardReload()) { sessionStorage.removeItem(HISTORY_KEY); sessionStorage.removeItem(SEED_KEY) }
-      return JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]')
-    } catch { return [] }
-  })
+  const [messages, setMessages] = React.useState([])
   const [input, setInput] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [toolStatus, setToolStatus] = React.useState(null)
@@ -515,7 +502,6 @@ export default function ChatPage() {
   }, [])
 
   React.useEffect(() => {
-    try { sessionStorage.setItem(HISTORY_KEY, JSON.stringify(messages)) } catch {}
     scrollToBottom()
   }, [messages, scrollToBottom])
 
