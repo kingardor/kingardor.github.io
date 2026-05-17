@@ -82,6 +82,10 @@ try {
   // Log page errors as warnings (non-fatal)
   page.on('pageerror', err => console.warn('  ⚠️  page error (non-fatal):', err.message.slice(0, 120)))
 
+  // Tell main.jsx not to dismiss the loader during prerender so the snapshot
+  // always includes the #loader div. Real browsers never have this flag set.
+  await page.evaluateOnNewDocument(() => { window.__PRERENDER = true })
+
   // Use 'load' (not 'networkidle0') so we don't wait for YouTube/GitHub/CounterAPI
   // calls, which can take 2–3 s and push us past the loader's 1700 ms minimum
   await page.goto(`http://127.0.0.1:${PORT}/`, {

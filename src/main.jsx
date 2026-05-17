@@ -31,7 +31,10 @@ if (isPrerendered) {
   createRoot(rootEl).render(app)
 }
 
-if (loader) {
+// Skip loader dismissal during build-time prerender so the snapshot includes the
+// loader div. window.__PRERENDER is injected by prerender.mjs via evaluateOnNewDocument
+// and is never present in real browsers.
+if (loader && !window.__PRERENDER) {
   const elapsed = Date.now() - (window.__LOADER_START ?? Date.now())
   const remaining = Math.max(0, MIN_MS - elapsed)
   setTimeout(() => {
