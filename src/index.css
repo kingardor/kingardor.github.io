@@ -608,12 +608,13 @@ section { position: relative; }
 }
 .marquee-track {
   display: flex; gap: 60px;
-  animation: marqueeRun 40s linear infinite;
+  animation: marqueeRun 25s linear infinite; /* fallback for reduced-motion / no-JS */
   white-space: nowrap;
   font-family: var(--display);
   font-weight: 900;
   font-size: clamp(24px, 4vw, 48px);
   letter-spacing: -0.02em;
+  will-change: transform;
 }
 .marquee-item {
   display: inline-flex; align-items: center; gap: 60px;
@@ -624,7 +625,8 @@ section { position: relative; }
   background: var(--accent);
   box-shadow: 0 0 14px var(--accent);
 }
-.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee { cursor: grab; user-select: none; }
+.marquee:active { cursor: grabbing; }
 @keyframes marqueeRun {
   to { transform: translateX(-50%); }
 }

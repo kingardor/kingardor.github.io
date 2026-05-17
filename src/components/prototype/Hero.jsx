@@ -145,13 +145,69 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
 }
 
 export function Marquee() {
+  const trackRef = useRef(null);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const BASE = 1.4;  // px/frame base speed (~84 px/s at 60 fps)
+    const MAX  = 8;    // cap on swipe-added velocity
+    const FRIC = 0.88; // velocity decay per frame
+
+    let pos = 0, vel = 0, raf, halfW = 0;
+    const measure = () => { halfW = track.scrollWidth / 2; };
+    measure();
+
+    track.style.animation = 'none'; // JS owns the motion now
+
+    raf = requestAnimationFrame(function tick() {
+      pos -= Math.max(0, BASE + vel);
+      if (pos <= -halfW) pos += halfW;
+      track.style.transform = `translateX(${pos}px)`;
+      vel *= FRIC;
+      if (Math.abs(vel) < 0.02) vel = 0;
+      raf = requestAnimationFrame(tick);
+    });
+
+    // Pointer/touch tracking — swipe left boosts speed, swipe right slows it
+    let px = 0, pt = 0, active = false;
+    const onDown  = (e) => { active = true; px = e.clientX; pt = performance.now(); };
+    const onMove  = (e) => {
+      if (!active) return;
+      const now = performance.now(), dt = now - pt;
+      if (dt < 2) return;
+      vel = Math.max(-MAX, Math.min(MAX, -(e.clientX - px) / dt * 16));
+      px = e.clientX; pt = now;
+    };
+    const onUp = () => { active = false; };
+
+    const el = track.parentElement;
+    el.addEventListener('pointerdown', onDown);
+    el.addEventListener('pointermove', onMove, { passive: true });
+    el.addEventListener('pointerup',    onUp);
+    el.addEventListener('pointerleave', onUp);
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(track);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener('pointerdown', onDown);
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerup',    onUp);
+      el.removeEventListener('pointerleave', onUp);
+      ro.disconnect();
+    };
+  }, []);
+
   const items = ['AGENTS', 'MULTIMODAL', 'VISION', 'EDGE', 'CUDA', 'AGENTS', 'LLMS', 'DEEPSTREAM', 'RAG', 'JETSON', 'TENSORRT'];
   const line = items.map((t, i) => (
     <span key={i} className="marquee-item">{t}<span className="sep" /></span>
   ));
   return (
     <div className="marquee">
-      <div className="marquee-track">
+      <div className="marquee-track" ref={trackRef}>
         {line}{line}
       </div>
     </div>
