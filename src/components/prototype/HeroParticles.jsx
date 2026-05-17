@@ -58,7 +58,7 @@ export default function HeroParticles({ onAssembled }) {
     // Three-tier sampling: xs → fewer particles for low-end phones
     const xs     = window.matchMedia('(max-width: 480px)').matches;
     const mobile = !xs && window.matchMedia('(max-width: 768px)').matches;
-    const [sw, sh] = xs ? [160, 120] : mobile ? [200, 150] : [320, 240];
+    const [sw, sh] = xs ? [60, 45] : mobile ? [80, 60] : [120, 90];
 
     let particleData = null;
     let imageReady = false;
@@ -171,7 +171,7 @@ export default function HeroParticles({ onAssembled }) {
       pts[o + 2] = x;
       pts[o + 3] = y;
       ctx.fillStyle = cols[i];
-      ctx.fillRect(x, y, 1.5, 1.5);
+      ctx.fillRect(x, y, 4, 4);
     }
 
     // Fire both at rt=1.5 so photo fades IN while canvas fades OUT simultaneously
