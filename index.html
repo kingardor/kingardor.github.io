@@ -33,10 +33,11 @@
     <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/cool.svg" />
 
-    <!-- Fonts: preconnect then load Outfit (used by loader) + JetBrains Mono -->
+    <!-- Fonts: preconnect + async load (non-render-blocking) so loader appears immediately -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@900&family=JetBrains+Mono:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@900&family=JetBrains+Mono:wght@400;500;600&display=swap" /></noscript>
 
     <!-- Preload hero image for faster LCP -->
     <link rel="preload" href="/hero.webp" as="image" />
@@ -284,7 +285,11 @@
   </head>
   <body>
     <!-- Timestamp so main.jsx can compute how long loader has been visible -->
-    <script>window.__LOADER_START = Date.now()</script>
+    <!-- pageshow reload handles bfcache restores (back nav on mobile) where loader was already removed -->
+    <script>
+      window.__LOADER_START = Date.now();
+      window.addEventListener('pageshow', function(e) { if (e.persisted) location.reload(); });
+    </script>
 
     <div id="loader" aria-hidden="true">
       <p class="loader-logo">AJ<span class="dot">.</span></p>
