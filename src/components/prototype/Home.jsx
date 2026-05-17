@@ -5,9 +5,7 @@ import { Career, Skills, Projects, Videos, Writing, Honours, Transmission } from
 import { TopNav } from './Chrome.jsx';
 import { useReveal } from './hooks.js';
 import { DATA } from './dataAdapter.js';
-import { fetchGithubProjects } from '../../shared/utils/fetchGithubProjects.js';
-
-const API_BASE = 'https://veronica-proxy-vercel.vercel.app';
+import { prefetched } from '../../shared/utils/prefetch.js';
 
 function toVideoItem(v, i) {
   if (typeof v === 'string') {
@@ -34,9 +32,9 @@ export default function Home() {
   const [videos, setVideos] = useState(null);
   useReveal();
 
-  // Fetch GitHub projects
+  // Consume pre-fetched promises kicked off in main.jsx during the loader window
   useEffect(() => {
-    fetchGithubProjects('kingardor', 6).then(repos => {
+    prefetched.github.then(repos => {
       if (!repos.length) return;
       const ghCards = repos.map((p, i) => ({
         code: `PRJ · ${String(i + 2).padStart(2, '0')}`,
@@ -45,25 +43,17 @@ export default function Home() {
         tags: p.tags.map(t => t.toUpperCase()),
         href: p.url,
       }));
-      // Keep Veronica card pinned first
       setProjects([DATA.projects[0], ...ghCards]);
     }).catch(() => {});
   }, []);
 
-  // Fetch YouTube feed via Veronica proxy
   useEffect(() => {
-    fetch(`${API_BASE}/api/youtube-feed?d=${Date.now()}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data?.items?.length) {
-          const items = data.items.map(toVideoItem);
-          setVideos({
-            featured: items[0],
-            strip: items.slice(1),
-          });
-        }
-      })
-      .catch(() => {});
+    prefetched.youtube.then(data => {
+      if (data?.items?.length) {
+        const items = data.items.map(toVideoItem);
+        setVideos({ featured: items[0], strip: items.slice(1) });
+      }
+    }).catch(() => {});
   }, []);
 
   const goChat = () => { location.hash = '/chat'; };
