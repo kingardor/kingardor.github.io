@@ -2,7 +2,7 @@ import React, { Suspense, useEffect } from 'react'
 import useHashPath from './shared/hooks/useHashPath'
 import { useLenis } from './shared/components/SmoothScroll'
 import Home from './components/prototype/Home'
-import { Reticle } from './components/prototype/Hud'
+import SplashCursor from './components/prototype/reactbits/SplashCursor'
 
 const ChatPage = React.lazy(() => import('./sections/Chat/ChatPage'))
 
@@ -82,7 +82,7 @@ export default function App() {
   if (path.startsWith('/chat')) {
     return (
       <>
-        <Reticle />
+        <SplashCursor />
         <Suspense fallback={<ChatLoader />}>
           <ChatPage />
         </Suspense>
@@ -90,5 +90,10 @@ export default function App() {
     )
   }
 
-  return <Home />
+  return (
+    <>
+      <SplashCursor />
+      <Home />
+    </>
+  )
 }

@@ -469,15 +469,6 @@ export function Transmission({ onAsk, bg = { aurora: true }, accent = '#ef2b3a' 
               <span>OR ASK VERONICA</span>
             </MagneticButton>
           </div>
-          <div className="socials reveal d3">
-            {DATA.socials.map((s, i) => (
-              <a key={i}
-                 href={s.href || '#'}
-                 target={s.href && !s.href.startsWith('mailto') ? '_blank' : undefined}
-                 rel={s.href && !s.href.startsWith('mailto') ? 'noreferrer' : undefined}
-                 className="hot">{s.k} · {s.v}</a>
-            ))}
-          </div>
         </div>
         <div className="transmission-right reveal d2">
           <OrbVisual />

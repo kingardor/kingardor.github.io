@@ -1,36 +1,40 @@
-import { useState, useEffect } from 'react';
+import { Home, ScrollText, Briefcase, Wrench, Folder as FolderIcon, Radio, Mail, MessageSquare } from 'lucide-react';
+import Dock from './reactbits/Dock.jsx';
 
 export function TopNav({ onAsk }) {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 60);
-    on();
-    window.addEventListener('scroll', on, { passive: true });
-    return () => window.removeEventListener('scroll', on);
-  }, []);
-  const links = [
-    { n: '01', t: 'MANIFESTO', id: 'manifesto' },
-    { n: '02', t: 'CAREER',    id: 'career' },
-    { n: '03', t: 'SKILLS',    id: 'skills' },
-    { n: '04', t: 'WORK',      id: 'projects' },
-    { n: '05', t: 'SIGNALS',   id: 'videos' },
-    { n: '06', t: 'CONTACT',   id: 'contact' },
-  ];
-  const jump = (id) => (e) => {
-    e.preventDefault();
+  const jump = (id) => () => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const items = [
+    { icon: <Home size={20} strokeWidth={1.75} />,          label: 'Home',         onClick: jump('top') },
+    { icon: <ScrollText size={20} strokeWidth={1.75} />,    label: 'Manifesto',    onClick: jump('manifesto') },
+    { icon: <Briefcase size={20} strokeWidth={1.75} />,     label: 'Career',       onClick: jump('career') },
+    { icon: <Wrench size={20} strokeWidth={1.75} />,        label: 'Skills',       onClick: jump('skills') },
+    { icon: <FolderIcon size={20} strokeWidth={1.75} />,    label: 'Work',         onClick: jump('projects') },
+    { icon: <Radio size={20} strokeWidth={1.75} />,         label: 'Signals',      onClick: jump('videos') },
+    { icon: <Mail size={20} strokeWidth={1.75} />,          label: 'Contact',      onClick: jump('contact') },
+    { icon: <MessageSquare size={20} strokeWidth={1.75} />, label: 'Ask Veronica', onClick: onAsk || (() => { location.hash = '/chat'; }) },
+  ];
+
   return (
-    <nav className={`top-nav ${scrolled ? 'scrolled' : ''}`}>
-      <a href="#top" className="brand hot" onClick={jump('top')}>AJ<span className="dot">.</span></a>
-      <div className="nav-links">
-        {links.map(l => (
-          <a key={l.id} href={`#${l.id}`} className="nav-link hot" onClick={jump(l.id)}>
-            <span className="n">{l.n}</span>{l.t}
-          </a>
-        ))}
-      </div>
-    </nav>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 20,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 50,
+      }}
+    >
+      <Dock
+        items={items}
+        panelHeight={46}
+        baseItemSize={32}
+        magnification={48}
+        distance={120}
+      />
+    </div>
   );
 }

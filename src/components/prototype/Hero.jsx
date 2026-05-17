@@ -3,6 +3,7 @@ import { DATA } from './dataAdapter.js';
 import { GridMeshBG } from './Backgrounds.jsx';
 import { CHAT_SUGGESTIONS } from '../../data.js';
 import { ElectricBorder } from './ElectricBorder.jsx';
+import RotatingText from './reactbits/RotatingText.jsx';
 
 const SEED_KEY = 'chat:seed';
 
@@ -98,7 +99,6 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     <section className="hero" id="top" data-screen-label="01 Hero">
       {bg.grid && <GridMeshBG accent={accent} />}
       <div className="hero-photo" />
-      <div className="hero-scan" />
       <div className="wrap hero-content">
         <h1 className="hero-name">
           <span className="line">{renderWord('AKASH', 200)}</span>
@@ -106,7 +106,22 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
         </h1>
         <div className="hero-meta">
           <p className="hero-tag reveal in d3">
-            {DATA.profile.tagline}
+            builds{' '}
+            <RotatingText
+              texts={[
+                'agents that close loops.',
+                'vision systems at the edge.',
+                'RAG pipelines that retrieve at scale.',
+                'platforms 0 → 1.',
+                'GPU stacks that ship.',
+              ]}
+              rotationInterval={3000}
+              staggerDuration={0.018}
+              staggerFrom="first"
+              splitBy="characters"
+              mainClassName="hero-rotate"
+              transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+            />
           </p>
         </div>
         <HeroChatPill />
