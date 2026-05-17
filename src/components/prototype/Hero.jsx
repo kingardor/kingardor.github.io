@@ -4,6 +4,7 @@ import { GridMeshBG } from './Backgrounds.jsx';
 import { CHAT_SUGGESTIONS } from '../../data.js';
 import { ElectricBorder } from './ElectricBorder.jsx';
 import RotatingText from './reactbits/RotatingText.jsx';
+import HeroParticles from './HeroParticles.jsx';
 
 const SEED_KEY = 'chat:seed';
 
@@ -85,6 +86,7 @@ function AnimChar({ ch, delay }) {
 }
 
 export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
+  const [assembled, setAssembled] = useState(false);
   const scrollTo = (id) => () => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -98,7 +100,8 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
   return (
     <section className="hero" id="top" data-screen-label="01 Hero">
       {bg.grid && <GridMeshBG accent={accent} />}
-      <div className="hero-photo" />
+      <HeroParticles onAssembled={() => setAssembled(true)} />
+      <div className={`hero-photo with-particles${assembled ? ' assembled' : ''}`} />
       <div className="wrap hero-content">
         <h1 className="hero-name">
           <span className="line">{renderWord('AKASH', 200)}</span>
