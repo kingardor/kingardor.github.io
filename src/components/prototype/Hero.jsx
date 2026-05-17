@@ -151,9 +151,9 @@ export function Marquee() {
     const track = trackRef.current;
     if (!track || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const BASE = 1.4;  // px/frame base speed (~84 px/s at 60 fps)
-    const MAX  = 8;    // cap on swipe-added velocity
-    const FRIC = 0.88; // velocity decay per frame
+    const BASE = 2.5;  // px/frame base speed (~150 px/s at 60 fps)
+    const MAX  = 28;   // cap on drag-added velocity
+    const FRIC = 0.93; // velocity decay per frame (after release)
 
     let pos = 0, vel = 0, raf, halfW = 0;
     const measure = () => { halfW = track.scrollWidth / 2; };
@@ -161,22 +161,26 @@ export function Marquee() {
 
     track.style.animation = 'none'; // JS owns the motion now
 
+    let active = false;
     raf = requestAnimationFrame(function tick() {
       pos -= Math.max(0, BASE + vel);
       if (pos <= -halfW) pos += halfW;
       track.style.transform = `translateX(${pos}px)`;
-      vel *= FRIC;
-      if (Math.abs(vel) < 0.02) vel = 0;
+      // Only apply friction after release — finger-down keeps exact drag speed
+      if (!active) {
+        vel *= FRIC;
+        if (Math.abs(vel) < 0.03) vel = 0;
+      }
       raf = requestAnimationFrame(tick);
     });
 
     // Pointer/touch tracking — swipe left boosts speed, swipe right slows it
-    let px = 0, pt = 0, active = false;
+    let px = 0, pt = 0;
     const onDown  = (e) => { active = true; px = e.clientX; pt = performance.now(); };
     const onMove  = (e) => {
       if (!active) return;
       const now = performance.now(), dt = now - pt;
-      if (dt < 2) return;
+      if (dt < 1) return;
       vel = Math.max(-MAX, Math.min(MAX, -(e.clientX - px) / dt * 16));
       px = e.clientX; pt = now;
     };

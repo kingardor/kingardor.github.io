@@ -608,7 +608,7 @@ section { position: relative; }
 }
 .marquee-track {
   display: flex; gap: 60px;
-  animation: marqueeRun 25s linear infinite; /* fallback for reduced-motion / no-JS */
+  animation: marqueeRun 16s linear infinite; /* fallback for reduced-motion / no-JS */
   white-space: nowrap;
   font-family: var(--display);
   font-weight: 900;
