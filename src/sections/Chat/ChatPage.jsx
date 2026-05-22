@@ -209,8 +209,8 @@ function UserMessage({ content }) {
   return (
     <motion.div
       className="flex items-end justify-end gap-2"
-      initial={{ opacity: 0, x: 20, y: 8 }}
-      animate={{ opacity: 1, x: 0, y: 0 }}
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
@@ -248,8 +248,8 @@ function AIMessage({ content, thinking, blocks }) {
   return (
     <motion.div
       className="flex items-end gap-2"
-      initial={{ opacity: 0, x: -20, y: 8 }}
-      animate={{ opacity: 1, x: 0, y: 0 }}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Avatar */}
@@ -277,6 +277,7 @@ function AIMessage({ content, thinking, blocks }) {
           lineHeight: 1.6,
           wordBreak: 'break-word',
           color: 'var(--nm-text)',
+          textShadow: '0 0 4px rgba(255,255,255,0.1), 0 0 12px rgba(220,38,38,0.15)',
           boxShadow: '4px 4px 14px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light)',
         }}
       >
@@ -290,14 +291,35 @@ function AIMessage({ content, thinking, blocks }) {
   )
 }
 
+/* ─── Tool scramble effect ─────────────────────────────────────────────────── */
+function ScrambleToolStatus({ text }) {
+  const [display, setDisplay] = React.useState(text)
+  React.useEffect(() => {
+    if (!text) return
+    const CHARS = '!<>[]{}—_*#$@/\\?ABCDEFGHIJKLMNOPQRSTUVWXYZ01'
+    let frame = 0
+    const STEPS = 12
+    const id = setInterval(() => {
+      setDisplay(text.split('').map((ch, i) => {
+        if (ch === ' ' || ch === '.') return ch
+        if (i < Math.floor((frame / STEPS) * text.length)) return ch
+        return CHARS[Math.floor(Math.random() * CHARS.length)]
+      }).join(''))
+      frame++
+      if (frame >= STEPS) { clearInterval(id); setDisplay(text) }
+    }, 40)
+    return () => clearInterval(id)
+  }, [text])
+  return <span>{display}</span>
+}
+
 /* ── Loading bubble shown while the full response is being fetched ── */
 function LoadingBubble({ toolStatus, thinking }) {
   return (
     <motion.div
       className="flex items-end gap-2"
-      initial={{ opacity: 0, x: -20, y: 8 }}
-      animate={{ opacity: 1, x: 0, y: 0 }}
-      exit={{ opacity: 0, x: -10, y: 4 }}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
@@ -323,7 +345,7 @@ function LoadingBubble({ toolStatus, thinking }) {
       >
         {thinking
           ? <ThinkingBlock text={thinking} isLive />
-          : <TypingIndicator label={toolStatus || 'COMPUTING'} />
+          : <TypingIndicator label={toolStatus ? <ScrambleToolStatus text={toolStatus} /> : 'COMPUTING'} />
         }
       </div>
     </motion.div>
@@ -498,7 +520,7 @@ export default function ChatPage() {
 
   const scrollToBottom = React.useCallback(() => {
     const el = scrollAreaRef.current
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    if (el) el.scrollTo({ top: el.scrollHeight })
   }, [])
 
   React.useEffect(() => {

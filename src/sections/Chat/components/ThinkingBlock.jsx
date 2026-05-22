@@ -44,24 +44,6 @@ export default function ThinkingBlock({ text, isLive = false }) {
             THINKING
           </span>
         </div>
-        <div
-          ref={scrollRef}
-          style={{
-            padding: '0.5rem 0.75rem',
-            background: 'var(--nm-bg)',
-            borderTop: '1px solid var(--nm-border)',
-            maxHeight: 140,
-            overflowY: 'auto',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.7rem',
-            color: 'var(--nm-text-subtle)',
-            lineHeight: 1.75,
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-          }}
-        >
-          {text}
-        </div>
       </div>
     )
   }

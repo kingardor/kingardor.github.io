@@ -904,6 +904,7 @@ section { position: relative; }
   padding: clamp(80px, 14vh, 160px) 0;
   position: relative;
   overflow: hidden;
+  container-type: inline-size;
 }
 .skills-head {
   text-align: center;
@@ -988,8 +989,8 @@ section { position: relative; }
 }
 .skill-cell:hover .bar { width: 100%; }
 
-@media (max-width: 1100px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 520px) { .skills-grid { grid-template-columns: 1fr; } }
+@container (max-width: 1100px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
+@container (max-width: 520px) { .skills-grid { grid-template-columns: 1fr; } }
 
 /* ═══════════════════════════════════════════════════════════════
    PROJECTS — mission files
@@ -998,6 +999,7 @@ section { position: relative; }
   padding: clamp(80px, 14vh, 160px) 0;
   background: var(--bg);
   border-top: 1px solid var(--line);
+  container-type: inline-size;
 }
 .projects-head {
   text-align: center;
@@ -1020,7 +1022,13 @@ section { position: relative; }
   gap: 16px;
   margin-top: 20px;
 }
-@media (max-width: 900px) { .projects-grid { grid-template-columns: 1fr; } }
+@container (max-width: 900px) { .projects-grid { grid-template-columns: 1fr; } }
+
+.projects-grid:has(.project-card:hover) .project-card:not(:hover) {
+  opacity: 0.4;
+  filter: grayscale(50%) blur(1px);
+  transform: scale(0.98);
+}
 
 .project-card {
   position: relative;
@@ -1030,7 +1038,7 @@ section { position: relative; }
   overflow: hidden;
   display: flex; flex-direction: column; gap: 14px;
   min-height: 260px;
-  transition: transform 0.4s cubic-bezier(.22,1,.36,1), border-color 0.3s ease;
+  transition: transform 0.4s cubic-bezier(.22,1,.36,1), border-color 0.3s ease, opacity 0.4s ease, filter 0.4s ease;
 }
 .project-card:hover {
   transform: translateY(-6px);
