@@ -120,7 +120,7 @@ export const DATA = {
   manifesto: [
     { txt: 'I build AI' },
     { txt: 'that ships.' },
-    { txt: 'Not demos—' },
+    { txt: 'Not demos' },
     { txt: 'production systems', accent: true },
     { txt: 'that hit the latency target,' },
     { txt: 'that scale,' },

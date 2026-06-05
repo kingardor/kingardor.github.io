@@ -87,6 +87,19 @@ function AnimChar({ ch, delay }) {
 
 export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
   const [assembled, setAssembled] = useState(false);
+  const zoneRef        = useRef(null);
+  const videoRef       = useRef(null);
+  const contentRef     = useRef(null);
+  const scrollCueRef   = useRef(null);
+  const manifestoRef   = useRef(null);
+  const assembledRef   = useRef(false);
+  const enabledAtRef   = useRef(0);
+  const snapDoneRef    = useRef(false); // latch: snap fired this pass; cleared when rawP < 0.72
+  const snapLockRef    = useRef(false); // true while actively holding position
+  const snapYRef       = useRef(0);    // the locked scroll Y
+  const snapAtRef      = useRef(0);    // timestamp when snap fired
+  const lastWheelRef   = useRef(0);    // timestamp of most recent wheel event during hold
+
   const scrollTo = (id) => () => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -97,49 +110,237 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     </span>
   );
 
+  useEffect(() => {
+    assembledRef.current = assembled;
+    if (assembled) enabledAtRef.current = performance.now();
+  }, [assembled]);
+
+  useEffect(() => {
+    const zone      = zoneRef.current;
+    const video     = videoRef.current;
+    const content   = contentRef.current;
+    const scrollCue = scrollCueRef.current;
+    const manifesto = manifestoRef.current;
+    if (!zone || !video) return;
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+    if (prefersReduced || isMobile) return;
+
+    const onScroll = () => {
+      if (!assembledRef.current) return;
+
+      const rect = zone.getBoundingClientRect();
+      const vh   = window.innerHeight;
+      const totalScrollable = rect.height - vh;
+      const scrolled = Math.max(0, -rect.top);
+      const rawP = Math.max(0, Math.min(1, scrolled / totalScrollable));
+
+      const ramp = Math.min(1, (performance.now() - enabledAtRef.current) / 500);
+      const p = rawP * ramp;
+
+      // Re-arm the snap latch when user scrolls back before the reveal window
+      if (rawP < 0.72) {
+        snapDoneRef.current = false;
+        snapLockRef.current = false;
+        lastWheelRef.current = 0;
+      }
+
+      // Drift release: if scroll drifted away from the hold point (keyboard/scrollbar), release
+      if (snapLockRef.current && Math.abs(window.scrollY - snapYRef.current) > 4) {
+        snapLockRef.current = false;
+      }
+
+      if (video.readyState >= 2 && video.duration) {
+        video.currentTime = p * video.duration;
+      }
+
+      // Cross-fade from static hero.webp to video
+      video.style.opacity = Math.min(1, p / 0.12).toFixed(3);
+
+      // Content fades out fast — gone by p=0.15
+      const contentP = Math.max(0, Math.min(1, p / 0.15));
+      if (content) {
+        content.style.opacity = (1 - contentP).toFixed(3);
+        content.style.transform = `translateY(${(contentP * -20).toFixed(1)}px)`;
+      }
+      if (scrollCue) {
+        // Fades out fast on scroll start; returns when parked at snap point
+        const fadeOut = 1 - Math.min(1, p / 0.08);
+        const fadeBack = Math.max(0, Math.min(1, (p - 0.88) / 0.06));
+        scrollCue.style.opacity = Math.max(fadeOut, fadeBack).toFixed(3);
+      }
+
+      // Manifesto: word-by-word reveal from p=0.72 to p=0.92
+      if (manifesto) {
+        const words = manifesto.querySelectorAll('.hero-manifesto-word');
+        const n = words.length;
+        const mP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
+        words.forEach((w, i) => {
+          const wP = Math.max(0, Math.min(1, mP * n - i));
+          w.style.opacity = wP.toFixed(3);
+          w.style.transform = `translateY(${((1 - wP) * 10).toFixed(1)}px)`;
+        });
+
+        // Snap to manifesto: fire once per pass (snapDoneRef guards re-fire)
+        if (mP >= 1 && !snapDoneRef.current) {
+          snapDoneRef.current = true;
+          snapLockRef.current = true;
+          snapAtRef.current = performance.now();
+          lastWheelRef.current = performance.now(); // treat snap moment as last-event baseline
+          const zoneTop = window.scrollY + zone.getBoundingClientRect().top;
+          const totalScrollable2 = zone.offsetHeight - window.innerHeight;
+          snapYRef.current = zoneTop + totalScrollable2 * 0.92;
+          window.scrollTo({ top: snapYRef.current }); // instant — keeps scrollY == snapY
+        }
+      }
+
+      const eased = 1 - Math.pow(1 - p, 3);
+      zone.style.setProperty('--vignette-strength', eased.toFixed(3));
+    };
+
+    // MIN_HOLD: hard floor — no release possible before this elapsed since snap
+    // INTER_GAP: gap between consecutive wheel events that indicates fresh gesture
+    // (macOS trackpad inertia fires <100ms apart while flowing; a new gesture has a clear pause)
+    const MIN_HOLD_MS   = 1200;
+    const INTER_GAP_MS  = 250;
+
+    const onWheel = (e) => {
+      if (!snapLockRef.current) return;
+
+      const now = performance.now();
+
+      // Always hard-stop regardless of speed or timing
+      e.preventDefault();
+      window.scrollTo({ top: snapYRef.current });
+
+      const sinceSnap = now - snapAtRef.current;
+      const sinceLast = now - lastWheelRef.current;
+
+      // Release only when: minimum hold elapsed AND this event arrived after a clear gap
+      if (sinceSnap >= MIN_HOLD_MS && sinceLast >= INTER_GAP_MS) {
+        snapLockRef.current = false;
+        lastWheelRef.current = 0;
+        return;
+      }
+
+      lastWheelRef.current = now;
+    };
+
+    // Touch: absorb all moves while locked; touchend marks gesture over; touchstart = new gesture
+    const onTouchStart = (e) => {
+      if (!snapLockRef.current) return;
+      const sinceSnap = performance.now() - snapAtRef.current;
+      if (sinceSnap >= MIN_HOLD_MS) {
+        snapLockRef.current = false;
+      }
+    };
+    const onTouchMove = (e) => {
+      if (!snapLockRef.current) return;
+      e.preventDefault();
+    };
+    const onTouchEnd = () => {};
+
+    const onVisibility = () => {
+      if (document.visibilityState !== 'visible') return;
+      // Run after the tab compositor is restored, not mid-restore
+      requestAnimationFrame(() => {
+        const rect2 = zone.getBoundingClientRect();
+        const scrolled2 = Math.max(0, -rect2.top);
+        const p2 = Math.max(0, Math.min(1, scrolled2 / (rect2.height - window.innerHeight)));
+        const target = p2 * (video.duration || 0);
+        // play() wakes the decoder the browser evicted while backgrounded;
+        // pause() + reseek locks it back to the exact scroll frame.
+        // A same-value currentTime assignment is a browser no-op — this forces a real decode.
+        video.play()
+          .then(() => { video.pause(); video.currentTime = target; })
+          .catch(() => { video.currentTime = target + 0.0001; }); // fallback: nudge forces seek
+      });
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
+
   return (
-    <section className="hero" id="top" data-screen-label="01 Hero">
-      {bg.grid && <GridMeshBG accent={accent} />}
-      <HeroParticles onAssembled={() => setAssembled(true)} />
-      <div className={`hero-photo with-particles${assembled ? ' assembled' : ''}`} />
-      <div className="wrap hero-content">
-        <h1 className="hero-name">
-          <span className="line">{renderWord('AKASH', 200)}</span>
-          <span className="line red">{renderWord('JAMES', 420)}</span>
-        </h1>
-        <div className="hero-meta">
-          <p className="hero-tag reveal in d3">
-            builds{' '}
-            <RotatingText
-              texts={[
-                'agents that close loops.',
-                'vision systems at the edge.',
-                'RAG pipelines that retrieve at scale.',
-                'platforms 0 → 1.',
-                'GPU stacks that ship.',
-              ]}
-              rotationInterval={3000}
-              staggerDuration={0.018}
-              staggerFrom="first"
-              splitBy="characters"
-              mainClassName="hero-rotate"
-              transition={{ type: 'spring', damping: 22, stiffness: 280 }}
-            />
+    <section className="hero" id="top" data-screen-label="01 Hero"
+             ref={zoneRef} style={{ height: '400vh' }}>
+      <div className="hero-pin">
+        {bg.grid && <GridMeshBG accent={accent} />}
+        <HeroParticles onAssembled={() => setAssembled(true)} />
+        {/* Static photo: handles particle reveal, remains as base layer */}
+        <div className={`hero-photo with-particles${assembled ? ' assembled' : ''}`} />
+        {/* Video: fades in over static photo as scroll begins (JS-controlled) */}
+        <video
+          ref={videoRef}
+          className="hero-video"
+          src="/hero-scroll.mp4"
+          muted
+          playsInline
+          preload="auto"
+        />
+        <div className="wrap hero-content" ref={contentRef}>
+          <h1 className="hero-name">
+            <span className="line">{renderWord('AKASH', 200)}</span>
+            <span className="line red">{renderWord('JAMES', 420)}</span>
+          </h1>
+          <div className="hero-meta">
+            <p className="hero-tag reveal in d3">
+              builds{' '}
+              <RotatingText
+                texts={[
+                  'agents that close loops.',
+                  'vision systems at the edge.',
+                  'RAG pipelines that retrieve at scale.',
+                  'platforms 0 → 1.',
+                  'GPU stacks that ship.',
+                ]}
+                rotationInterval={3000}
+                staggerDuration={0.018}
+                staggerFrom="first"
+                splitBy="characters"
+                mainClassName="hero-rotate"
+                transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+              />
+            </p>
+          </div>
+          <HeroChatPill />
+        </div>
+        <button className="hero-scroll hot" ref={scrollCueRef} onClick={scrollTo('career')}
+          style={{ background: 'transparent', border: 'none', color: 'inherit' }}>
+          <div className="scroll-sonar">
+            <div className="scroll-ring" />
+            <div className="scroll-ring" />
+            <div className="scroll-ring" />
+            <div className="scroll-dot" />
+          </div>
+          <div className="scroll-stem" />
+          <span className="scroll-label">SCROLL</span>
+        </button>
+
+        <div className="hero-manifesto-overlay" ref={manifestoRef} aria-hidden="true">
+          <div className="hero-manifesto-label hero-manifesto-word">MANIFESTO · 001</div>
+          <p className="hero-manifesto-text">
+            {DATA.manifesto.flatMap((w, i) => [
+              <span key={i} className={`hero-manifesto-word${w.accent ? ' hi-accent' : ''}`}>{w.txt}</span>,
+              ' ',
+            ])}
           </p>
         </div>
-        <HeroChatPill />
       </div>
-      <button className="hero-scroll hot" onClick={scrollTo('manifesto')}
-        style={{ background: 'transparent', border: 'none', color: 'inherit' }}>
-        <div className="scroll-sonar">
-          <div className="scroll-ring" />
-          <div className="scroll-ring" />
-          <div className="scroll-ring" />
-          <div className="scroll-dot" />
-        </div>
-        <div className="scroll-stem" />
-        <span className="scroll-label">SCROLL</span>
-      </button>
     </section>
   );
 }

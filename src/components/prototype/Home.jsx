@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Hud } from './Hud.jsx';
-import { Hero, Marquee, Manifesto } from './Hero.jsx';
+import { Hero, Marquee } from './Hero.jsx';
 import { Career, Skills, Projects, Videos, Writing, Honours, Transmission } from './Sections.jsx';
 import { TopNav } from './Chrome.jsx';
 import { useReveal } from './hooks.js';
@@ -66,7 +66,6 @@ export default function Home() {
       <main>
         <Hero bg={{ grid: false }} accent="#ef2b3a" />
         <Marquee />
-        <Manifesto />
         <Career bg={{ rain: true }} accent="#ef2b3a" />
         <Skills />
         <Projects projects={projects || undefined} />
