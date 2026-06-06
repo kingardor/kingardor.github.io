@@ -205,9 +205,9 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
         }
       }
 
-      // Pan video left as manifesto reveals; fade hero photo to black so right side is dark.
+      // Hide hero photo instantly when manifesto reveals (right side goes dark).
+      // Video stays unscaled — the manifesto overlay's padding-left:50% creates the split.
       const panP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
-      video.style.transform = panP > 0 ? `translateX(${(-panP * 15).toFixed(1)}%)` : '';
       if (photo) {
         if (panP > 0) {
           photo.style.transition = 'none';
