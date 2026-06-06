@@ -1016,58 +1016,57 @@ section { position: relative; }
 }
 .skills-sentence .word.is-key { color: var(--ink); }
 
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
+/* ScrollStack card for skill groups */
+.scroll-stack-card {
+  border-radius: 4px !important;
+  background: var(--bg-2) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3) !important;
+  height: auto !important;
+  min-height: 280px;
+  margin: 0 auto;
+  max-width: 900px;
+  width: 100%;
 }
-.skill-cell {
-  background: var(--bg);
-  padding: 30px 24px;
+.skill-stack-card {
+  padding: 36px 40px;
   position: relative;
-  min-height: 240px;
   overflow: hidden;
-  transition: background 0.3s ease;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
-.skill-cell:hover { background: var(--bg-2); }
-.skill-cell .idx {
+.skill-stack-idx {
   font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em;
   color: var(--muted);
 }
-.skill-cell .name {
+.skill-stack-name {
   font-family: var(--display); font-weight: 800;
-  font-size: clamp(22px, 2vw, 30px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin: 20px 0 16px;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--ink);
 }
-.skill-cell .items { display: flex; flex-wrap: wrap; gap: 6px; }
-.skill-cell .chip {
+.skill-stack-items {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.chip {
   font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em;
   padding: 4px 10px;
   border: 1px solid var(--line);
   color: var(--muted);
   border-radius: 99px;
 }
-.skill-cell .huge {
-  position: absolute; right: -16px; bottom: -36px;
+.skill-stack-huge {
+  position: absolute; right: -10px; bottom: -40px;
   font-family: var(--display); font-weight: 900;
-  font-size: 12rem; line-height: 1;
+  font-size: 14rem; line-height: 1;
   color: var(--ink);
   opacity: 0.03;
   letter-spacing: -0.05em;
+  pointer-events: none;
 }
-.skill-cell .bar {
-  position: absolute; top: 0; left: 0;
-  height: 2px; width: 0; background: var(--accent);
-  transition: width 0.6s cubic-bezier(.22,1,.36,1);
-}
-.skill-cell:hover .bar { width: 100%; }
-
-@container (max-width: 1100px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
-@container (max-width: 520px) { .skills-grid { grid-template-columns: 1fr; } }
 
 /* ═══════════════════════════════════════════════════════════════
    PROJECTS — mission files
@@ -1093,120 +1092,7 @@ section { position: relative; }
   text-align: center;
 }
 
-.projects-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 16px;
-  margin-top: 20px;
-}
-@container (max-width: 900px) { .projects-grid { grid-template-columns: 1fr; } }
-
-.projects-grid:has(.project-card:hover) .project-card:not(:hover) {
-  opacity: 0.4;
-  filter: grayscale(50%) blur(1px);
-  transform: scale(0.98);
-}
-
-.project-card {
-  position: relative;
-  padding: 24px 24px;
-  border: 1px solid var(--line);
-  background: var(--bg-2);
-  overflow: hidden;
-  display: flex; flex-direction: column; gap: 14px;
-  min-height: 260px;
-  transition: transform 0.4s cubic-bezier(.22,1,.36,1), border-color 0.3s ease, opacity 0.4s ease, filter 0.4s ease;
-}
-.project-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--accent);
-}
-.project-card::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(239,43,58,0.1), transparent 40%);
-  opacity: 0; transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-.project-card:hover::before { opacity: 1; }
-.project-card .code {
-  font-family: var(--mono); font-size: 9px; letter-spacing: 0.24em;
-  color: var(--accent);
-}
-.project-card .name {
-  font-family: var(--display); font-weight: 800;
-  font-size: clamp(22px, 2.4vw, 32px);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-.project-card .desc {
-  font-size: 14px; line-height: 1.6;
-  color: var(--muted);
-  max-width: 520px;
-}
-.project-card .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
-.project-card .tag {
-  font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em;
-  padding: 4px 10px;
-  border: 1px solid var(--line);
-  color: var(--muted);
-  border-radius: 99px;
-}
-.project-card .open {
-  position: absolute; top: 24px; right: 24px;
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--muted);
-  transition: all 0.25s ease;
-}
-.project-card:hover .open {
-  border-color: var(--accent); color: var(--accent);
-  transform: rotate(-45deg);
-}
-.project-card .meter {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 2px; background: var(--line);
-}
-.project-card .meter::after {
-  content: ''; position: absolute; left: 0; top: 0; height: 100%;
-  width: 0; background: var(--accent);
-  transition: width 0.5s ease;
-}
-.project-card:hover .meter::after { width: 100%; }
-
-.project-card.feature {
-  grid-row: span 2;
-  min-height: 320px;
-  background:
-    linear-gradient(135deg, rgba(239,43,58,0.08), transparent 60%),
-    var(--bg-2);
-}
-.project-card.feature .name { font-size: clamp(32px, 3.5vw, 54px); }
-.project-card.feature .preview {
-  flex: 1;
-  border: 1px solid var(--line);
-  background:
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 8px, transparent 8px 18px),
-    var(--bg);
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-  min-height: 160px;
-}
-.project-card.feature .preview::before {
-  content: '';
-  position: absolute; inset: 20px;
-  border: 1px dashed rgba(239,43,58,0.4);
-}
-.project-card.feature .preview .badge {
-  font-family: var(--mono); font-size: 10px;
-  letter-spacing: 0.22em; color: var(--accent);
-  padding: 10px 20px;
-  border: 1px solid var(--accent);
-  background: rgba(0,0,0,0.4);
-}
-@media (max-width: 900px) { .project-card.feature { grid-row: auto; min-height: 320px; } }
+/* MagicBento grid is styled via MagicBento.css — no project-card rules needed here */
 
 /* ═══════════════════════════════════════════════════════════════
    VIDEOS — CRT stack

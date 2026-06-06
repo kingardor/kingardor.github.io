@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DATA } from './dataAdapter.js';
 import { DataRainBG, AuroraBG } from './Backgrounds.jsx';
+import MagicBento from './reactbits/MagicBento.jsx';
+import ScrollStack, { ScrollStackItem } from './reactbits/ScrollStack.jsx';
 
 function SmartThumb({ id, thumb, style }) {
   const initial = id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : (thumb || '');
@@ -111,20 +113,28 @@ export function Skills() {
             return <span key={i} className={`word ${isKey ? 'is-key' : ''}`}>{w} </span>;
           })}
         </p>
-        <div className="skills-grid">
-          {DATA.skillGroups.map((g, i) => (
-            <div className="skill-cell reveal" key={i} style={{ transitionDelay: `${i * 40}ms` }}>
-              <div className="bar" />
-              <div className="idx">GRP · {g.idx}</div>
-              <div className="name">{g.name}</div>
-              <div className="items">
+      </div>
+      <ScrollStack
+        useWindowScroll
+        stackPosition="18%"
+        itemDistance={60}
+        itemScale={0.04}
+        itemStackDistance={16}
+        baseScale={0.88}
+      >
+        {DATA.skillGroups.map((g) => (
+          <ScrollStackItem key={g.idx}>
+            <div className="skill-stack-card">
+              <div className="skill-stack-idx">GRP · {g.idx}</div>
+              <div className="skill-stack-name">{g.name}</div>
+              <div className="skill-stack-items">
                 {g.items.map(it => <span className="chip" key={it}>{it}</span>)}
               </div>
-              <div className="huge">{g.huge}</div>
+              <div className="skill-stack-huge">{g.huge}</div>
             </div>
-          ))}
-        </div>
-      </div>
+          </ScrollStackItem>
+        ))}
+      </ScrollStack>
     </section>
   );
 }
@@ -132,11 +142,6 @@ export function Skills() {
 /* Projects accepts an optional `projects` prop that overrides DATA.projects (for live fetch) */
 export function Projects({ projects: propProjects }) {
   const projects = propProjects || DATA.projects;
-  const onMove = (e) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
-    e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
-  };
   return (
     <section className="projects" id="projects" data-screen-label="05 Projects">
       <div className="wrap">
@@ -144,33 +149,15 @@ export function Projects({ projects: propProjects }) {
           <div className="kicker"><span className="accent">MISSION FILES</span> · 003</div>
           <div className="title">Selected<br/>works.</div>
         </div>
-        <div className="projects-grid">
-          {projects.map((p, i) => (
-            <a className={`project-card ${p.feature ? 'feature' : ''} reveal`} key={i}
-               onMouseMove={onMove}
-               href={p.href || '#'}
-               target={p.href && !p.href.startsWith('#') ? '_blank' : undefined}
-               rel={p.href && !p.href.startsWith('#') ? 'noreferrer' : undefined}
-               onClick={!p.href || p.href === '#' ? e => e.preventDefault() : undefined}
-               style={{ transitionDelay: `${i * 32}ms` }}>
-              <div className="code">{p.code}{p.feature && ' · FEATURED'}</div>
-              <div className="name">{p.name}</div>
-              {p.feature && (
-                <div className="preview">
-                  <span className="badge">VERONICA · AGENT ONLINE</span>
-                </div>
-              )}
-              <div className="desc">{p.desc}</div>
-              <div className="tags">
-                {(p.tags || []).map(t => <span className="tag" key={t}>{t}</span>)}
-              </div>
-              <div className="open">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 9L9 3M9 3H4M9 3V8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="square"/></svg>
-              </div>
-              <div className="meter" />
-            </a>
-          ))}
-        </div>
+        <MagicBento
+          cards={projects}
+          enableStars
+          enableSpotlight
+          enableBorderGlow
+          glowColor="239, 43, 58"
+          enableTilt
+          clickEffect
+        />
       </div>
     </section>
   );
