@@ -208,7 +208,15 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       // Pan video left as manifesto reveals; fade hero photo to black so right side is dark.
       const panP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
       video.style.transform = panP > 0 ? `translateX(${(-panP * 15).toFixed(1)}%)` : '';
-      if (photo) photo.style.opacity = panP > 0 ? '0' : '';
+      if (photo) {
+        if (panP > 0) {
+          photo.style.transition = 'none';
+          photo.style.opacity = '0';
+        } else {
+          photo.style.transition = '';
+          photo.style.opacity = '';
+        }
+      }
 
       const eased = 1 - Math.pow(1 - p, 3);
       zone.style.setProperty('--vignette-strength', eased.toFixed(3));
