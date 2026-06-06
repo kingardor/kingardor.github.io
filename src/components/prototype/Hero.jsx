@@ -212,9 +212,16 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
         }
       }
 
-      // Pan video left as manifesto reveals so subject sits in left half
+      // Pan video left as manifesto reveals so subject sits in left half.
+      // scale(1 + p*0.2) + translateX(-p*10%) keeps the right edge pinned to the
+      // container right (no background leaking). Math: center + S*50% + T*W = 100% → holds for all p.
       const panP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
-      video.style.transform = panP > 0 ? `translateX(${(-panP * 12).toFixed(1)}%)` : '';
+      if (panP > 0) {
+        const s = (1 + panP * 0.2).toFixed(3);
+        video.style.transform = `scale(${s}) translateX(${(-panP * 10).toFixed(1)}%)`;
+      } else {
+        video.style.transform = '';
+      }
 
       const eased = 1 - Math.pow(1 - p, 3);
       zone.style.setProperty('--vignette-strength', eased.toFixed(3));
