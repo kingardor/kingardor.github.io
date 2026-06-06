@@ -113,6 +113,13 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
   useEffect(() => {
     assembledRef.current = assembled;
     if (assembled) enabledAtRef.current = performance.now();
+    // Mobile: play video on loop after particle assembly completes
+    if (assembled && window.matchMedia('(max-width: 900px)').matches && videoRef.current) {
+      const v = videoRef.current;
+      v.loop = true;
+      v.style.opacity = '1';
+      v.play().catch(() => {});
+    }
   }, [assembled]);
 
   useEffect(() => {

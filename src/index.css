@@ -377,6 +377,8 @@ section { position: relative; }
 @media (max-width: 900px) {
   .hero { height: auto !important; }
   .hero-pin { position: relative; height: auto; min-height: 100svh; }
+  /* On mobile the video autoplays — center the subject on portrait screens */
+  .hero-video { object-position: center 10%; }
 }
 
 /* manifesto overlay: reveals word-by-word at end of scroll zone */
