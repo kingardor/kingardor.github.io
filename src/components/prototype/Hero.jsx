@@ -115,7 +115,8 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     if (assembled) enabledAtRef.current = performance.now();
   }, [assembled]);
 
-  // Signal main.jsx when video has enough data to play
+  // Cross-module contract with main.jsx: __resolveHeroVideo is set there and
+  // called here when the video is ready to play. main.jsx also installs a 10s safety-release.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -288,7 +289,6 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       if (!snapLockRef.current) return;
       e.preventDefault();
     };
-    const onTouchEnd = () => {};
 
     const onVisibility = () => {
       if (document.visibilityState !== 'visible') return;
@@ -312,14 +312,12 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     window.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: false });
-    window.addEventListener('touchend', onTouchEnd, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onTouchEnd);
       document.removeEventListener('visibilitychange', onVisibility);
       video.removeEventListener('seeked', onSeeked);
     };

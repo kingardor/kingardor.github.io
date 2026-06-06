@@ -13,7 +13,7 @@ const loader = document.getElementById('loader')
 const rootEl = document.getElementById('root')
 
 const isPrerendered = rootEl.hasChildNodes()
-const MIN_MS = 1700
+const MIN_MS = 1700 // minimum loader display time so CSS animations complete
 
 // Resolved by Hero.jsx when video fires canplaythrough; safety-release after 10s
 const videoReadyPromise = new Promise(resolve => {

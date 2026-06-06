@@ -337,7 +337,7 @@ section { position: relative; }
    ═══════════════════════════════════════════════════════════════ */
 .hero {
   position: relative;
-  /* height set inline to 300vh for scroll zone */
+  /* height set inline to 400vh for scroll zone */
 }
 .hero-pin {
   position: sticky;
@@ -346,11 +346,17 @@ section { position: relative; }
   overflow: hidden;
   display: flex; flex-direction: column; justify-content: center;
 }
+/* Hero stacking order (do not renumber — particle reveal depends on these):
+   0 → .hero-photo           (static bg, base layer)
+   1 → .hero-video           (scroll cross-fade over photo)
+   1 → .hero-particles       (canvas, same level — sits over photo)
+   2 → .hero-pin::before     (vignette)
+   5 → .hero-manifesto-overlay */
 .hero-photo {
   position: absolute; inset: 0;
   background-image: url('/hero.webp');
   background-size: cover;
-  background-position: center 18%;
+  background-position: center 18%; /* 18%: keeps subject in upper frame on desktop */
   filter: brightness(0.65) saturate(0.75) contrast(1.05);
   z-index: 0;
 }
@@ -358,7 +364,7 @@ section { position: relative; }
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center 18%; /* 18%: keeps subject in upper frame on desktop */
   z-index: 1;
   opacity: 0; /* JS controls cross-fade from static photo */
 }
@@ -376,7 +382,7 @@ section { position: relative; }
 }
 @media (max-width: 900px) {
   /* Portrait screens: keep video focused on subject */
-  .hero-video { object-position: center 10%; }
+  .hero-video { object-position: center 10%; /* 10%: shifts subject higher on portrait screens */ }
   /* Manifesto: centered on mobile (right-split is too cramped on narrow viewports) */
   .hero-manifesto-overlay {
     align-items: center;
@@ -434,14 +440,14 @@ section { position: relative; }
   position: absolute; inset: 0; z-index: 1;
   pointer-events: none;
   opacity: 1;
-  transition: opacity 1000ms cubic-bezier(.4,0,.2,1);
+  transition: opacity 1000ms cubic-bezier(.4,0,.2,1); /* matches .hero-photo — synchronized crossfade */
 }
 .hero-particles.ambient { opacity: 0; }
 
 /* photo hidden until particles assemble, then crossfades in simultaneously with canvas fade-out */
 .hero-photo.with-particles {
   opacity: 0;
-  transition: opacity 1000ms cubic-bezier(.4,0,.2,1);
+  transition: opacity 1000ms cubic-bezier(.4,0,.2,1); /* matches .hero-particles — synchronized crossfade */
 }
 .hero-photo.with-particles.assembled { opacity: 1; }
 
