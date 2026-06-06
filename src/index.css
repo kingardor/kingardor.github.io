@@ -375,8 +375,6 @@ section { position: relative; }
     linear-gradient(to right, rgba(10,10,13,0.3), transparent 30%, transparent 70%, rgba(10,10,13,0.3));
 }
 @media (max-width: 900px) {
-  .hero { height: auto !important; }
-  .hero-pin { position: relative; height: auto; min-height: 100svh; }
   /* Portrait screens: keep video focused on subject */
   .hero-video { object-position: center 10%; }
   /* Manifesto: centered on mobile (right-split is too cramped on narrow viewports) */

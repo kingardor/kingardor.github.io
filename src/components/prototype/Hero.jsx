@@ -113,13 +113,6 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
   useEffect(() => {
     assembledRef.current = assembled;
     if (assembled) enabledAtRef.current = performance.now();
-    // Mobile: autoplay loop after particle assembly (scroll scrubbing is too laggy on mobile)
-    if (assembled && window.matchMedia('(max-width: 900px)').matches && videoRef.current) {
-      const v = videoRef.current;
-      v.loop = true;
-      v.style.opacity = '1';
-      v.play().catch(() => {});
-    }
   }, [assembled]);
 
   // Signal main.jsx when video has enough data to play
@@ -142,8 +135,28 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     if (!zone || !video) return;
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobile = window.matchMedia('(max-width: 900px)').matches;
-    if (prefersReduced || isMobile) return;
+    if (prefersReduced) return;
+
+    // iOS won't seek until the video has been activated by a user gesture.
+    // Prime it on first touch so currentTime works throughout the scroll.
+    let touchPrimed = false;
+    const onTouchPrime = () => {
+      if (touchPrimed) return;
+      touchPrimed = true;
+      video.play().then(() => video.pause()).catch(() => {});
+    };
+    window.addEventListener('touchstart', onTouchPrime, { once: true, passive: true });
+
+    // Seek gating: only one seek in flight at a time; coalesce to the latest target.
+    // Without this, rapid scroll fires queue up full-frame decodes on mobile.
+    let pendingTime = null;
+    const onSeeked = () => {
+      if (pendingTime !== null) {
+        const t = pendingTime; pendingTime = null;
+        video.currentTime = t;
+      }
+    };
+    video.addEventListener('seeked', onSeeked);
 
     const onScroll = () => {
       if (!assembledRef.current) return;
@@ -170,7 +183,8 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       }
 
       if (video.readyState >= 2 && video.duration) {
-        video.currentTime = p * video.duration;
+        const t = p * video.duration;
+        if (video.seeking) { pendingTime = t; } else { video.currentTime = t; }
       }
 
       // Cross-fade from static hero.webp to video
@@ -307,6 +321,7 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
       document.removeEventListener('visibilitychange', onVisibility);
+      video.removeEventListener('seeked', onSeeked);
     };
   }, []);
 
@@ -322,7 +337,7 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
         <video
           ref={videoRef}
           className="hero-video"
-          src="/hero-scroll.mp4"
+          src={window.matchMedia('(max-width: 900px)').matches ? '/hero-scroll-mobile.mp4' : '/hero-scroll.mp4'}
           muted
           playsInline
           preload="auto"
