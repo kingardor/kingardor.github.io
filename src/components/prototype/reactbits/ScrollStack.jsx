@@ -186,8 +186,13 @@ const ScrollStack = ({
   const setupLenis = useCallback(() => {
     if (useWindowScroll) {
       // The app already has a global LenisProvider — don't create a second instance.
-      // Plain window scroll events are enough; Lenis fires them during its raf loop.
-      window.addEventListener('scroll', handleScroll, { passive: true });
+      // Drive updates from a plain rAF loop polling window.scrollY each frame.
+      // updateCardTransforms has a hasChanged guard so DOM writes only happen on change.
+      const raf = () => {
+        updateCardTransforms();
+        animationFrameRef.current = requestAnimationFrame(raf);
+      };
+      animationFrameRef.current = requestAnimationFrame(raf);
       return null;
     } else {
       const scroller = scrollerRef.current;
@@ -255,9 +260,6 @@ const ScrollStack = ({
     updateCardTransforms();
 
     return () => {
-      if (useWindowScroll) {
-        window.removeEventListener('scroll', handleScroll);
-      }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
