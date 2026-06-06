@@ -15,6 +15,12 @@ const rootEl = document.getElementById('root')
 const isPrerendered = rootEl.hasChildNodes()
 const MIN_MS = 1700
 
+// Resolved by Hero.jsx when video fires canplaythrough; safety-release after 10s
+const videoReadyPromise = new Promise(resolve => {
+  window.__resolveHeroVideo = resolve
+  setTimeout(resolve, 10000)
+})
+
 const app = (
   <StrictMode>
     <ThemeProvider>
@@ -37,9 +43,12 @@ if (isPrerendered) {
 if (loader && !window.__PRERENDER) {
   const elapsed = Date.now() - (window.__LOADER_START ?? Date.now())
   const remaining = Math.max(0, MIN_MS - elapsed)
-  setTimeout(() => {
+  Promise.all([
+    new Promise(r => setTimeout(r, remaining)),
+    videoReadyPromise,
+  ]).then(() => {
     loader.style.opacity = '0'
     loader.style.pointerEvents = 'none'
     setTimeout(() => loader.remove(), 600)
-  }, remaining)
+  })
 }

@@ -122,6 +122,16 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     }
   }, [assembled]);
 
+  // Signal main.jsx when video has enough data to play
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const resolve = () => { window.__resolveHeroVideo?.(); window.__resolveHeroVideo = null; };
+    if (video.readyState >= 3) { resolve(); return; }
+    video.addEventListener('canplaythrough', resolve, { once: true });
+    return () => video.removeEventListener('canplaythrough', resolve);
+  }, []);
+
   useEffect(() => {
     const zone      = zoneRef.current;
     const video     = videoRef.current;
@@ -201,6 +211,10 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
           window.scrollTo({ top: snapYRef.current }); // instant — keeps scrollY == snapY
         }
       }
+
+      // Pan video left as manifesto reveals so subject sits in left half
+      const panP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
+      video.style.transform = panP > 0 ? `translateX(${(-panP * 12).toFixed(1)}%)` : '';
 
       const eased = 1 - Math.pow(1 - p, 3);
       zone.style.setProperty('--vignette-strength', eased.toFixed(3));
