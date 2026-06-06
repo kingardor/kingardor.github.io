@@ -205,8 +205,7 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
         }
       }
 
-      // Hide hero photo instantly when manifesto reveals (right side goes dark).
-      // Video stays unscaled — the manifesto overlay's padding-left:50% creates the split.
+      // As manifesto reveals: blackout photo, darken right half for text contrast.
       const panP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
       if (photo) {
         if (panP > 0) {
@@ -216,6 +215,11 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
           photo.style.transition = '';
           photo.style.opacity = '';
         }
+      }
+      if (manifesto) {
+        manifesto.style.background = panP > 0
+          ? `linear-gradient(to right, transparent 30%, rgba(0,0,0,${(panP * 0.82).toFixed(2)}) 52%)`
+          : 'none';
       }
 
       const eased = 1 - Math.pow(1 - p, 3);

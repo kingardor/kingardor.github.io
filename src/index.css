@@ -398,8 +398,7 @@ section { position: relative; }
   padding: 0 clamp(2rem, 6vw, 8rem) 0 50%;
   pointer-events: none;
   text-align: right;
-  /* dark right half so text reads cleanly against the unscaled video */
-  background: linear-gradient(to right, transparent 30%, rgba(0,0,0,0.82) 52%);
+  background: none; /* JS drives this during manifesto reveal */
 }
 .hero-manifesto-label {
   font-family: var(--mono);
