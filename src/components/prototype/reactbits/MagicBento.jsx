@@ -231,8 +231,10 @@ const useMobileDetection = () => {
 };
 
 // Accepts `cards` — array of { code, name, desc, tags, href, feature }
+// `columns` controls desktop grid columns (default 3; use 2 for 2×2 layouts)
 const MagicBento = ({
   cards = [],
+  columns = 3,
   textAutoHide = true,
   enableStars = true,
   enableSpotlight = true,
@@ -254,7 +256,7 @@ const MagicBento = ({
       {enableSpotlight && (
         <GlobalSpotlight gridRef={gridRef} disableAnimations={shouldDisableAnimations} enabled={enableSpotlight} spotlightRadius={spotlightRadius} glowColor={glowColor} />
       )}
-      <div className="card-grid bento-section" ref={gridRef}>
+      <div className="card-grid bento-section" ref={gridRef} style={{ '--bento-cols': columns }}>
         {cards.map((card, index) => {
           const baseClassName = [
             'magic-bento-card',

@@ -157,6 +157,6 @@
 }
 
 @media (min-width: 1024px) {
-  .card-grid { grid-template-columns: repeat(3, 1fr); }
+  .card-grid { grid-template-columns: repeat(var(--bento-cols, 3), 1fr); }
   .magic-bento-card--feature { grid-column: span 2; }
 }

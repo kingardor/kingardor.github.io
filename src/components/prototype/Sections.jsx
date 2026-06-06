@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import { DATA } from './dataAdapter.js';
 import { DataRainBG, AuroraBG } from './Backgrounds.jsx';
 import MagicBento from './reactbits/MagicBento.jsx';
-import ScrollStack, { ScrollStackItem } from './reactbits/ScrollStack.jsx';
 
 function SmartThumb({ id, thumb, style }) {
   const initial = id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : (thumb || '');
@@ -113,28 +112,23 @@ export function Skills() {
             return <span key={i} className={`word ${isKey ? 'is-key' : ''}`}>{w} </span>;
           })}
         </p>
+        <MagicBento
+          cards={DATA.skillGroups.map(g => ({
+            code: `GRP · ${g.idx}`,
+            name: g.name,
+            desc: '',
+            tags: g.items,
+            href: null,
+          }))}
+          enableStars
+          enableSpotlight
+          enableBorderGlow
+          glowColor="239, 43, 58"
+          enableTilt
+          clickEffect={false}
+          columns={2}
+        />
       </div>
-      <ScrollStack
-        useWindowScroll
-        stackPosition="18%"
-        itemDistance={60}
-        itemScale={0.04}
-        itemStackDistance={16}
-        baseScale={0.88}
-      >
-        {DATA.skillGroups.map((g) => (
-          <ScrollStackItem key={g.idx}>
-            <div className="skill-stack-card">
-              <div className="skill-stack-idx">GRP · {g.idx}</div>
-              <div className="skill-stack-name">{g.name}</div>
-              <div className="skill-stack-items">
-                {g.items.map(it => <span className="chip" key={it}>{it}</span>)}
-              </div>
-              <div className="skill-stack-huge">{g.huge}</div>
-            </div>
-          </ScrollStackItem>
-        ))}
-      </ScrollStack>
     </section>
   );
 }
