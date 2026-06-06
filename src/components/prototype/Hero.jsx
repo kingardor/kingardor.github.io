@@ -113,13 +113,6 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
   useEffect(() => {
     assembledRef.current = assembled;
     if (assembled) enabledAtRef.current = performance.now();
-    // Mobile: play video on loop after particle assembly completes
-    if (assembled && window.matchMedia('(max-width: 900px)').matches && videoRef.current) {
-      const v = videoRef.current;
-      v.loop = true;
-      v.style.opacity = '1';
-      v.play().catch(() => {});
-    }
   }, [assembled]);
 
   // Signal main.jsx when video has enough data to play
@@ -138,11 +131,11 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     const content   = contentRef.current;
     const scrollCue = scrollCueRef.current;
     const manifesto = manifestoRef.current;
+    const photo     = zone?.querySelector('.hero-photo');
     if (!zone || !video) return;
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobile = window.matchMedia('(max-width: 900px)').matches;
-    if (prefersReduced || isMobile) return;
+    if (prefersReduced) return;
 
     const onScroll = () => {
       if (!assembledRef.current) return;
@@ -212,16 +205,10 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
         }
       }
 
-      // Pan video left as manifesto reveals so subject sits in left half.
-      // scale(1 + p*0.2) + translateX(-p*10%) keeps the right edge pinned to the
-      // container right (no background leaking). Math: center + S*50% + T*W = 100% → holds for all p.
+      // Pan video left as manifesto reveals; fade hero photo to black so right side is dark.
       const panP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
-      if (panP > 0) {
-        const s = (1 + panP * 0.2).toFixed(3);
-        video.style.transform = `scale(${s}) translateX(${(-panP * 10).toFixed(1)}%)`;
-      } else {
-        video.style.transform = '';
-      }
+      video.style.transform = panP > 0 ? `translateX(${(-panP * 15).toFixed(1)}%)` : '';
+      if (photo) photo.style.opacity = (1 - panP).toFixed(3);
 
       const eased = 1 - Math.pow(1 - p, 3);
       zone.style.setProperty('--vignette-strength', eased.toFixed(3));

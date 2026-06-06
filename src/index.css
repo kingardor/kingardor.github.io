@@ -375,11 +375,9 @@ section { position: relative; }
     linear-gradient(to right, rgba(10,10,13,0.3), transparent 30%, transparent 70%, rgba(10,10,13,0.3));
 }
 @media (max-width: 900px) {
-  .hero { height: auto !important; }
-  .hero-pin { position: relative; height: auto; min-height: 100svh; }
-  /* On mobile the video autoplays — center the subject on portrait screens */
+  /* Portrait screens: keep video focused on subject */
   .hero-video { object-position: center 10%; }
-  /* Keep manifesto centered on mobile (no scroll-driven pan) */
+  /* Manifesto: centered on mobile (right-split is too cramped on narrow viewports) */
   .hero-manifesto-overlay {
     align-items: center;
     padding: 0 clamp(1.5rem, 8vw, 8rem);
