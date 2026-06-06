@@ -8,6 +8,24 @@ import HeroParticles from './HeroParticles.jsx';
 
 const SEED_KEY = 'chat:seed';
 
+// ── Scroll configuration ─────────────────────────────────────────────────────
+const MIN_HOLD_MS      = 1200; // min ms to hold snap before releasing
+const INTER_GAP_MS     = 250;  // wheel-event gap that signals a new gesture
+const RAMP_MS          = 500;  // ms: animation ramp-up after particle assembly
+const VIDEO_FADE_IN    = 0.12; // p: video reaches full opacity
+const CONTENT_FADE_OUT = 0.15; // p: hero content fully gone
+const CUE_FADE_OUT     = 0.08; // p: scroll cue fades on scroll start
+const CUE_FADE_BACK    = 0.88; // p: scroll cue reappears at snap
+const REVEAL_START     = 0.72; // p: manifesto reveal begins (also re-arms snap latch)
+const REVEAL_END       = 0.92; // p: snap locks here — manifesto fully shown
+const REVEAL_RANGE     = REVEAL_END - REVEAL_START;
+
+/** Normalized scroll progress [0,1] for a sticky scroll zone. Returns raw value — callers apply ramp. */
+function calcScrollProgress(el) {
+  const rect = el.getBoundingClientRect();
+  return Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
+}
+
 function HeroChatPill() {
   const [text, setText] = useState('');
   const [ghost, setGhost] = useState('');
@@ -162,17 +180,13 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     const onScroll = () => {
       if (!assembledRef.current) return;
 
-      const rect = zone.getBoundingClientRect();
-      const vh   = window.innerHeight;
-      const totalScrollable = rect.height - vh;
-      const scrolled = Math.max(0, -rect.top);
-      const rawP = Math.max(0, Math.min(1, scrolled / totalScrollable));
-
-      const ramp = Math.min(1, (performance.now() - enabledAtRef.current) / 500);
+      const rawP = calcScrollProgress(zone); // rawP: unramped — used for latch re-arm guard below
+      const ramp = Math.min(1, (performance.now() - enabledAtRef.current) / RAMP_MS);
       const p = rawP * ramp;
 
-      // Re-arm the snap latch when user scrolls back before the reveal window
-      if (rawP < 0.72) {
+      // Re-arm the snap latch when user scrolls back before the reveal window.
+      // Uses rawP (not p) so the guard fires even during the ramp window.
+      if (rawP < REVEAL_START) {
         snapDoneRef.current = false;
         snapLockRef.current = false;
         lastWheelRef.current = 0;
@@ -189,26 +203,26 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       }
 
       // Cross-fade from static hero.webp to video
-      video.style.opacity = Math.min(1, p / 0.12).toFixed(3);
+      video.style.opacity = Math.min(1, p / VIDEO_FADE_IN).toFixed(3);
 
-      // Content fades out fast — gone by p=0.15
-      const contentP = Math.max(0, Math.min(1, p / 0.15));
+      // Content fades out fast — gone by p=CONTENT_FADE_OUT
+      const contentP = Math.max(0, Math.min(1, p / CONTENT_FADE_OUT));
       if (content) {
         content.style.opacity = (1 - contentP).toFixed(3);
         content.style.transform = `translateY(${(contentP * -20).toFixed(1)}px)`;
       }
       if (scrollCue) {
         // Fades out fast on scroll start; returns when parked at snap point
-        const fadeOut = 1 - Math.min(1, p / 0.08);
-        const fadeBack = Math.max(0, Math.min(1, (p - 0.88) / 0.06));
+        const fadeOut = 1 - Math.min(1, p / CUE_FADE_OUT);
+        const fadeBack = Math.max(0, Math.min(1, (p - CUE_FADE_BACK) / 0.06));
         scrollCue.style.opacity = Math.max(fadeOut, fadeBack).toFixed(3);
       }
 
-      // Manifesto: word-by-word reveal from p=0.72 to p=0.92
+      // Manifesto: word-by-word reveal from REVEAL_START to REVEAL_END
       if (manifesto) {
         const words = manifesto.querySelectorAll('.hero-manifesto-word');
         const n = words.length;
-        const mP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
+        const mP = Math.max(0, Math.min(1, (p - REVEAL_START) / REVEAL_RANGE));
         words.forEach((w, i) => {
           const wP = Math.max(0, Math.min(1, mP * n - i));
           w.style.opacity = wP.toFixed(3);
@@ -223,13 +237,13 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
           lastWheelRef.current = performance.now(); // treat snap moment as last-event baseline
           const zoneTop = window.scrollY + zone.getBoundingClientRect().top;
           const totalScrollable2 = zone.offsetHeight - window.innerHeight;
-          snapYRef.current = zoneTop + totalScrollable2 * 0.92;
+          snapYRef.current = zoneTop + totalScrollable2 * REVEAL_END;
           window.scrollTo({ top: snapYRef.current }); // instant — keeps scrollY == snapY
         }
       }
 
       // As manifesto reveals: blackout photo, darken right half for text contrast.
-      const panP = Math.max(0, Math.min(1, (p - 0.72) / 0.20));
+      const panP = Math.max(0, Math.min(1, (p - REVEAL_START) / REVEAL_RANGE));
       if (photo) {
         if (panP > 0) {
           photo.style.transition = 'none';
@@ -248,12 +262,6 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       const eased = 1 - Math.pow(1 - p, 3);
       zone.style.setProperty('--vignette-strength', eased.toFixed(3));
     };
-
-    // MIN_HOLD: hard floor — no release possible before this elapsed since snap
-    // INTER_GAP: gap between consecutive wheel events that indicates fresh gesture
-    // (macOS trackpad inertia fires <100ms apart while flowing; a new gesture has a clear pause)
-    const MIN_HOLD_MS   = 1200;
-    const INTER_GAP_MS  = 250;
 
     const onWheel = (e) => {
       if (!snapLockRef.current) return;
@@ -294,9 +302,7 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
       if (document.visibilityState !== 'visible') return;
       // Run after the tab compositor is restored, not mid-restore
       requestAnimationFrame(() => {
-        const rect2 = zone.getBoundingClientRect();
-        const scrolled2 = Math.max(0, -rect2.top);
-        const p2 = Math.max(0, Math.min(1, scrolled2 / (rect2.height - window.innerHeight)));
+        const p2 = calcScrollProgress(zone); // no ramp — tab restore should snap to exact frame
         const target = p2 * (video.duration || 0);
         // play() wakes the decoder the browser evicted while backgrounded;
         // pause() + reseek locks it back to the exact scroll frame.
