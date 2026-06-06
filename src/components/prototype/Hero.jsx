@@ -113,6 +113,13 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
   useEffect(() => {
     assembledRef.current = assembled;
     if (assembled) enabledAtRef.current = performance.now();
+    // Mobile: autoplay loop after particle assembly (scroll scrubbing is too laggy on mobile)
+    if (assembled && window.matchMedia('(max-width: 900px)').matches && videoRef.current) {
+      const v = videoRef.current;
+      v.loop = true;
+      v.style.opacity = '1';
+      v.play().catch(() => {});
+    }
   }, [assembled]);
 
   // Signal main.jsx when video has enough data to play
@@ -135,7 +142,8 @@ export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
     if (!zone || !video) return;
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) return;
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+    if (prefersReduced || isMobile) return;
 
     const onScroll = () => {
       if (!assembledRef.current) return;
