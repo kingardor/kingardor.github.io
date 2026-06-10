@@ -1,40 +1,63 @@
-import { Home, ScrollText, Briefcase, Wrench, Folder as FolderIcon, Radio, Mail, MessageSquare } from 'lucide-react';
-import Dock from './reactbits/Dock.jsx';
+import { useEffect, useState } from 'react';
 
+const SECTIONS = [
+  { id: 'top', label: 'HOME' },
+  { id: 'career', label: 'CAREER' },
+  { id: 'skills', label: 'STACK' },
+  { id: 'projects', label: 'WORK' },
+  { id: 'videos', label: 'SIGNALS' },
+  { id: 'writing', label: 'NOTES' },
+  { id: 'honours', label: 'HONOURS' },
+  { id: 'contact', label: 'CONTACT' },
+];
+
+/**
+ * Top-edge minimal chrome: AJ. wordmark, mono section index with live
+ * active-state, Ask Veronica. Mobile collapses to wordmark + Ask.
+ */
 export function TopNav({ onAsk }) {
-  const jump = (id) => () => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  const [active, setActive] = useState('top');
+
+  useEffect(() => {
+    const els = SECTIONS.map(s => document.getElementById(s.id)).filter(Boolean);
+    if (!els.length) return;
+    const io = new IntersectionObserver(entries => {
+      // Pick the most visible intersecting section
+      const hit = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (hit) setActive(hit.target.id);
+    }, { rootMargin: '-35% 0px -45% 0px', threshold: [0, 0.1, 0.5] });
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  const jump = (id) => (e) => {
+    e.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const items = [
-    { icon: <Home size={20} strokeWidth={1.75} />,          label: 'Home',         onClick: jump('top') },
-    { icon: <ScrollText size={20} strokeWidth={1.75} />,    label: 'Manifesto',    onClick: jump('manifesto') },
-    { icon: <Briefcase size={20} strokeWidth={1.75} />,     label: 'Career',       onClick: jump('career') },
-    { icon: <Wrench size={20} strokeWidth={1.75} />,        label: 'Skills',       onClick: jump('skills') },
-    { icon: <FolderIcon size={20} strokeWidth={1.75} />,    label: 'Work',         onClick: jump('projects') },
-    { icon: <Radio size={20} strokeWidth={1.75} />,         label: 'Signals',      onClick: jump('videos') },
-    { icon: <Mail size={20} strokeWidth={1.75} />,          label: 'Contact',      onClick: jump('contact') },
-    { icon: <MessageSquare size={20} strokeWidth={1.75} />, label: 'Ask Veronica', onClick: onAsk || (() => { location.hash = '/chat'; }) },
-  ];
-
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 20,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 50,
-      }}
-    >
-      <Dock
-        items={items}
-        panelHeight={46}
-        baseItemSize={32}
-        magnification={48}
-        distance={120}
-      />
-    </div>
+    <nav className="ob-nav" aria-label="Sections">
+      <a className="ob-nav-mark" href="#top" onClick={jump('top')}>
+        AJ<span className="ob-ember">.</span>
+      </a>
+      <div className="ob-nav-links mono-ob">
+        {SECTIONS.slice(1).map((s, i) => (
+          <a
+            key={s.id}
+            href={`#${s.id}`}
+            onClick={jump(s.id)}
+            className={active === s.id ? 'active' : undefined}
+          >
+            <span className="ob-nav-num">{String(i + 1).padStart(2, '0')}</span>
+            {s.label}
+          </a>
+        ))}
+      </div>
+      <button className="ob-nav-ask mono-ob" onClick={onAsk}>
+        <span className="ob-nav-sigil">V</span>ASK VERONICA
+      </button>
+    </nav>
   );
 }

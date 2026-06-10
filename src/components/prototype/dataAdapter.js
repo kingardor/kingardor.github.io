@@ -39,7 +39,8 @@ const career = allRoles.map((r, i) => {
 
 /* ── Honours ── */
 const honours = RAW_HONOURS.map(h => {
-  const k = h.title.split(':')[0].toUpperCase().trim();
+  let k = h.title.split(':')[0].toUpperCase().trim();
+  if (k.length > 12) k = k.split(/\s+/)[0]; // titles without a colon: first word only
   return { k, t: h.title, href: h.url || null };
 });
 honours.push(

@@ -1,7 +1,13 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import TelemetryHud from '../os/TelemetryHud.jsx';
 import HeroSection, { KeywordStrip } from '../sections/HeroSection.jsx';
-import { Career, Skills, Projects, Videos, Writing, Honours, Transmission } from './Sections.jsx';
+import CareerSection from '../sections/CareerSection.jsx';
+import SkillsSection from '../sections/SkillsSection.jsx';
+import ProjectsSection from '../sections/ProjectsSection.jsx';
+import VideosSection from '../sections/VideosSection.jsx';
+import WritingSection from '../sections/WritingSection.jsx';
+import HonoursSection from '../sections/HonoursSection.jsx';
+import ContactSection from '../sections/ContactSection.jsx';
 import { TopNav } from './Chrome.jsx';
 import { useReveal } from './hooks.js';
 import { DATA } from './dataAdapter.js';
@@ -36,7 +42,7 @@ export default function Home() {
   const [projects, setProjects] = useState(null);
   const [videos, setVideos] = useState(null);
   const [canvasOn, setCanvasOn] = useState(false);
-  useReveal();
+  useReveal([projects, videos]);
 
   // Mount the monolith canvas after first paint settles (idle), never during
   // prerender / on mobile / under reduced motion (webglTier gates those).
@@ -88,13 +94,13 @@ export default function Home() {
       <main>
         <HeroSection />
         <KeywordStrip />
-        <Career bg={{ rain: true }} accent="#ff3d00" />
-        <Skills />
-        <Projects projects={projects || undefined} />
-        <Videos videos={videos || undefined} />
-        <Writing />
-        <Honours />
-        <Transmission onAsk={goChat} bg={{ aurora: true }} accent="#ff3d00" />
+        <CareerSection />
+        <SkillsSection />
+        <ProjectsSection projects={projects || undefined} />
+        <VideosSection videos={videos || undefined} />
+        <WritingSection />
+        <HonoursSection />
+        <ContactSection onAsk={goChat} />
       </main>
     </>
   );
