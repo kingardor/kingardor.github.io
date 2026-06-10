@@ -175,7 +175,7 @@ export default function HeroSection() {
         </div>
 
         <div className="ob-hero-manifesto" ref={manifestoRef} aria-hidden="true">
-          <div className="ob-mani-label mono-ob">MANIFESTO · 001</div>
+          <div className="ob-mani-label mono-ob ob-mani-word">MANIFESTO · 001</div>
           <p className="ob-mani-text">
             {DATA.manifesto.flatMap((w, i) => [
               <span key={i} className={`ob-mani-word${w.accent ? ' ember' : ''}`}>{w.txt}</span>,

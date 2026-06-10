@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { Hud } from './Hud.jsx';
+import TelemetryHud from '../os/TelemetryHud.jsx';
 import HeroSection, { KeywordStrip } from '../sections/HeroSection.jsx';
 import { Career, Skills, Projects, Videos, Writing, Honours, Transmission } from './Sections.jsx';
 import { TopNav } from './Chrome.jsx';
@@ -82,7 +82,7 @@ export default function Home() {
       {canvasOn
         ? <Suspense fallback={<Poster />}><MonolithCanvas /></Suspense>
         : <Poster />}
-      <Hud />
+      <TelemetryHud />
       <div className="grain" />
       <TopNav onAsk={goChat} />
       <main>
