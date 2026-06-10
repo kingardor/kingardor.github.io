@@ -2,7 +2,7 @@ import { DATA } from '../prototype/dataAdapter.js'
 import { SectionHead } from './lib/effects.jsx'
 
 /**
- * Four hairline columns over the monolith's shard moment (the canvas
+ * Four hairline columns over the story layer (
  * fragments into four clusters behind this section — the DOM stays light).
  */
 export default function SkillsSection() {

@@ -214,22 +214,31 @@ section { position: relative; }
    OBSIDIAN MONOLITH — canvas, poster, hero, keyword strip
    ═══════════════════════════════════════════════════════════════ */
 
-/* Persistent WebGL stage behind all content */
-.monolith-canvas {
+/* Story layer: per-section scroll-scrubbed video segments */
+.story-layer {
   position: fixed; inset: 0;
   z-index: 0;
   pointer-events: none;
+  background: var(--ob-void);
 }
-.monolith-canvas canvas { display: block; }
-
-/* CSS stand-in: pre-load, mobile, reduced-motion */
-.monolith-poster {
-  position: fixed; inset: 0;
-  z-index: 0;
-  pointer-events: none;
+.story-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  transition: opacity 0.25s ease;
+}
+.story-scrim {
+  position: absolute; inset: 0;
   background:
-    radial-gradient(40% 58% at 72% 46%, rgba(236,233,226,0.05), transparent 70%),
-    radial-gradient(7% 32% at 72% 50%, rgba(255,61,0,0.10), transparent 75%);
+    linear-gradient(to right, rgba(5,5,5,0.62), rgba(5,5,5,0.18) 55%, rgba(5,5,5,0.45)),
+    linear-gradient(to top, rgba(5,5,5,0.7), transparent 30%);
+}
+.story-poster {
+  background:
+    linear-gradient(to right, rgba(5,5,5,0.7), rgba(5,5,5,0.35)),
+    url('/hero.webp') center 22% / cover no-repeat,
+    var(--ob-void);
 }
 
 /* Content rides above the fixed canvas */

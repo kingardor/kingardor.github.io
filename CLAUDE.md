@@ -20,14 +20,14 @@ npm run preview    # Preview production build locally
 
 Hash-based via the custom `useHashPath` hook — no React Router. `App.jsx` branches: `/#/chat` → lazy ChatPage, everything else → `Home`. Route swaps go through `src/shared/utils/navigate.js`, which wraps the hash change in the View Transitions API (clip-wipe + blur; instant fallback).
 
-### The Monolith (WebGL centerpiece)
+### The Story Layer (scroll-scrubbed video centerpiece)
 
-One persistent R3F canvas (`src/components/monolith/`) fixed behind all home content:
+A fixed full-viewport video layer (`src/components/story/StoryScrub.jsx`) behind all home content. Eight AI-generated segments (`public/story/story-{1..8}.mp4` + `-m` mobile variants) tell one continuous transformation — Akash's real selfie at the Golden Gate progressively becoming a half-chrome cyborg (ember palette), themed per section: circuits wake (hero/manifesto), armor assembles (career), PCB head reveal (skills), schematics (projects), red eye + REC (signals), glyph rain (notes), mirror polish (honours), final-form push-in (contact).
 
-- `Monolith.jsx` — single `IcosahedronGeometry` + custom ShaderMaterial (procedural fresnel/speculars, ember veins, dissolve, shard separation). All shape change is uniform-driven so poses interpolate continuously.
-- `keyframes.js` — per-section pose table; `useSectionRanges.js` resolves stops against live DOM offsets.
-- Scroll feed: `useScrollProgress()` ref from `SmoothScroll.jsx` (Lenis), read inside `useFrame` with `THREE.MathUtils.damp` for cinematic lag. Lenis smoothing (`lerp 0.09`) is desktop-only.
-- Gating: `src/shared/utils/capabilities.js` (`webglTier`) — mobile, reduced-motion, and prerender get the CSS `Poster.jsx` instead. The canvas chunk lazy-loads post-LCP (`requestIdleCallback` in `Home.jsx`).
+- Scroll space is partitioned contiguously: segment *i* owns `[anchor_i, anchor_i+1)` (anchor ≈ section top − 0.85vh); `video.currentTime = t × duration`. Consecutive segments share boundary keyframes, so handoffs are pixel-identical.
+- Mobile machinery ported from the old hero: iOS gesture priming (all videos primed in the first `touchstart`), single-seek-in-flight gating per video, decoder wake on tab restore. Mobile uses the `-m` encodes (720px, 15fps, `-g 5` for fast seeks).
+- Reduced-motion / prerender renders a static poster (`.story-poster`, hero.webp).
+- Asset pipeline (regeneration): keyframes via Higgsfield `nano_banana_pro` chained edits — every generation references BOTH the previous keyframe and the original `public/hero.webp` to lock facial identity; segments via `wan2_7` with `start_image`/`end_image`; encode desktop `1024w CRF29 -g 15`, mobile `720w fps15 CRF30 -g 5`, `+faststart`, no audio.
 
 ### Sections
 

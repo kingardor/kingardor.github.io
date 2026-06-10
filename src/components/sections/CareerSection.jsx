@@ -10,8 +10,8 @@ const stepEase = t => 1 - Math.pow(1 - t, 3)
 
 /**
  * Cinematic vertical timeline: the zone is one viewport per role; a pinned
- * stage crossfades chapters as you scroll while the monolith holds station
- * as a stele at far left (canvas pose) with the ember era-rail climbing.
+ * stage crossfades chapters as you scroll over the story video's
+ * armor-assembly segment, with the ember era-rail climbing.
  * Mobile: plain stacked list, no pinning.
  */
 export default function CareerSection() {

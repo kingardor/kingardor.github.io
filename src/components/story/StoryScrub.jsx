@@ -1,0 +1,158 @@
+import { useEffect, useRef } from 'react'
+import { isMobile, prefersReduced } from '../../shared/utils/capabilities.js'
+
+// One video segment per section. Segment N ends on the exact keyframe that
+// segment N+1 starts on, so holding a finished segment's last frame is
+// pixel-identical to the next segment's first frame — boundaries are silent.
+const SEGMENTS = [
+  { id: 'top' },      // selfie → circuits wake, dusk falls   (hero + manifesto)
+  { id: 'career' },   // twilight, armor assembles, blueprints
+  { id: 'skills' },   // void; head opens: PCB + wiring
+  { id: 'projects' }, // chrome plate completes, schematics
+  { id: 'videos' },   // red eye ignites, REC
+  { id: 'writing' },  // glyph rain, contemplative
+  { id: 'honours' },  // mirror polish, crown light
+  { id: 'contact' },  // slow push-in, final form
+]
+
+const SEEK_EPS = 1 / 30 // don't reseek for sub-frame deltas
+
+/**
+ * Fixed full-viewport story layer scrubbed by scroll. The active section's
+ * segment is visible and its currentTime follows section progress; all
+ * other segments hide. Ports the old hero's battle-tested mobile machinery:
+ * iOS gesture priming, single-seek-in-flight gating, decoder wake on tab
+ * restore. Reduced motion gets a static poster.
+ */
+export default function StoryScrub() {
+  const rootRef = useRef(null)
+
+  useEffect(() => {
+    if (prefersReduced || window.__PRERENDER) return
+    const root = rootRef.current
+    if (!root) return
+    const videos = Array.from(root.querySelectorAll('video'))
+
+    // ── Seek gating: one in-flight seek per video, coalesce to latest ──
+    const pending = new Array(videos.length).fill(null)
+    const onSeeked = videos.map((v, i) => () => {
+      if (pending[i] !== null) {
+        const t = pending[i]
+        pending[i] = null
+        v.currentTime = t
+      }
+    })
+    videos.forEach((v, i) => v.addEventListener('seeked', onSeeked[i]))
+
+    const seek = (i, t) => {
+      const v = videos[i]
+      if (v.readyState < 2 || !v.duration) return
+      const target = Math.min(v.duration - 0.05, Math.max(0, t * v.duration))
+      if (Math.abs(target - v.currentTime) < SEEK_EPS) return
+      if (v.seeking) pending[i] = target
+      else v.currentTime = target
+    }
+
+    // ── iOS: videos can't seek until a user gesture activates them.
+    // Prime every segment inside the first touch gesture. ──
+    let primed = false
+    const prime = () => {
+      if (primed) return
+      primed = true
+      videos.forEach(v => v.play().then(() => v.pause()).catch(() => {}))
+    }
+    window.addEventListener('touchstart', prime, { once: true, passive: true })
+
+    // ── Contiguous partition of the whole scroll space: segment i owns
+    // [anchor_i, anchor_i+1) where an anchor sits just before its section
+    // scrolls into view. The story timeline is therefore strictly monotonic
+    // with scroll, and handoffs land exactly on the shared keyframes. ──
+    let anchors = []
+    const measure = () => {
+      const vh = window.innerHeight
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh)
+      anchors = SEGMENTS.map((s, i) => {
+        if (i === 0) return 0
+        const el = document.getElementById(s.id)
+        if (!el) return null
+        const top = el.getBoundingClientRect().top + window.scrollY
+        return Math.min(maxScroll - 1, Math.max(0, top - vh * 0.85))
+      }).filter(a => a !== null)
+      anchors.push(maxScroll)
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(document.body)
+
+    // ── rAF driver: pick active segment, scrub it, manage preload ──
+    let raf
+    let lastActive = -1
+    const tick = () => {
+      raf = requestAnimationFrame(tick)
+      const y = window.scrollY
+      let active = 0
+      for (let i = 0; i < anchors.length - 1; i++) {
+        if (y >= anchors[i]) active = i
+        else break
+      }
+      const span = Math.max(1, anchors[active + 1] - anchors[active])
+      const t = Math.min(1, Math.max(0, (y - anchors[active]) / span))
+      if (active !== lastActive) {
+        videos.forEach((v, i) => {
+          v.style.opacity = i === active ? '1' : '0'
+          // keep neighbors warm, let distant segments idle
+          const near = Math.abs(i - active) <= 1
+          if (near && v.preload !== 'auto') v.preload = 'auto'
+        })
+        lastActive = active
+      }
+      seek(active, t)
+    }
+    raf = requestAnimationFrame(tick)
+
+    // ── Tab restore: the browser evicts background decoders; wake the
+    // active one and force a real re-decode at the current frame ──
+    const onVisibility = () => {
+      if (document.visibilityState !== 'visible' || lastActive < 0) return
+      requestAnimationFrame(() => {
+        const v = videos[lastActive]
+        if (!v?.duration) return
+        const target = v.currentTime
+        v.play()
+          .then(() => { v.pause(); v.currentTime = target })
+          .catch(() => { v.currentTime = target + 0.0001 })
+      })
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+      window.removeEventListener('touchstart', prime)
+      document.removeEventListener('visibilitychange', onVisibility)
+      videos.forEach((v, i) => v.removeEventListener('seeked', onSeeked[i]))
+    }
+  }, [])
+
+  if (prefersReduced || (typeof window !== 'undefined' && window.__PRERENDER)) {
+    return <div className="story-layer story-poster" aria-hidden="true" />
+  }
+
+  const mobile = isMobile
+  return (
+    <div className="story-layer" ref={rootRef} aria-hidden="true">
+      {SEGMENTS.map((s, i) => (
+        <video
+          key={s.id}
+          className="story-video"
+          src={`/story/story-${i + 1}${mobile ? '-m' : ''}.mp4`}
+          muted
+          playsInline
+          preload={i === 0 ? 'auto' : 'metadata'}
+          style={{ opacity: i === 0 ? 1 : 0 }}
+        />
+      ))}
+      <div className="story-scrim" />
+    </div>
+  )
+}

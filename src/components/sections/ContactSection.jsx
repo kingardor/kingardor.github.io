@@ -3,8 +3,8 @@ import { DATA } from '../prototype/dataAdapter.js'
 import { ScrambleText, TypewriterKicker, MagneticButton } from './lib/effects.jsx'
 
 /**
- * Finale: the monolith returns dead-center with its ember core lit (canvas
- * pose); the DOM is a single headline, two CTAs and a mono social line.
+ * Finale over the story video's final-form push-in: a single headline,
+ * two CTAs and a mono social line.
  */
 export default function ContactSection({ onAsk }) {
   const [visible, setVisible] = useState(false)
