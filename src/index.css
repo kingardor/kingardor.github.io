@@ -1205,3 +1205,51 @@ main { position: relative; z-index: 1; }
     to { clip-path: inset(0 0 0 0); filter: blur(0); }
   }
 }
+
+/* ═══ GUIDED TOUR — Veronica autopilot chip ═══ */
+.ob-tour {
+  position: fixed;
+  left: 50%; bottom: calc(var(--hud-h) + 18px);
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex; align-items: center; gap: 14px;
+  max-width: min(680px, calc(100vw - 32px));
+  padding: 12px 18px;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--ob-hairline);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ob-bone);
+  animation: obTourIn 0.4s var(--ease-out-l) both;
+}
+@keyframes obTourIn { from { opacity: 0; transform: translate(-50%, 14px); } }
+.ob-tour-sigil {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ob-ember);
+  flex-shrink: 0;
+}
+.ob-tour-caption { min-width: 0; line-height: 1.6; }
+.ob-tour-controls { display: flex; gap: 8px; flex-shrink: 0; }
+.ob-tour-controls button {
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid var(--ob-hairline-2);
+  color: var(--ob-bone-35);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.ob-tour-controls button:hover { border-color: rgba(255,61,0,0.5); color: var(--ob-bone); }
+
+/* The HUD strip yields the bottom edge while the tour narrates */
+body.ob-touring .ob-hud { transform: translateY(100%); }
+
+@media (max-width: 900px) {
+  .ob-nav-tour { display: none; }
+}

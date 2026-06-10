@@ -57,6 +57,13 @@ export function TopNav({ onAsk }) {
       </div>
       <div className="ob-nav-actions">
         <button
+          className="ob-nav-kbd ob-nav-tour mono-ob"
+          onClick={() => window.dispatchEvent(new CustomEvent('ob:tour'))}
+          aria-label="Start guided tour"
+        >
+          ▶ TOUR
+        </button>
+        <button
           className="ob-nav-kbd mono-ob"
           onClick={() => window.dispatchEvent(new CustomEvent('ob:palette'))}
           aria-label="Open command palette"

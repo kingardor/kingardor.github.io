@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import TelemetryHud from '../os/TelemetryHud.jsx';
+import GuidedTour from '../os/GuidedTour.jsx';
 import HeroSection, { KeywordStrip } from '../sections/HeroSection.jsx';
 import CareerSection from '../sections/CareerSection.jsx';
 import SkillsSection from '../sections/SkillsSection.jsx';
@@ -90,6 +91,7 @@ export default function Home() {
         ? <Suspense fallback={<Poster />}><MonolithCanvas /></Suspense>
         : <Poster />}
       <TelemetryHud />
+      <GuidedTour />
       <div className="grain" />
       <TopNav onAsk={goChat} />
       <main>
