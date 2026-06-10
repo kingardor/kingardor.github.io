@@ -5,55 +5,62 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev       # Start Vite dev server (localhost:5173)
-npm run build     # Production build → dist/
-npm run lint      # ESLint
-npm run preview   # Preview production build locally
+npm run dev        # Start Vite dev server (localhost:5173)
+npm run build      # Production build → dist/
+npm run prerender  # Snapshot dist/index.html via headless Chrome (needs PUPPETEER_EXECUTABLE_PATH)
+npm run lint       # ESLint
+npm run preview    # Preview production build locally
 ```
 
 ## Architecture
 
-**Personal portfolio SPA** for Akash James (AI Architect). Built with React 19 + Vite + Tailwind CSS 4.
+**Personal portfolio SPA** for Akash James (AI Architect). React 19 + Vite + Tailwind CSS 4. Design system: **Obsidian Monolith** — void black `#050505`, bone white `#ece9e2`, single ember accent `#ff3d00`. Tokens are `--ob-*` in `src/index.css`; legacy `--nm-*`/`--bg`/`--accent` names are aliases onto them (chat surfaces consume `--nm-*`). Fonts are self-hosted in `public/fonts/` (Clash Display, General Sans, JetBrains Mono) with `@font-face` in `index.html`.
 
 ### Routing
 
-Hash-based routing via the custom `useHashPath` hook — no React Router. The main router lives in `App.jsx`. Hash `/#/chat` loads the Chat page; all other hashes are anchors within the single scrolling page.
+Hash-based via the custom `useHashPath` hook — no React Router. `App.jsx` branches: `/#/chat` → lazy ChatPage, everything else → `Home`. Route swaps go through `src/shared/utils/navigate.js`, which wraps the hash change in the View Transitions API (clip-wipe + blur; instant fallback).
 
-### Section Layout
+### The Monolith (WebGL centerpiece)
 
-`App.jsx` renders all sections vertically. Sections are in `src/sections/`, each as its own folder with an `index.jsx`. Heavy sections (`Chat`, `YouTube`) are lazy-loaded via `React.lazy`.
+One persistent R3F canvas (`src/components/monolith/`) fixed behind all home content:
+
+- `Monolith.jsx` — single `IcosahedronGeometry` + custom ShaderMaterial (procedural fresnel/speculars, ember veins, dissolve, shard separation). All shape change is uniform-driven so poses interpolate continuously.
+- `keyframes.js` — per-section pose table; `useSectionRanges.js` resolves stops against live DOM offsets.
+- Scroll feed: `useScrollProgress()` ref from `SmoothScroll.jsx` (Lenis), read inside `useFrame` with `THREE.MathUtils.damp` for cinematic lag. Lenis smoothing (`lerp 0.09`) is desktop-only.
+- Gating: `src/shared/utils/capabilities.js` (`webglTier`) — mobile, reduced-motion, and prerender get the CSS `Poster.jsx` instead. The canvas chunk lazy-loads post-LCP (`requestIdleCallback` in `Home.jsx`).
+
+### Sections
+
+`src/components/sections/` — one file per section (HeroSection, CareerSection, SkillsSection, ProjectsSection, VideosSection, WritingSection, HonoursSection, ContactSection), orchestrated by `src/components/prototype/Home.jsx`. Shared helpers in `sections/lib/effects.jsx` (ScrambleText, TypewriterKicker, MagneticButton, SectionHead). Career is a pinned vertical chapter crossfade (stacked list ≤900px). Top chrome is `Chrome.jsx` (wordmark + numbered index + TOUR + ⌘K + Ask Veronica).
+
+### Veronica OS layer (`src/components/os/`)
+
+- `CommandPalette.jsx` — ⌘K/Ctrl+K/`/`; fuzzy index (`usePaletteIndex.js`, scorer in `shared/utils/fuzzy.js`) over sections/projects/posts/socials/commands; unmatched queries route to the chat as a seeded question.
+- `GuidedTour.jsx` + `tourScript.js` — canned Veronica captions, Lenis-driven autopilot; wheel pauses, Esc exits; entries: TOUR button, palette, `?tour=1`. Disabled on mobile/reduced-motion.
+- `TelemetryHud.jsx` — bottom strip: GitHub events ticker (unauth API, sessionStorage TTL, hides on failure), YouTube count, CounterAPI visitors, IST clock, SYS status.
+- `ContextChip.jsx` — per-section "ASK VERONICA ABOUT THIS" handoff.
 
 ### Content / Data
 
-All site content (roles, projects, social links, skill data, highlights) lives in `src/data.js`. Edit this file to update portfolio content without touching components.
+Site content lives in `src/data.js`, mapped to component shape by `src/components/prototype/dataAdapter.js` (career chapters, projects with Veronica pinned first, honours keys, writing rows, manifesto words, stats).
 
 ### Chat ("Veronica" AI)
 
-- Triggered via a floating action button (`ChatFAB`) or the hero prompt bar
-- Uses **Server-Sent Events** (SSE) via `src/shared/utils/openSSE.js`
-- Chat history persisted in session storage (`src/shared/utils/chatHistory.js`)
-- Responses rendered as Markdown via `react-markdown` + `remark-gfm`
-- Seeding a prompt from the hero bar uses `sessionStorage` to pass it to the Chat section
-
-### Background Effects
-
-`BgFX.jsx` renders a Three.js `<Stars />` field (via `@react-three/fiber` + `@react-three/drei`) in dark mode, and a plain CSS radial gradient in light mode. No CDN scripts.
+- SSE via `src/shared/utils/openSSE.js` to the Vercel proxy; typed events (text/thinking/tool/block) render rich blocks in `src/sections/Chat/blocks/`
+- Seeding: hero prompt bar / palette set `sessionStorage 'chat:seed'` + `#/chat?q=…`
+- Styled entirely by the `--nm-*` token aliases — recolor by editing tokens, not components
 
 ### Loading Screen
 
-A pure CSS/HTML splash screen lives in `index.html` (`#loader`). It shows immediately on page load (before JS executes) and is dismissed by `main.jsx` after React renders, with a minimum display time of ~1.7 s so all CSS animations complete before the fade-out.
-
-### Animations
-
-Framer Motion configs (variants, transitions) are centralized in `src/shared/utils/motion.js`. Import from there rather than defining inline.
+Pure CSS splash in `index.html` (`#loader`). Dismissed by `main.jsx` after BOTH ~1.7s minimum AND `window.__resolveHeroReady` (called by `HeroSection` once Clash Display is loaded; 4s safety timeout). `window.__PRERENDER` skips dismissal during the prerender snapshot.
 
 ### Deployment
 
-GitHub Actions (`.github/workflows/pages.yml`) builds on push to `main` and deploys to GitHub Pages. `dist/404.html` is a copy of `dist/index.html` to support SPA hash routing fallback.
+GitHub Actions (`.github/workflows/pages.yml`): build → prerender (headless Chrome) → copy `dist/index.html` to `dist/404.html` (SPA fallback) → deploy to GitHub Pages.
 
 ### External APIs
 
-- **CounterAPI** — site visit counter (`useSiteViews` hook)
-- **YouTube Data API** — fetched in `fetchYoutubeVideos.js`
-- **GitHub API** — fetched in `fetchGithubProjects.js`
-- **SSE endpoint** — powers the Veronica chat assistant
+- **CounterAPI** — visitor counter (`src/shared/hooks/useSiteViews.js`)
+- **GitHub API** — repos (`fetchGithubProjects.js`, prefetched during loader) + public events ticker (`shared/utils/telemetry.js`)
+- **YouTube feed** — via the Veronica Vercel proxy (`shared/utils/prefetch.js`)
+- **SSE endpoint** — the Veronica chat agent
