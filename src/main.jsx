@@ -14,10 +14,10 @@ const rootEl = document.getElementById('root')
 const isPrerendered = rootEl.hasChildNodes()
 const MIN_MS = 1700 // minimum loader display time so CSS animations complete
 
-// Resolved by Hero.jsx when video fires canplaythrough; safety-release after 10s
-const videoReadyPromise = new Promise(resolve => {
-  window.__resolveHeroVideo = resolve
-  setTimeout(resolve, 10000)
+// Resolved by HeroSection.jsx once the display font is usable; 4s safety-release
+const heroReadyPromise = new Promise(resolve => {
+  window.__resolveHeroReady = resolve
+  setTimeout(resolve, 4000)
 })
 
 const app = (
@@ -42,7 +42,7 @@ if (loader && !window.__PRERENDER) {
   const remaining = Math.max(0, MIN_MS - elapsed)
   Promise.all([
     new Promise(r => setTimeout(r, remaining)),
-    videoReadyPromise,
+    heroReadyPromise,
   ]).then(() => {
     loader.style.opacity = '0'
     loader.style.pointerEvents = 'none'
