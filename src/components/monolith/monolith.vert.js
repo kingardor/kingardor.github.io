@@ -72,8 +72,17 @@ void main() {
   vec3 pos = position;
   vec3 nrm = normal;
 
-  // Slab elongation
+  // Sphere → rounded-box projection: straightens the silhouette so the form
+  // reads as a cut slab, not an ovoid (facet shading recomputes normals
+  // from screen-space derivatives, so the approximate normal is fine)
+  float mx = max(abs(pos.x), max(abs(pos.y), abs(pos.z)));
+  pos = mix(pos, pos / max(mx, 0.0001), 0.55);
+
+  // Slab elongation + shard cross-section: narrow in X, thin in Z
   pos.y *= uStretchY;
+  pos.x *= 0.72;
+  pos.z *= 0.38;
+  nrm = normalize(nrm * vec3(1.0 / 0.72, 1.0, 1.0 / 0.38));
 
   // Twist around Y, proportional to height
   float ang = uTwist * pos.y;

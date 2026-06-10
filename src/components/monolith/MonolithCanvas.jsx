@@ -31,7 +31,7 @@ export default function MonolithCanvas() {
         gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 0, 5], fov: 45 }}
       >
-        <Monolith subdivisions={tier === 1 ? 24 : 64} />
+        <Monolith subdivisions={tier === 1 ? 8 : 16} />
         <CAController offset={caOffset} />
         <EffectComposer multisampling={0}>
           <Bloom mipmapBlur intensity={0.35} luminanceThreshold={0.6} luminanceSmoothing={0.2} />

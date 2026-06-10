@@ -9,7 +9,9 @@ import useSectionRanges from './useSectionRanges.js'
 
 const INTRO_MS = 2200 // materialize duration after mount (uDissolve 1 → 0)
 
-export default function Monolith({ subdivisions = 64 }) {
+// Low subdivision is deliberate: with flat-faceted shading the coarse
+// triangulation is what makes the surface read as cut crystal.
+export default function Monolith({ subdivisions = 16 }) {
   const meshRef = useRef(null)
   const scrollRef = useScrollProgress()
   const lenisRef = useLenis()

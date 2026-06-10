@@ -6,55 +6,55 @@
 const heroPose = {
   x: 0.55, y: 0.05, z: 0,
   scale: 0.62, stretchY: 2.4, noiseAmp: 0.04, twist: 0,
-  shard: 0, ember: 0.15, facet: 0.85, rotSpeed: 0.05,
+  shard: 0, ember: 0.15, facet: 1.0, rotSpeed: 0.04,
 }
 
 const manifestoPose = {
   x: 0.72, y: 0.05, z: 0.2,
   scale: 0.6, stretchY: 1.8, noiseAmp: 0.10, twist: 0.4,
-  shard: 0, ember: 0.45, facet: 0.7, rotSpeed: 0.08,
+  shard: 0, ember: 0.45, facet: 1.0, rotSpeed: 0.06,
 }
 
 const careerPose = {
   x: -0.62, y: 0, z: -0.5,
   scale: 0.5, stretchY: 3.2, noiseAmp: 0.06, twist: 0.15,
-  shard: 0, ember: 0.25, facet: 0.9, rotSpeed: 0.04,
+  shard: 0, ember: 0.25, facet: 1.0, rotSpeed: 0.03,
 }
 
 const skillsPose = {
   x: 0, y: 0.1, z: -0.8,
-  scale: 0.5, stretchY: 1.0, noiseAmp: 0.18, twist: 0,
-  shard: 1.0, ember: 0.6, facet: 0.6, rotSpeed: 0.12,
+  scale: 0.5, stretchY: 1.0, noiseAmp: 0.14, twist: 0,
+  shard: 1.0, ember: 0.6, facet: 1.0, rotSpeed: 0.09,
 }
 
 const projectsPose = {
   x: 0.55, y: 0.45, z: -1,
   scale: 0.45, stretchY: 1.5, noiseAmp: 0.05, twist: 0.8,
-  shard: 0, ember: 0.2, facet: 0.85, rotSpeed: 0.06,
+  shard: 0, ember: 0.2, facet: 1.0, rotSpeed: 0.05,
 }
 
 const videosPose = {
   x: -0.58, y: -0.1, z: -0.8,
   scale: 0.5, stretchY: 1.0, noiseAmp: 0.08, twist: 0.2,
-  shard: 0, ember: 0.3, facet: 0.75, rotSpeed: 0.05,
+  shard: 0, ember: 0.3, facet: 1.0, rotSpeed: 0.04,
 }
 
 const writingPose = {
   x: 0, y: -0.85, z: -1.2,
   scale: 0.42, stretchY: 2.6, noiseAmp: 0.03, twist: 0,
-  shard: 0, ember: 0.15, facet: 0.9, rotSpeed: 0.03,
+  shard: 0, ember: 0.15, facet: 1.0, rotSpeed: 0.03,
 }
 
 const honoursPose = {
   x: 0.6, y: 0, z: -1,
   scale: 0.45, stretchY: 1.9, noiseAmp: 0.04, twist: 0.1,
-  shard: 0, ember: 0.25, facet: 0.9, rotSpeed: 0.04,
+  shard: 0, ember: 0.25, facet: 1.0, rotSpeed: 0.03,
 }
 
 const contactPose = {
   x: 0, y: 0, z: 0.4,
-  scale: 0.68, stretchY: 1.7, noiseAmp: 0.09, twist: 0.3,
-  shard: 0, ember: 0.8, facet: 0.65, rotSpeed: 0.10,
+  scale: 0.68, stretchY: 1.7, noiseAmp: 0.07, twist: 0.25,
+  shard: 0, ember: 0.8, facet: 1.0, rotSpeed: 0.07,
 }
 
 // Ordered stops; double entries hold a pose steady across a long section.

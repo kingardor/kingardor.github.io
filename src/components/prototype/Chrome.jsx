@@ -1,79 +1,58 @@
-import { useEffect, useState } from 'react';
-
-const SECTIONS = [
-  { id: 'top', label: 'HOME' },
-  { id: 'career', label: 'CAREER' },
-  { id: 'skills', label: 'STACK' },
-  { id: 'projects', label: 'WORK' },
-  { id: 'videos', label: 'SIGNALS' },
-  { id: 'writing', label: 'NOTES' },
-  { id: 'honours', label: 'HONOURS' },
-  { id: 'contact', label: 'CONTACT' },
-];
+import { Home, Briefcase, Wrench, Folder as FolderIcon, Radio, Mail, Play, Command, MessageSquare } from 'lucide-react';
+import Dock from './reactbits/Dock.jsx';
+import { isMobile, prefersReduced } from '../../shared/utils/capabilities.js';
 
 /**
- * Top-edge minimal chrome: AJ. wordmark, mono section index with live
- * active-state, Ask Veronica. Mobile collapses to wordmark + Ask.
+ * Bottom dock navigation (magnifying, macOS-style) — sits just above the
+ * telemetry HUD strip. Tour is desktop-only (the tour itself is gated).
  */
 export function TopNav({ onAsk }) {
-  const [active, setActive] = useState('top');
-
-  useEffect(() => {
-    const els = SECTIONS.map(s => document.getElementById(s.id)).filter(Boolean);
-    if (!els.length) return;
-    const io = new IntersectionObserver(entries => {
-      // Pick the most visible intersecting section
-      const hit = entries
-        .filter(e => e.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (hit) setActive(hit.target.id);
-    }, { rootMargin: '-35% 0px -45% 0px', threshold: [0, 0.1, 0.5] });
-    els.forEach(el => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-
-  const jump = (id) => (e) => {
-    e.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const jump = (id) => () => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const items = [
+    { icon: <Home size={20} strokeWidth={1.75} />,      label: 'Home',    onClick: jump('top') },
+    { icon: <Briefcase size={20} strokeWidth={1.75} />, label: 'Career',  onClick: jump('career') },
+    { icon: <Wrench size={20} strokeWidth={1.75} />,    label: 'Stack',   onClick: jump('skills') },
+    { icon: <FolderIcon size={20} strokeWidth={1.75} />,label: 'Work',    onClick: jump('projects') },
+    { icon: <Radio size={20} strokeWidth={1.75} />,     label: 'Signals', onClick: jump('videos') },
+    { icon: <Mail size={20} strokeWidth={1.75} />,      label: 'Contact', onClick: jump('contact') },
+    ...(!isMobile && !prefersReduced ? [{
+      icon: <Play size={20} strokeWidth={1.75} />,
+      label: 'Tour',
+      onClick: () => window.dispatchEvent(new CustomEvent('ob:tour')),
+    }] : []),
+    {
+      icon: <Command size={20} strokeWidth={1.75} />,
+      label: '⌘K',
+      onClick: () => window.dispatchEvent(new CustomEvent('ob:palette')),
+    },
+    {
+      icon: <MessageSquare size={20} strokeWidth={1.75} />,
+      label: 'Ask Veronica',
+      onClick: onAsk || (() => { location.hash = '/chat'; }),
+    },
+  ];
+
   return (
-    <nav className="ob-nav" aria-label="Sections">
-      <a className="ob-nav-mark" href="#top" onClick={jump('top')}>
-        AJ<span className="ob-ember">.</span>
-      </a>
-      <div className="ob-nav-links mono-ob">
-        {SECTIONS.slice(1).map((s, i) => (
-          <a
-            key={s.id}
-            href={`#${s.id}`}
-            onClick={jump(s.id)}
-            className={active === s.id ? 'active' : undefined}
-          >
-            <span className="ob-nav-num">{String(i + 1).padStart(2, '0')}</span>
-            {s.label}
-          </a>
-        ))}
-      </div>
-      <div className="ob-nav-actions">
-        <button
-          className="ob-nav-kbd ob-nav-tour mono-ob"
-          onClick={() => window.dispatchEvent(new CustomEvent('ob:tour'))}
-          aria-label="Start guided tour"
-        >
-          ▶ TOUR
-        </button>
-        <button
-          className="ob-nav-kbd mono-ob"
-          onClick={() => window.dispatchEvent(new CustomEvent('ob:palette'))}
-          aria-label="Open command palette"
-        >
-          ⌘K
-        </button>
-        <button className="ob-nav-ask mono-ob" onClick={onAsk}>
-          <span className="ob-nav-sigil">V</span>ASK VERONICA
-        </button>
-      </div>
-    </nav>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 'calc(var(--hud-h) + 12px)',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 80,
+      }}
+    >
+      <Dock
+        items={items}
+        panelHeight={46}
+        baseItemSize={32}
+        magnification={48}
+        distance={120}
+      />
+    </div>
   );
 }

@@ -1,7 +1,9 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import TelemetryHud from '../os/TelemetryHud.jsx';
 import GuidedTour from '../os/GuidedTour.jsx';
-import HeroSection, { KeywordStrip } from '../sections/HeroSection.jsx';
+import HeroSection from '../sections/HeroSection.jsx';
+import Marquee from '../sections/Marquee.jsx';
+import StatsStrip from '../sections/StatsStrip.jsx';
 import CareerSection from '../sections/CareerSection.jsx';
 import SkillsSection from '../sections/SkillsSection.jsx';
 import ProjectsSection from '../sections/ProjectsSection.jsx';
@@ -96,7 +98,8 @@ export default function Home() {
       <TopNav onAsk={goChat} />
       <main>
         <HeroSection />
-        <KeywordStrip />
+        <Marquee />
+        <StatsStrip />
         <CareerSection />
         <SkillsSection />
         <ProjectsSection projects={projects || undefined} />

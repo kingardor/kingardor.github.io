@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { DATA } from '../prototype/dataAdapter.js'
 import DecryptedText from '../prototype/reactbits/DecryptedText.jsx'
+import { useLenis } from '../../shared/components/SmoothScroll.jsx'
+
+const STEP_COOLDOWN_MS = 550 // min time between chapter steps
+const STEP_THRESHOLD = 60    // accumulated wheel delta that triggers a step
+const STEP_S = 0.85          // chapter step scroll duration
+const stepEase = t => 1 - Math.pow(1 - t, 3)
 
 /**
  * Cinematic vertical timeline: the zone is one viewport per role; a pinned
@@ -12,6 +18,8 @@ export default function CareerSection() {
   const zoneRef = useRef(null)
   const railRef = useRef(null)
   const [idx, setIdx] = useState(0)
+  const idxRef = useRef(0)
+  const lenisRef = useLenis()
   const roles = DATA.career
   const n = roles.length
 
@@ -24,13 +32,66 @@ export default function CareerSection() {
       const rect = zone.getBoundingClientRect()
       const totalPx = rect.height - window.innerHeight
       const p = Math.max(0, Math.min(1, -rect.top / totalPx))
-      setIdx(Math.min(n - 1, Math.floor(p * n + 0.0001)))
+      const i = Math.min(n - 1, Math.floor(p * n + 0.0001))
+      idxRef.current = i
+      setIdx(i)
       railRef.current?.style.setProperty('--p', `${(p * 100).toFixed(2)}%`)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [n])
+
+    // Discrete chapter stepping. While the zone is pinned, wheel input is
+    // absorbed and accumulated; once the accumulated delta crosses the
+    // threshold (and the cooldown has elapsed) the chapter steps once.
+    // Rapid flicking therefore advances at a steady cadence — one chapter
+    // per ~0.9s — instead of trapping the user, and at either edge the
+    // gesture passes through so the page scrolls on naturally.
+    let acc = 0
+    let lastStepAt = 0
+    let animating = false
+    const onWheel = (e) => {
+      const rect = zone.getBoundingClientRect()
+      const vh = window.innerHeight
+      const pinned = rect.top <= 2 && rect.bottom >= vh - 2
+      if (!pinned) { acc = 0; return }
+
+      const dir = e.deltaY > 0 ? 1 : -1
+      const i = idxRef.current
+      // Edge release: outward gestures leave the zone untouched
+      if (!animating && ((i === 0 && dir < 0) || (i === n - 1 && dir > 0))) return
+
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      if (animating) return
+
+      acc += e.deltaY
+      const now = performance.now()
+      if (now - lastStepAt < STEP_COOLDOWN_MS) return
+      if (Math.abs(acc) < STEP_THRESHOLD) return
+
+      const stepDir = acc > 0 ? 1 : -1
+      acc = 0
+      lastStepAt = now
+      const next = Math.min(n - 1, Math.max(0, i + stepDir))
+      if (next === i) return
+      const zoneTop = window.scrollY + rect.top
+      const scrollable = zone.offsetHeight - vh
+      const target = zoneTop + scrollable * ((next + 0.5) / n)
+      const lenis = lenisRef?.current
+      animating = true
+      const done = () => { animating = false; acc = 0 }
+      if (lenis) lenis.scrollTo(target, { duration: STEP_S, easing: stepEase, lock: true, onComplete: done })
+      else { window.scrollTo({ top: target, behavior: 'smooth' }); setTimeout(done, STEP_S * 1000) }
+    }
+    // Capture phase + stopImmediatePropagation keeps Lenis's own wheel
+    // handler from double-driving the scroll while we step.
+    window.addEventListener('wheel', onWheel, { passive: false, capture: true })
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('wheel', onWheel, { capture: true })
+    }
+  }, [n, lenisRef])
 
   return (
     <section

@@ -205,12 +205,3 @@ export default function HeroSection() {
   )
 }
 
-/** Static keyword strip — replaces the draggable marquee. */
-export function KeywordStrip() {
-  const items = ['AGENTS', 'MULTIMODAL', 'VISION', 'EDGE', 'CUDA', 'LLMS', 'DEEPSTREAM', 'RAG', 'JETSON', 'TENSORRT']
-  return (
-    <div className="ob-keywords mono-ob" aria-hidden="true">
-      {items.map((t, i) => <span key={i}>{t}</span>)}
-    </div>
-  )
-}
