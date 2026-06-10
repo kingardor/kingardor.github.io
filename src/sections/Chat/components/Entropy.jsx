@@ -155,9 +155,9 @@ export function Entropy({ phase = 'idle' }) {
 
             if (!isError && mode === 'sweeping' && behind < SYNAPSE_PX) {
               const t  = 1 - behind / SYNAPSE_PX;
-              const sR = Math.round(lerp(255, 30,  t));
-              const sG = Math.round(lerp(255, 220, t));
-              const sB = Math.round(lerp(255, 255, t));
+              const sR = 255;
+              const sG = Math.round(lerp(255, 61, t));
+              const sB = Math.round(lerp(255, 0, t));
               ctx.strokeStyle = `rgba(${sR},${sG},${sB},${(baseA * (0.7 + t * 0.3)).toFixed(3)})`;
             } else {
               ctx.strokeStyle = `rgba(255,${errG},${errB},${baseA.toFixed(3)})`;
@@ -178,9 +178,9 @@ export function Entropy({ phase = 'idle' }) {
 
         if (mode === 'idle' && !isError && pt.flash > 0) {
           // ── Idle synapse spark ──────────────────────────────────────────
-          pR = Math.round(lerp(255, 30,  pt.flash));
-          pG = Math.round(lerp(255, 220, pt.flash));
-          pB = Math.round(lerp(255, 255, pt.flash));
+          pR = 255;
+          pG = Math.round(lerp(255, 61, pt.flash));
+          pB = Math.round(lerp(255, 0, pt.flash));
           pA = lerp(0.42, 1.0, pt.flash);
           r  = pt.r + pt.flash * 2;
 
@@ -197,9 +197,9 @@ export function Entropy({ phase = 'idle' }) {
 
             if (mode === 'sweeping' && behind < SYNAPSE_PX) {
               const t = 1 - behind / SYNAPSE_PX;
-              pR = Math.round(lerp(255, 30,  t));
-              pG = Math.round(lerp(255, 220, t));
-              pB = Math.round(lerp(255, 255, t));
+              pR = 255;
+              pG = Math.round(lerp(255, 61, t));
+              pB = Math.round(lerp(255, 0, t));
               pA = lerp(0.55, 1.0, t);
               r  = pt.r + t * 1.5;
             } else {

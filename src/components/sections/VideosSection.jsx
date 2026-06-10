@@ -39,7 +39,7 @@ export default function VideosSection({ videos: propVideos }) {
   return (
     <section className="ob-videos" id="videos" data-screen-label="05 Signals">
       <div className="ob-wrap">
-        <SectionHead kicker="SIGNALS" index="004" title="Live from the workshop." />
+        <SectionHead kicker="SIGNALS" index="004" title="Live from the workshop." ask="What videos has Akash published?" />
         <div className="ob-screening">
           <div className="ob-screen reveal">
             {playing && curId ? (

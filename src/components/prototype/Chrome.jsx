@@ -55,9 +55,18 @@ export function TopNav({ onAsk }) {
           </a>
         ))}
       </div>
-      <button className="ob-nav-ask mono-ob" onClick={onAsk}>
-        <span className="ob-nav-sigil">V</span>ASK VERONICA
-      </button>
+      <div className="ob-nav-actions">
+        <button
+          className="ob-nav-kbd mono-ob"
+          onClick={() => window.dispatchEvent(new CustomEvent('ob:palette'))}
+          aria-label="Open command palette"
+        >
+          ⌘K
+        </button>
+        <button className="ob-nav-ask mono-ob" onClick={onAsk}>
+          <span className="ob-nav-sigil">V</span>ASK VERONICA
+        </button>
+      </div>
     </nav>
   );
 }

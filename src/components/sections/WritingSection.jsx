@@ -6,7 +6,7 @@ export default function WritingSection() {
   return (
     <section className="ob-writing" id="writing" data-screen-label="06 Notes">
       <div className="ob-wrap">
-        <SectionHead kicker="FIELD NOTES" index="005" title="Writing." />
+        <SectionHead kicker="FIELD NOTES" index="005" title="Writing." ask="What has Akash written about?" />
         <div className="ob-ledger">
           {DATA.writing.map((w, i) => (
             <a

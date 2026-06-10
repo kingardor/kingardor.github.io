@@ -6,7 +6,7 @@ export default function HonoursSection() {
   return (
     <section className="ob-honours" id="honours" data-screen-label="07 Honours">
       <div className="ob-wrap">
-        <SectionHead kicker="HONOURS" index="006" title="Notable." />
+        <SectionHead kicker="HONOURS" index="006" title="Notable." ask="Tell me about Akash's patent and honours" />
         <div className="ob-honours-grid">
           {DATA.honours.map((h, i) => {
             const Tag = h.href ? 'a' : 'div'

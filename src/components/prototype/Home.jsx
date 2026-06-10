@@ -14,6 +14,7 @@ import { DATA } from './dataAdapter.js';
 import { prefetched } from '../../shared/utils/prefetch.js';
 import Poster from '../monolith/Poster.jsx';
 import { webglTier } from '../../shared/utils/capabilities.js';
+import navigate from '../../shared/utils/navigate.js';
 
 // Heavy WebGL chunk loads post-LCP on capable devices only
 const MonolithCanvas = lazy(() => import('../monolith/MonolithCanvas.jsx'));
@@ -81,7 +82,7 @@ export default function Home() {
     }).catch(() => {});
   }, []);
 
-  const goChat = () => { location.hash = '/chat'; };
+  const goChat = () => navigate('/chat');
 
   return (
     <>

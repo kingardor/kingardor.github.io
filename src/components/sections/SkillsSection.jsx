@@ -10,7 +10,7 @@ export default function SkillsSection() {
   return (
     <section className="ob-skills" id="skills" data-screen-label="03 Stack">
       <div className="ob-wrap">
-        <SectionHead kicker="ARSENAL" index="002" title="The stack, spoken aloud." />
+        <SectionHead kicker="ARSENAL" index="002" title="The stack, spoken aloud." ask="What's Akash's current tech stack?" />
         <p className="ob-skills-sentence reveal">
           {words.map((w, i) => {
             const clean = w.replace(/[.,]/g, '')

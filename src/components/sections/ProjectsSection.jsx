@@ -11,7 +11,7 @@ export default function ProjectsSection({ projects: propProjects }) {
   return (
     <section className="ob-projects" id="projects" data-screen-label="04 Work">
       <div className="ob-wrap">
-        <SectionHead kicker="MISSION FILES" index="003" title="Selected works." />
+        <SectionHead kicker="MISSION FILES" index="003" title="Selected works." ask="Show me Akash's top 3 projects" />
         <div className="ob-project-rows">
           {projects.map((p, i) => {
             const external = p.href && !p.href.startsWith('#')

@@ -1051,3 +1051,157 @@ main { position: relative; z-index: 1; }
   font-size: 8px;
   color: var(--ob-bone-15);
 }
+
+/* ═══ VERONICA OS — command palette, context chips, route transitions ═══ */
+.ob-palette-backdrop {
+  position: fixed; inset: 0;
+  z-index: 100;
+  background: rgba(5, 5, 5, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex; justify-content: center;
+  padding-top: clamp(60px, 16vh, 180px);
+  animation: obFadeIn 0.18s ease both;
+}
+@keyframes obFadeIn { from { opacity: 0; } }
+.ob-palette {
+  width: min(580px, calc(100vw - 32px));
+  height: fit-content;
+  max-height: 70vh;
+  display: flex; flex-direction: column;
+  background: var(--glass-bg);
+  border: 1px solid var(--ob-hairline);
+  box-shadow: 0 40px 120px -20px rgba(0,0,0,0.9);
+  animation: obPaletteIn 0.25s var(--ease-out-l) both;
+}
+@keyframes obPaletteIn { from { opacity: 0; transform: translateY(-12px) scale(0.985); } }
+.ob-palette-bar {
+  display: flex; align-items: center; gap: 14px;
+  height: 56px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--ob-hairline-2);
+}
+.ob-palette-sigil {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ob-ember);
+}
+.ob-palette-input {
+  flex: 1;
+  background: none; border: none; outline: none;
+  color: var(--ob-bone);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.ob-palette-input::placeholder { color: var(--ob-bone-35); }
+.ob-palette-esc {
+  font-size: 8px;
+  color: var(--ob-bone-15);
+  border: 1px solid var(--ob-hairline-2);
+  padding: 3px 6px;
+}
+.ob-palette-list {
+  list-style: none;
+  margin: 0; padding: 6px;
+  overflow-y: auto;
+}
+.ob-palette-row {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  grid-template-areas: "type label" "type sub";
+  column-gap: 14px;
+  align-items: baseline;
+  width: 100%;
+  padding: 11px 12px;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  text-align: left;
+  color: var(--ob-bone-60);
+  cursor: pointer;
+}
+.ob-palette-row.selected {
+  background: rgba(236, 233, 226, 0.04);
+  border-left-color: var(--ob-ember);
+  color: var(--ob-bone);
+}
+.ob-palette-type {
+  grid-area: type;
+  font-size: 8px;
+  color: var(--ob-bone-15);
+  align-self: center;
+}
+.ob-palette-row.selected .ob-palette-type { color: var(--ob-ember); }
+.ob-palette-label {
+  grid-area: label;
+  font-size: 13px;
+  font-family: var(--font-body);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ob-palette-row.ask .ob-palette-label { color: var(--ob-ember-hot); }
+.ob-palette-sub {
+  grid-area: sub;
+  font-size: 10px;
+  color: var(--ob-bone-35);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ob-palette-empty {
+  padding: 22px 12px;
+  font-size: 9px;
+  color: var(--ob-bone-35);
+}
+
+/* Context chip */
+.ob-sec-head-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 18px;
+}
+.ob-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 12px;
+  background: none;
+  border: 1px solid var(--ob-hairline-2);
+  color: var(--ob-bone-35);
+  font-size: 8px;
+  cursor: pointer;
+  transition: border-color 0.25s ease, color 0.25s ease;
+  white-space: nowrap;
+}
+.ob-chip:hover { border-color: rgba(255, 61, 0, 0.5); color: var(--ob-bone); }
+.ob-chip span { color: var(--ob-ember); }
+@media (max-width: 640px) {
+  .ob-chip { display: none; }
+}
+
+/* ⌘K affordance in the nav */
+.ob-nav-actions { display: flex; align-items: center; gap: 10px; }
+.ob-nav-kbd {
+  height: 32px;
+  padding: 0 10px;
+  background: none;
+  border: 1px solid var(--ob-hairline-2);
+  color: var(--ob-bone-35);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+.ob-nav-kbd:hover { border-color: var(--ob-hairline); color: var(--ob-bone); }
+
+/* Route swap: vertical clip-wipe + blur (View Transitions API) */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: obWipeOut 0.45s var(--ease-cine) both;
+  }
+  ::view-transition-new(root) {
+    animation: obWipeIn 0.5s var(--ease-cine) 0.05s both;
+  }
+  @keyframes obWipeOut {
+    to { clip-path: inset(0 0 100% 0); filter: blur(8px); }
+  }
+  @keyframes obWipeIn {
+    from { clip-path: inset(100% 0 0 0); filter: blur(8px); }
+    to { clip-path: inset(0 0 0 0); filter: blur(0); }
+  }
+}

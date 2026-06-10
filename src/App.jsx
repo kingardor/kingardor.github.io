@@ -2,6 +2,7 @@ import React, { Suspense, useEffect } from 'react'
 import useHashPath from './shared/hooks/useHashPath'
 import { useLenis } from './shared/components/SmoothScroll'
 import Home from './components/prototype/Home'
+import CommandPalette from './components/os/CommandPalette.jsx'
 
 const ChatPage = React.lazy(() => import('./sections/Chat/ChatPage'))
 
@@ -80,11 +81,19 @@ export default function App() {
 
   if (path.startsWith('/chat')) {
     return (
-      <Suspense fallback={<ChatLoader />}>
-        <ChatPage />
-      </Suspense>
+      <>
+        <CommandPalette />
+        <Suspense fallback={<ChatLoader />}>
+          <ChatPage />
+        </Suspense>
+      </>
     )
   }
 
-  return <Home />
+  return (
+    <>
+      <CommandPalette />
+      <Home />
+    </>
+  )
 }

@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { DATA } from '../prototype/dataAdapter.js'
 import { CHAT_SUGGESTIONS } from '../../data.js'
 import DecryptedText from '../prototype/reactbits/DecryptedText.jsx'
+import navigate from '../../shared/utils/navigate.js'
 
 const SEED_KEY = 'chat:seed'
 
@@ -46,9 +47,9 @@ function HeroChatPill() {
     const q = text.trim()
     if (q) {
       try { sessionStorage.setItem(SEED_KEY, q) } catch { /* private mode */ }
-      location.hash = `/chat?q=${encodeURIComponent(q)}`
+      navigate(`/chat?q=${encodeURIComponent(q)}`)
     } else {
-      location.hash = '/chat'
+      navigate('/chat')
     }
   }
 

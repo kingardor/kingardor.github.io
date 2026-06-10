@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import ContextChip from '../../os/ContextChip.jsx'
 
 /** Scrambles into the final text when `trigger` flips true. */
 export function ScrambleText({ text, className, trigger }) {
@@ -73,11 +74,14 @@ export function MagneticButton({ tag = 'a', children, className, style, ...props
   )
 }
 
-/** Section header shared by all chapters. */
-export function SectionHead({ kicker, index, title }) {
+/** Section header shared by all chapters; `ask` wires a Veronica handoff chip. */
+export function SectionHead({ kicker, index, title, ask }) {
   return (
     <header className="ob-sec-head reveal">
-      <div className="ob-kicker mono-ob"><span className="ob-ember">{kicker}</span> · {index}</div>
+      <div className="ob-sec-head-row">
+        <div className="ob-kicker mono-ob"><span className="ob-ember">{kicker}</span> · {index}</div>
+        {ask && <ContextChip question={ask} />}
+      </div>
       <h2 className="ob-sec-title">{title}</h2>
     </header>
   )
