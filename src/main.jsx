@@ -3,7 +3,6 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import './shared/utils/prefetch.js' // kick off API fetches during loader window
 import App from './App.jsx'
-import { ThemeProvider } from './shared/contexts/ThemeContext'
 import { LenisProvider } from './shared/components/SmoothScroll'
 
 // Prefetch the Chat chunk while the loader is showing so it's ready on first click
@@ -23,11 +22,9 @@ const videoReadyPromise = new Promise(resolve => {
 
 const app = (
   <StrictMode>
-    <ThemeProvider>
-      <LenisProvider>
-        <App />
-      </LenisProvider>
-    </ThemeProvider>
+    <LenisProvider>
+      <App />
+    </LenisProvider>
   </StrictMode>
 )
 

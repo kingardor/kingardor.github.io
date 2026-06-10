@@ -64,15 +64,15 @@ export default function Home() {
       <div className="grain" />
       <TopNav onAsk={goChat} />
       <main>
-        <Hero bg={{ grid: false }} accent="#ef2b3a" />
+        <Hero bg={{ grid: false }} accent="#ff3d00" />
         <Marquee />
-        <Career bg={{ rain: true }} accent="#ef2b3a" />
+        <Career bg={{ rain: true }} accent="#ff3d00" />
         <Skills />
         <Projects projects={projects || undefined} />
         <Videos videos={videos || undefined} />
         <Writing />
         <Honours />
-        <Transmission onAsk={goChat} bg={{ aurora: true }} accent="#ef2b3a" />
+        <Transmission onAsk={goChat} bg={{ aurora: true }} accent="#ff3d00" />
       </main>
     </>
   );

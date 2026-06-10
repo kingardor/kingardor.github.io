@@ -3,13 +3,12 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, Tooltip, Cell,
 } from 'recharts'
-import { useTheme } from '../../../shared/contexts/ThemeContext'
 
 function getColors() {
   const s = getComputedStyle(document.documentElement)
   return {
-    accent:   (s.getPropertyValue('--nm-accent')      || '#dc2626').trim(),
-    accent2:  (s.getPropertyValue('--nm-accent-2')    || '#db2777').trim(),
+    accent:   (s.getPropertyValue('--nm-accent')      || '#ff3d00').trim(),
+    accent2:  (s.getPropertyValue('--nm-accent-2')    || '#ff6a33').trim(),
     surface:  (s.getPropertyValue('--nm-surface')     || '#111116').trim(),
     textMuted:(s.getPropertyValue('--nm-text-muted')  || '#6b7280').trim(),
     border:   (s.getPropertyValue('--nm-border')      || '#1f1f2e').trim(),
@@ -17,8 +16,7 @@ function getColors() {
 }
 
 export default function SkillCharts({ data }) {
-  const { theme } = useTheme()
-  const colors = React.useMemo(() => getColors(), [theme])
+  const colors = React.useMemo(() => getColors(), [])
 
   const radarData  = data?.radar    ?? []
   const techData   = data?.tech_bars ?? []

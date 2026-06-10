@@ -2,7 +2,6 @@ import React, { Suspense, useEffect } from 'react'
 import useHashPath from './shared/hooks/useHashPath'
 import { useLenis } from './shared/components/SmoothScroll'
 import Home from './components/prototype/Home'
-import SplashCursor from './components/prototype/reactbits/SplashCursor'
 
 const ChatPage = React.lazy(() => import('./sections/Chat/ChatPage'))
 
@@ -16,15 +15,15 @@ function ChatLoader() {
       {/* Subtle radial glow behind sigil */}
       <div style={{
         position: 'absolute', width: 320, height: 320, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(220,38,38,0.12) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(255,61,0,0.12) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
       {/* V sigil */}
       <div style={{
         width: 64, height: 64, borderRadius: '50%', flexShrink: 0,
-        background: 'linear-gradient(135deg, #ef2b3a, #ff4d7a)',
-        boxShadow: '0 0 40px rgba(239,43,58,0.4), 0 0 80px rgba(239,43,58,0.12)',
+        background: 'linear-gradient(135deg, #ff3d00, #ff6a33)',
+        boxShadow: '0 0 40px rgba(255,61,0,0.4), 0 0 80px rgba(255,61,0,0.12)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         animation: 'pulseGlow 1.4s ease-in-out infinite',
       }}>
@@ -37,7 +36,7 @@ function ChatLoader() {
       {/* Label */}
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
         <div style={{
-          fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: '1.4rem',
+          fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.4rem',
           letterSpacing: '-0.04em', color: 'var(--nm-text, #f1f5f9)',
         }}>
           VERONICA
@@ -54,13 +53,13 @@ function ChatLoader() {
       {/* Progress bar */}
       <div style={{
         width: 160, height: 1,
-        background: 'rgba(239,43,58,0.2)',
+        background: 'rgba(255,61,0,0.2)',
         borderRadius: 1, overflow: 'hidden',
         position: 'relative',
       }}>
         <div style={{
           position: 'absolute', top: 0, left: 0, height: '100%', width: '40%',
-          background: 'linear-gradient(to right, transparent, #ef2b3a, transparent)',
+          background: 'linear-gradient(to right, transparent, #ff3d00, transparent)',
           animation: 'chatLoadScan 1.2s ease-in-out infinite',
         }} />
       </div>
@@ -81,19 +80,11 @@ export default function App() {
 
   if (path.startsWith('/chat')) {
     return (
-      <>
-        <SplashCursor />
-        <Suspense fallback={<ChatLoader />}>
-          <ChatPage />
-        </Suspense>
-      </>
+      <Suspense fallback={<ChatLoader />}>
+        <ChatPage />
+      </Suspense>
     )
   }
 
-  return (
-    <>
-      <SplashCursor />
-      <Home />
-    </>
-  )
+  return <Home />
 }

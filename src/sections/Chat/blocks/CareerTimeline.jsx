@@ -2,15 +2,14 @@ import React from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Cell, ResponsiveContainer,
 } from 'recharts'
-import { useTheme } from '../../../shared/contexts/ThemeContext'
 
 const BASE_YEAR = 2020
 
 function getColors() {
   const s = getComputedStyle(document.documentElement)
   return {
-    accent:   (s.getPropertyValue('--nm-accent')   || '#dc2626').trim(),
-    accent2:  (s.getPropertyValue('--nm-accent-2') || '#db2777').trim(),
+    accent:   (s.getPropertyValue('--nm-accent')   || '#ff3d00').trim(),
+    accent2:  (s.getPropertyValue('--nm-accent-2') || '#ff6a33').trim(),
     surface:  (s.getPropertyValue('--nm-surface')  || '#111116').trim(),
     textMuted:(s.getPropertyValue('--nm-text-muted')|| '#6b7280').trim(),
     border:   (s.getPropertyValue('--nm-border')   || '#1f1f2e').trim(),
@@ -36,8 +35,7 @@ function CustomTooltip({ active, payload }) {
 }
 
 export default function CareerTimeline({ data }) {
-  const { theme } = useTheme()
-  const colors = React.useMemo(() => getColors(), [theme])
+  const colors = React.useMemo(() => getColors(), [])
   const career = data?.career ?? []
   if (!career.length) return null
 

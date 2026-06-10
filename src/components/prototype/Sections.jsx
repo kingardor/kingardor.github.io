@@ -24,7 +24,7 @@ function getYTId(url) {
   return url?.match(/(?:v=|youtu\.be\/)([^&?/]+)/)?.[1] || null;
 }
 
-export function Career({ bg = { rain: true }, accent = '#ef2b3a' }) {
+export function Career({ bg = { rain: true }, accent = '#ff3d00' }) {
   const wrapRef = useRef(null);
   const trackRef = useRef(null);
   const barRef = useRef(null);
@@ -123,7 +123,7 @@ export function Skills() {
           enableStars
           enableSpotlight
           enableBorderGlow
-          glowColor="239, 43, 58"
+          glowColor="255, 61, 0"
           enableTilt
           clickEffect={false}
           columns={2}
@@ -148,7 +148,7 @@ export function Projects({ projects: propProjects }) {
           enableStars
           enableSpotlight
           enableBorderGlow
-          glowColor="239, 43, 58"
+          glowColor="255, 61, 0"
           enableTilt
           clickEffect
         />
@@ -193,8 +193,8 @@ export function Videos({ videos: propVideos }) {
                 ? <SmartThumb key={curId} id={curId} thumb={cur.thumb} />
                 : <div className="screen" style={{
                     background:
-                      'radial-gradient(circle at 30% 40%, rgba(239,43,58,0.15), transparent 50%),' +
-                      'radial-gradient(circle at 70% 60%, rgba(255,77,122,0.15), transparent 50%),' +
+                      'radial-gradient(circle at 30% 40%, rgba(255,61,0,0.15), transparent 50%),' +
+                      'radial-gradient(circle at 70% 60%, rgba(255,106,51,0.15), transparent 50%),' +
                       'repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0 12px, transparent 12px 24px)'
                   }} />
               }
@@ -232,7 +232,7 @@ export function Videos({ videos: propVideos }) {
                 ? <SmartThumb key={vId} id={vId} thumb={v.thumb} />
                 : <div className="img" style={{
                     background:
-                      `radial-gradient(circle at ${20 + i * 13}% ${30 + i * 11}%, rgba(239,43,58,0.2), transparent 60%),` +
+                      `radial-gradient(circle at ${20 + i * 13}% ${30 + i * 11}%, rgba(255,61,0,0.2), transparent 60%),` +
                       'repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 6px, transparent 6px 12px)'
                   }} />
               }
@@ -413,7 +413,7 @@ function OrbVisual() {
   );
 }
 
-export function Transmission({ onAsk, bg = { aurora: true }, accent = '#ef2b3a' }) {
+export function Transmission({ onAsk, bg = { aurora: true }, accent = '#ff3d00' }) {
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
   useEffect(() => {

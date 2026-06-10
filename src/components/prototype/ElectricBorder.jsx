@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 
 export function ElectricBorder({
   children,
-  color = '#ef2b3a',
+  color = '#ff3d00',
   speed = 1,
   chaos = 0.12,
   borderRadius = 12,

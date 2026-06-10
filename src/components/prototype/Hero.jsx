@@ -103,7 +103,7 @@ function AnimChar({ ch, delay }) {
   );
 }
 
-export function Hero({ bg = { grid: true }, accent = '#ef2b3a' }) {
+export function Hero({ bg = { grid: true }, accent = '#ff3d00' }) {
   const [assembled, setAssembled] = useState(false);
   const zoneRef        = useRef(null);
   const videoRef       = useRef(null);

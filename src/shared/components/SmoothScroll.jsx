@@ -13,9 +13,11 @@ export function LenisProvider({ children }) {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
 
   useEffect(() => {
+    // Desktop gets cinematic smoothing (heavy lag suits the monolith choreography);
+    // mobile stays on native scroll — no rubber-band conflicts, no wasted frames.
     const lenis = new Lenis({
-      lerp: 1,
-      smoothWheel: false,
+      lerp: isMobile ? 1 : 0.09,
+      smoothWheel: !isMobile,
       smoothTouch: false,
       orientation: 'vertical',
       gestureOrientation: 'vertical',

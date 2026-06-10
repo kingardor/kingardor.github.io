@@ -84,9 +84,9 @@ const mdComponents = {
   ul:         ({ children })           => <ul style={{ paddingLeft: '1.2em', marginBottom: '0.6em' }}>{children}</ul>,
   ol:         ({ children })           => <ol style={{ paddingLeft: '1.2em', marginBottom: '0.6em' }}>{children}</ol>,
   li:         ({ children })           => <li style={{ marginBottom: '0.25em', color: 'var(--nm-text)', lineHeight: 1.6 }}>{children}</li>,
-  h1:         ({ children })           => <h1 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 800, fontSize: '1.25em', color: 'var(--nm-text)', margin: '0.8em 0 0.4em' }}>{children}</h1>,
-  h2:         ({ children })           => <h2 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 700, fontSize: '1.1em',  color: 'var(--nm-text)', margin: '0.7em 0 0.35em' }}>{children}</h2>,
-  h3:         ({ children })           => <h3 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 700, fontSize: '1em',    color: 'var(--nm-text)', margin: '0.6em 0 0.3em' }}>{children}</h3>,
+  h1:         ({ children })           => <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.25em', color: 'var(--nm-text)', margin: '0.8em 0 0.4em' }}>{children}</h1>,
+  h2:         ({ children })           => <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1em',  color: 'var(--nm-text)', margin: '0.7em 0 0.35em' }}>{children}</h2>,
+  h3:         ({ children })           => <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1em',    color: 'var(--nm-text)', margin: '0.6em 0 0.3em' }}>{children}</h3>,
   hr:         ()                       => <hr style={{ border: 'none', borderTop: '1px solid var(--nm-border)', margin: '0.75em 0' }} />,
   blockquote: ({ children })           => <blockquote style={{ borderLeft: '2px solid var(--nm-accent)', paddingLeft: '0.75em', color: 'var(--nm-text-muted)', margin: '0.5em 0' }}>{children}</blockquote>,
   table: ({ children }) => (
@@ -132,7 +132,7 @@ function EmptyState({ onSuggest }) {
         style={{
           width: 72, height: 72, borderRadius: '50%',
           background: 'linear-gradient(135deg, var(--nm-accent), var(--nm-accent-2))',
-          boxShadow: '0 0 48px rgba(220,38,38,0.35), 0 0 96px rgba(220,38,38,0.12)',
+          boxShadow: '0 0 48px rgba(255,61,0,0.35), 0 0 96px rgba(255,61,0,0.12)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           marginBottom: '1.5rem',
         }}
@@ -146,7 +146,7 @@ function EmptyState({ onSuggest }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, delay: 0.15 }}
       >
-        <h1 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(1.8rem, 6vw, 2.8rem)', color: 'var(--nm-text)', letterSpacing: '-0.04em', lineHeight: 1 }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(1.8rem, 6vw, 2.8rem)', color: 'var(--nm-text)', letterSpacing: '-0.04em', lineHeight: 1 }}>
           {ASSISTANT.name}
         </h1>
         <div className="hud-text mt-2" style={{ fontSize: '0.56rem', color: 'var(--nm-text-muted)', letterSpacing: '0.1em', textAlign: 'center' }}>
@@ -223,7 +223,7 @@ function UserMessage({ content }) {
           fontSize: '0.9rem',
           lineHeight: 1.6,
           wordBreak: 'break-word',
-          boxShadow: '0 0 20px rgba(220,38,38,0.22), 4px 4px 12px rgba(0,0,0,0.35)',
+          boxShadow: '0 0 20px rgba(255,61,0,0.22), 4px 4px 12px rgba(0,0,0,0.35)',
         }}
       >
         {content}
@@ -257,7 +257,7 @@ function AIMessage({ content, thinking, blocks }) {
         style={{
           width: 30, height: 30, borderRadius: '50%', flexShrink: 0, alignSelf: 'flex-start', marginTop: 4,
           background: 'linear-gradient(135deg, var(--nm-accent), var(--nm-accent-2))',
-          boxShadow: '0 0 12px rgba(220,38,38,0.35)',
+          boxShadow: '0 0 12px rgba(255,61,0,0.35)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
@@ -277,7 +277,7 @@ function AIMessage({ content, thinking, blocks }) {
           lineHeight: 1.6,
           wordBreak: 'break-word',
           color: 'var(--nm-text)',
-          textShadow: '0 0 4px rgba(255,255,255,0.1), 0 0 12px rgba(220,38,38,0.15)',
+          textShadow: '0 0 4px rgba(255,255,255,0.1), 0 0 12px rgba(255,61,0,0.15)',
           boxShadow: '4px 4px 14px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light)',
         }}
       >
@@ -326,7 +326,7 @@ function LoadingBubble({ toolStatus, thinking }) {
         style={{
           width: 30, height: 30, borderRadius: '50%', flexShrink: 0, alignSelf: 'flex-start', marginTop: 4,
           background: 'linear-gradient(135deg, var(--nm-accent), var(--nm-accent-2))',
-          boxShadow: '0 0 12px rgba(220,38,38,0.35)',
+          boxShadow: '0 0 12px rgba(255,61,0,0.35)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
@@ -387,7 +387,7 @@ function ChatHeader({ loading }) {
               style={{
                 width: 26, height: 26, borderRadius: '50%',
                 background: 'linear-gradient(135deg, var(--nm-accent), var(--nm-accent-2))',
-                boxShadow: '0 0 12px rgba(220,38,38,0.4)',
+                boxShadow: '0 0 12px rgba(255,61,0,0.4)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0,
               }}
@@ -395,7 +395,7 @@ function ChatHeader({ loading }) {
               <VIcon size={12} color="#fff" />
             </div>
             <div style={{ lineHeight: 1.15 }}>
-              <div style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 700, fontSize: '0.85rem', color: 'var(--nm-text)', letterSpacing: '-0.01em' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.85rem', color: 'var(--nm-text)', letterSpacing: '-0.01em' }}>
                 {ASSISTANT.name}
               </div>
               <div className="hud-text" style={{ fontSize: '0.42rem', color: 'var(--nm-text-muted)', letterSpacing: '0.08em' }}>
@@ -443,7 +443,7 @@ function InputBar({ value, onChange, onSubmit, loading, onStop }) {
               style={{
                 color: 'var(--nm-text)',
                 caretColor: 'var(--nm-accent)',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--font-body)',
               }}
               autoComplete="off"
               spellCheck={false}
@@ -485,7 +485,7 @@ function InputBar({ value, onChange, onSubmit, loading, onStop }) {
                   style={{
                     width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
                     background: 'linear-gradient(135deg, var(--nm-accent), var(--nm-accent-2))',
-                    boxShadow: '0 0 18px rgba(220,38,38,0.4)',
+                    boxShadow: '0 0 18px rgba(255,61,0,0.4)',
                     border: 'none',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer',

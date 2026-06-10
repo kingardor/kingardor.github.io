@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useCanvasEffect } from './hooks.js';
 
 /* ── BG 1 · GRID MESH + PARTICLES (for hero) ───────────────── */
-export function GridMeshBG({ enabled = true, density = 32, accent = '#ef2b3a' }) {
+export function GridMeshBG({ enabled = true, density = 32, accent = '#ff3d00' }) {
   const ref = useRef(null);
   const particles = useRef([]);
 
@@ -105,7 +105,7 @@ export function GridMeshBG({ enabled = true, density = 32, accent = '#ef2b3a' })
 }
 
 /* ── BG 2 · DATA RAIN + SCANLINES (for career) ───────────────── */
-export function DataRainBG({ enabled = true, accent = '#ef2b3a' }) {
+export function DataRainBG({ enabled = true, accent = '#ff3d00' }) {
   const ref = useRef(null);
   const cols = useRef([]);
 
@@ -150,7 +150,7 @@ export function DataRainBG({ enabled = true, accent = '#ef2b3a' }) {
 }
 
 /* ── BG 3 · AURORA (for transmission/contact) ───────── */
-export function AuroraBG({ enabled = true, accent = '#ef2b3a' }) {
+export function AuroraBG({ enabled = true, accent = '#ff3d00' }) {
   const ref = useRef(null);
 
   useCanvasEffect(ref, (ctx, s, t, reduced) => {
@@ -164,7 +164,7 @@ export function AuroraBG({ enabled = true, accent = '#ef2b3a' }) {
       const cy = s.h * (0.7 + 0.2 * Math.cos(phase * 1.2)) + (s.hover ? (s.my - s.h/2) * 0.1 : 0);
       const rad = s.w * (0.28 + 0.08 * Math.sin(phase * 1.6));
       const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
-      const hue = i === 1 ? '255, 77, 122' : '239, 43, 58';
+      const hue = i === 1 ? '255, 106, 51' : '255, 61, 0';
       grd.addColorStop(0, `rgba(${hue},${0.4 - i * 0.08})`);
       grd.addColorStop(1, `rgba(${hue},0)`);
       ctx.fillStyle = grd;
