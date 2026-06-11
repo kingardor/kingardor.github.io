@@ -24,11 +24,16 @@ const MAX_RATE = 1.5      // video-seconds per real second — the cinematic lea
                           // faster than 1.5× its authored speed getting there
 const CHASE_LAMBDA = 3    // easing as the displayed frame settles onto the target
 const SWITCH_FADE_MS = 300
+const DIR_PX = 24         // intentional-scroll threshold before the story flips
+                          // playback direction — sub-notch jitter (trackpad
+                          // settle, gate clamps) doesn't reverse the scene
 
 /**
- * Fixed full-viewport story layer scrubbed by scroll. The active section's
- * segment is visible and its currentTime follows section progress; all
- * other segments hide. Ports the old hero's battle-tested mobile machinery:
+ * Fixed full-viewport story layer driven by scroll as SCENES, not a scrub
+ * track. Crossing into a section starts its segment at the shared boundary
+ * keyframe and plays it through to the far end at the cinematic rate —
+ * identical behaviour whether the section is one viewport or five. Scrolling
+ * back rewinds the scene. Ports the old hero's battle-tested mobile machinery:
  * iOS gesture priming, single-seek-in-flight gating, decoder wake on tab
  * restore. Reduced motion gets a static poster.
  */
@@ -62,10 +67,10 @@ export default function StoryScrub() {
       else v.currentTime = target
     }
 
-    // ── Cinematic decoupling: scroll computes a TARGET time, but each
-    // segment's displayed frame chases it — eased, and never faster than
-    // MAX_RATE — so fast scrolling moves the page at full speed while the
-    // footage keeps its own rhythm and settles a beat later. ──
+    // ── Cinematic chase: the scene has a TARGET time (its far end, or 0
+    // when rewinding), but the displayed frame eases toward it — never
+    // faster than MAX_RATE — so the footage keeps its authored rhythm no
+    // matter how the page moves. ──
     const shown = new Array(videos.length).fill(0)
     const chase = (i, targetSec, dt) => {
       const dur = videos[i].duration || 6
@@ -90,8 +95,8 @@ export default function StoryScrub() {
 
     // ── Contiguous partition of the whole scroll space: segment i owns
     // [anchor_i, anchor_i+1) where an anchor sits just before its section
-    // scrolls into view. The story timeline is therefore strictly monotonic
-    // with scroll, and handoffs land exactly on the shared keyframes. ──
+    // scrolls into view. Anchors only pick WHICH scene is active — playback
+    // within the scene is time-driven, not position-driven. ──
     let anchors = []
     const measure = () => {
       const vh = window.innerHeight
@@ -109,12 +114,15 @@ export default function StoryScrub() {
     const ro = new ResizeObserver(measure)
     ro.observe(document.body)
 
-    // ── rAF driver: pick active segment, chase its target, manage preload ──
+    // ── rAF driver: pick active scene, play it through, manage preload ──
     let raf
     let lastActive = -1
     let prevActive = -1
     let fadeUntil = 0
     let lastNow = performance.now()
+    let lastY = window.scrollY
+    let dir = 0   // 1 play forward, -1 rewind, 0 hold (pre-first-scroll)
+    let drift = 0 // counter-direction px accumulated before dir flips
     const tick = () => {
       raf = requestAnimationFrame(tick)
       const now = performance.now()
@@ -122,13 +130,24 @@ export default function StoryScrub() {
       lastNow = now
 
       const y = window.scrollY
+      // Scroll picks the story's playback DIRECTION, not its frame. A flip
+      // needs DIR_PX of intentional counter-movement so jitter can't reverse
+      // the scene mid-performance.
+      const dy = y - lastY
+      lastY = y
+      if (dy !== 0) {
+        if (Math.sign(dy) === dir) drift = 0
+        else {
+          drift += dy
+          if (Math.abs(drift) > DIR_PX) { dir = Math.sign(drift); drift = 0 }
+        }
+      }
+
       let active = 0
       for (let i = 0; i < anchors.length - 1; i++) {
         if (y >= anchors[i]) active = i
         else break
       }
-      const span = Math.max(1, anchors[active + 1] - anchors[active])
-      const t = Math.min(1, Math.max(0, (y - anchors[active]) / span))
       if (active !== lastActive) {
         videos.forEach((v, i) => {
           v.style.opacity = i === active ? '1' : '0'
@@ -136,8 +155,9 @@ export default function StoryScrub() {
           const near = Math.abs(i - active) <= 1
           if (near && v.preload !== 'auto') v.preload = 'auto'
         })
-        // The incoming segment performs from its shared boundary keyframe
-        // toward wherever the scroll landed — a scene settling in, not a jump
+        // The incoming scene enters from its shared boundary keyframe and
+        // performs toward its far end — every section transition plays its
+        // snippet, regardless of how tall the section is
         if (lastActive !== -1) {
           shown[active] = active > lastActive ? 0 : (videos[active].duration || 6)
           prevActive = lastActive
@@ -146,11 +166,13 @@ export default function StoryScrub() {
         lastActive = active
       }
       // At rest the full-res hero.webp sits on top — the 1024w video frame
-      // reads soft when upscaled. It yields as soon as scrubbing begins.
+      // reads soft when upscaled. It yields as the opening scene starts to
+      // perform, and returns when rewinding lands back on frame zero.
       const still = root.querySelector('.story-still')
-      if (still) still.style.opacity = active === 0 ? (1 - Math.min(1, t / 0.06)).toFixed(3) : '0'
+      if (still) still.style.opacity = active === 0 ? (1 - Math.min(1, shown[0] / 0.3)).toFixed(3) : '0'
 
-      chase(active, t * (videos[active].duration || 6), dt)
+      const dur = videos[active].duration || 6
+      chase(active, dir > 0 ? dur : dir < 0 ? 0 : shown[active], dt)
       // While the 0.25s opacity crossfade runs, the outgoing segment keeps
       // performing toward its boundary keyframe instead of freezing mid-frame
       if (prevActive !== -1 && prevActive !== active && now < fadeUntil) {
