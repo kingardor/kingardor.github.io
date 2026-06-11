@@ -9,6 +9,9 @@ const GATE_IDS = ['career', 'skills', 'projects', 'videos', 'writing', 'honours'
 
 const MIN_HOLD_MS = 350     // min latch time before a release is possible
 const GESTURE_GAP_MS = 250  // wheel-event silence that marks a new gesture
+const RELEASE_DELTA = 240   // accumulated wheel delta (post-hold) that forces
+                            // the gate open — rapid flicking passes through at
+                            // a cadence instead of locking the page
 const WHEEL_ACTIVE_MS = 200 // a crossing only latches if wheel-driven
 const REARM_FRAC = 0.3      // re-arm a gate after moving 30vh away from it
 const PRE_LATCH_PX = 150    // magnetic: latch from the wheel event itself
@@ -58,9 +61,15 @@ export default function SectionGate() {
     let prevY = window.scrollY
 
     const latch = (g) => {
-      lock = { y: g, at: performance.now(), lastWheelAt: performance.now() }
+      lock = { y: g, at: performance.now(), lastWheelAt: performance.now(), acc: 0 }
       gateState.locked = true
       lenisRef.current?.scrollTo(g, { immediate: true })
+    }
+
+    const release = () => {
+      suppressed = lock.y // don't re-latch the gate we just opened
+      lock = null
+      gateState.locked = false
     }
 
     const onScroll = () => {
@@ -104,11 +113,14 @@ export default function SectionGate() {
       e.preventDefault()
       e.stopImmediatePropagation()
       const now = performance.now()
-      if (now - lock.at >= MIN_HOLD_MS && now - lock.lastWheelAt >= GESTURE_GAP_MS) {
-        suppressed = lock.y // fresh gesture: open the gate, don't re-latch it
-        lock = null
-        gateState.locked = false
-        return
+      const held = now - lock.at >= MIN_HOLD_MS
+      // Release path 1: a distinct fresh gesture after the hold
+      if (held && now - lock.lastWheelAt >= GESTURE_GAP_MS) { release(); return }
+      // Release path 2: sustained scrolling — once held, accumulated delta
+      // forces the gate open so rapid flicking never traps the page
+      if (held) {
+        lock.acc += e.deltaY
+        if (Math.abs(lock.acc) >= RELEASE_DELTA) { release(); return }
       }
       lock.lastWheelAt = now
     }
