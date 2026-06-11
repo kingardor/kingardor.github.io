@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { DATA } from '../prototype/dataAdapter.js'
 import DecryptedText from '../prototype/reactbits/DecryptedText.jsx'
 import { useLenis } from '../../shared/components/SmoothScroll.jsx'
+import { gateState } from '../os/SectionGate.jsx'
 
 const STEP_COOLDOWN_MS = 550 // min time between chapter steps
 const STEP_THRESHOLD = 60    // accumulated wheel delta that triggers a step
@@ -50,6 +51,7 @@ export default function CareerSection() {
     let lastStepAt = 0
     let animating = false
     const onWheel = (e) => {
+      if (gateState.locked) return // a section gate holds — stand down
       const rect = zone.getBoundingClientRect()
       const vh = window.innerHeight
       const pinned = rect.top <= 2 && rect.bottom >= vh - 2

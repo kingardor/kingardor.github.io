@@ -16,6 +16,7 @@ import { useReveal } from './hooks.js';
 import { DATA } from './dataAdapter.js';
 import { prefetched } from '../../shared/utils/prefetch.js';
 import StoryScrub from '../story/StoryScrub.jsx';
+import SectionGate from '../os/SectionGate.jsx';
 import navigate from '../../shared/utils/navigate.js';
 
 function toVideoItem(v, i) {
@@ -71,6 +72,9 @@ export default function Home() {
 
   return (
     <>
+      {/* Must precede the sections: its capture wheel listener has to register
+          before CareerSection's chapter stepper */}
+      <SectionGate />
       <StoryScrub />
       <TelemetryHud />
       <GuidedTour />
