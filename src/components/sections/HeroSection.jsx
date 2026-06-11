@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { DATA } from '../prototype/dataAdapter.js'
 import { CHAT_SUGGESTIONS } from '../../data.js'
 import DecryptedText from '../prototype/reactbits/DecryptedText.jsx'
+import HeroParticles from '../prototype/HeroParticles.jsx'
 import navigate from '../../shared/utils/navigate.js'
 
 const SEED_KEY = 'chat:seed'
@@ -86,6 +87,20 @@ export default function HeroSection() {
   const manifestoRef = useRef(null)
   const statsRef = useRef(null)
   const cueRef = useRef(null)
+  // Pixel-assembly intro: 'assembling' → 'fading' (canvas crossfades into the
+  // story video's first frame, which is the same image) → 'done' (unmounted)
+  const [assembly, setAssembly] = useState(
+    typeof window !== 'undefined' &&
+      (window.__PRERENDER || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      ? 'done'
+      : 'assembling'
+  )
+
+  useEffect(() => {
+    if (assembly !== 'fading') return
+    const id = setTimeout(() => setAssembly('done'), 1100) // matches CSS fade
+    return () => clearTimeout(id)
+  }, [assembly])
 
   // Loader gate: release once Clash Display is usable (raced with a 3s cap)
   // so the name's first paint is the real face, not a fallback flash.
@@ -159,6 +174,11 @@ export default function HeroSection() {
   return (
     <section className="ob-hero" id="top" data-screen-label="01 Hero" ref={zoneRef}>
       <div className="ob-hero-pin">
+        {assembly !== 'done' && (
+          <div className={`ob-hero-assembly${assembly === 'fading' ? ' fading' : ''}`} aria-hidden="true">
+            <HeroParticles onAssembled={() => setAssembly('fading')} />
+          </div>
+        )}
         <div className="ob-hero-core" ref={coreRef}>
           <h1 className="ob-hero-name">
             <span className="ob-line"><span className="ob-line-inner">AKASH</span></span>

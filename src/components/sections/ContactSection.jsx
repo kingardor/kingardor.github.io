@@ -25,7 +25,7 @@ export default function ContactSection({ onAsk }) {
       <div className="ob-wrap ob-contact-core">
         <div className="ob-kicker mono-ob"><TypewriterKicker text="ESTABLISHING TRANSMISSION" /></div>
         <h2 className="ob-contact-headline">
-          Let's build<br />something<br />
+          Let's build something{' '}
           <ScrambleText text="outrageous." className="ob-ember" trigger={visible} />
         </h2>
         <div className="ob-contact-ctas reveal d2">
