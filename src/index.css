@@ -1279,3 +1279,11 @@ body.ob-touring .ob-hud { transform: translateY(100%); }
   width: 100%; height: 100%;
   display: block;
 }
+
+/* Full-res hero still — covers the upscaled video frame at rest */
+.story-still {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}

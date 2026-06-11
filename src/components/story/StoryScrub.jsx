@@ -106,6 +106,10 @@ export default function StoryScrub() {
         })
         lastActive = active
       }
+      // At rest the full-res hero.webp sits on top — the 1024w video frame
+      // reads soft when upscaled. It yields as soon as scrubbing begins.
+      const still = root.querySelector('.story-still')
+      if (still) still.style.opacity = active === 0 ? (1 - Math.min(1, t / 0.06)).toFixed(3) : '0'
       seek(active, t)
     }
     raf = requestAnimationFrame(tick)
@@ -152,6 +156,7 @@ export default function StoryScrub() {
           style={{ opacity: i === 0 ? 1 : 0 }}
         />
       ))}
+      <img className="story-still" src="/hero.webp" alt="" />
       <div className="story-scrim" />
     </div>
   )
