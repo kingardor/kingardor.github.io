@@ -42,7 +42,7 @@ export const PAST_ROLES = [
     tags: ['Computer Vision','DeepStream','TensorRT','Product']
   },
   {
-    title: 'Visiting Research Scholar (Former)',
+    title: 'Visiting Research Scholar',
     org: 'UC Berkeley',
     period: '2023',
     blurb: 'Wildfire detection research: low-latency pipeline across ~1k CalTrans CCTVs; YOLO-based smoke/fire detection.',
