@@ -15,7 +15,12 @@ const SEGMENTS = [
   { id: 'contact' },  // slow push-in, final form
 ]
 
-const SEEK_EPS = 1 / 30 // don't reseek for sub-frame deltas
+const SEEK_EPS = 1 / 30   // don't reseek for sub-frame deltas
+const MAX_RATE = 1.5      // video-seconds per real second — the cinematic leash:
+                          // scroll sets the destination, the footage never plays
+                          // faster than 1.5× its authored speed getting there
+const CHASE_LAMBDA = 3    // easing as the displayed frame settles onto the target
+const SWITCH_FADE_MS = 300
 
 /**
  * Fixed full-viewport story layer scrubbed by scroll. The active section's
@@ -44,13 +49,29 @@ export default function StoryScrub() {
     })
     videos.forEach((v, i) => v.addEventListener('seeked', onSeeked[i]))
 
-    const seek = (i, t) => {
+    const seekSec = (i, sec) => {
       const v = videos[i]
       if (v.readyState < 2 || !v.duration) return
-      const target = Math.min(v.duration - 0.05, Math.max(0, t * v.duration))
+      const target = Math.min(v.duration - 0.05, Math.max(0, sec))
       if (Math.abs(target - v.currentTime) < SEEK_EPS) return
       if (v.seeking) pending[i] = target
       else v.currentTime = target
+    }
+
+    // ── Cinematic decoupling: scroll computes a TARGET time, but each
+    // segment's displayed frame chases it — eased, and never faster than
+    // MAX_RATE — so fast scrolling moves the page at full speed while the
+    // footage keeps its own rhythm and settles a beat later. ──
+    const shown = new Array(videos.length).fill(0)
+    const chase = (i, targetSec, dt) => {
+      const dur = videos[i].duration || 6
+      const tgt = Math.min(dur - 0.05, Math.max(0, targetSec))
+      let step = (tgt - shown[i]) * (1 - Math.exp(-CHASE_LAMBDA * dt))
+      const cap = MAX_RATE * dt
+      if (step > cap) step = cap
+      else if (step < -cap) step = -cap
+      shown[i] += step
+      seekSec(i, shown[i])
     }
 
     // ── iOS: videos can't seek until a user gesture activates them.
@@ -84,11 +105,18 @@ export default function StoryScrub() {
     const ro = new ResizeObserver(measure)
     ro.observe(document.body)
 
-    // ── rAF driver: pick active segment, scrub it, manage preload ──
+    // ── rAF driver: pick active segment, chase its target, manage preload ──
     let raf
     let lastActive = -1
+    let prevActive = -1
+    let fadeUntil = 0
+    let lastNow = performance.now()
     const tick = () => {
       raf = requestAnimationFrame(tick)
+      const now = performance.now()
+      const dt = Math.min(0.05, (now - lastNow) / 1000) // clamp tab-jank spikes
+      lastNow = now
+
       const y = window.scrollY
       let active = 0
       for (let i = 0; i < anchors.length - 1; i++) {
@@ -104,13 +132,26 @@ export default function StoryScrub() {
           const near = Math.abs(i - active) <= 1
           if (near && v.preload !== 'auto') v.preload = 'auto'
         })
+        // The incoming segment performs from its shared boundary keyframe
+        // toward wherever the scroll landed — a scene settling in, not a jump
+        if (lastActive !== -1) {
+          shown[active] = active > lastActive ? 0 : (videos[active].duration || 6)
+          prevActive = lastActive
+          fadeUntil = now + SWITCH_FADE_MS
+        }
         lastActive = active
       }
       // At rest the full-res hero.webp sits on top — the 1024w video frame
       // reads soft when upscaled. It yields as soon as scrubbing begins.
       const still = root.querySelector('.story-still')
       if (still) still.style.opacity = active === 0 ? (1 - Math.min(1, t / 0.06)).toFixed(3) : '0'
-      seek(active, t)
+
+      chase(active, t * (videos[active].duration || 6), dt)
+      // While the 0.25s opacity crossfade runs, the outgoing segment keeps
+      // performing toward its boundary keyframe instead of freezing mid-frame
+      if (prevActive !== -1 && prevActive !== active && now < fadeUntil) {
+        chase(prevActive, prevActive < active ? (videos[prevActive].duration || 6) : 0, dt)
+      }
     }
     raf = requestAnimationFrame(tick)
 
