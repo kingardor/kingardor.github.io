@@ -14,7 +14,7 @@ function sampleImage(img, sw, sh) {
     for (let sx = 0; sx < sw; sx++) {
       const i = (sy * sw + sx) * 4;
       const a = data[i + 3], r = data[i], g = data[i + 1], b = data[i + 2];
-      if (a < 30 || 0.299 * r + 0.587 * g + 0.114 * b < 18) continue;
+      if (a < 30 || 0.299 * r + 0.587 * g + 0.114 * b < 8) continue;
       pts.push(
         sx / (sw - 1), sy / (sh - 1), // fractional image coords
         0, 0,                          // x, y (scatter positions set on first draw)
@@ -25,7 +25,7 @@ function sampleImage(img, sw, sh) {
       cols.push(`rgb(${r},${g},${b})`);
     }
   }
-  return { pts: new Float32Array(pts), cols };
+  return { pts: new Float32Array(pts), cols, sw };
 }
 
 // Replicates the story video's object-fit:cover + object-position:center 22%
@@ -59,7 +59,7 @@ export default function HeroParticles({ onAssembled }) {
     // Three-tier sampling: xs → fewer particles for low-end phones
     const xs     = window.matchMedia('(max-width: 480px)').matches;
     const mobile = !xs && window.matchMedia('(max-width: 768px)').matches;
-    const [sw, sh] = xs ? [60, 45] : mobile ? [80, 60] : [120, 90];
+    const [sw, sh] = xs ? [76, 57] : mobile ? [112, 84] : [160, 120];
 
     let particleData = null;
     let imageReady = false;
@@ -120,6 +120,9 @@ export default function HeroParticles({ onAssembled }) {
     const { pts, cols } = d;
     const N = pts.length / STRIDE;
     const { dw, dh, ox, oy } = coverOffset(state.w, state.h);
+    // Square size tracks the sampling grid so the assembled image reads
+    // near-solid rather than as sparse dots
+    const px = Math.max(2.5, (dw / d.sw) * 0.78);
 
     // On first valid frame: lock start time + scatter particles randomly
     if (!initRef.current) {
@@ -172,7 +175,7 @@ export default function HeroParticles({ onAssembled }) {
       pts[o + 2] = x;
       pts[o + 3] = y;
       ctx.fillStyle = cols[i];
-      ctx.fillRect(x, y, 4, 4);
+      ctx.fillRect(x, y, px, px);
     }
 
     // Fire both at rt=1.5 so photo fades IN while canvas fades OUT simultaneously
