@@ -15,7 +15,10 @@ const SEGMENTS = [
   { id: 'contact' },  // slow push-in, final form
 ]
 
-const SEEK_EPS = 1 / 30   // don't reseek for sub-frame deltas
+const SEEK_EPS = 1 / 30      // forward: don't reseek for sub-frame deltas
+const SEEK_EPS_BACK = 0.07   // backward: fewer, larger steps — every reverse
+                             // seek re-decodes its GOP, and Safari stops
+                             // repainting under per-frame backward seeks
 const MAX_RATE = 1.5      // video-seconds per real second — the cinematic leash:
                           // scroll sets the destination, the footage never plays
                           // faster than 1.5× its authored speed getting there
@@ -53,7 +56,8 @@ export default function StoryScrub() {
       const v = videos[i]
       if (v.readyState < 2 || !v.duration) return
       const target = Math.min(v.duration - 0.05, Math.max(0, sec))
-      if (Math.abs(target - v.currentTime) < SEEK_EPS) return
+      const delta = target - v.currentTime
+      if (Math.abs(delta) < (delta < 0 ? SEEK_EPS_BACK : SEEK_EPS)) return
       if (v.seeking) pending[i] = target
       else v.currentTime = target
     }
