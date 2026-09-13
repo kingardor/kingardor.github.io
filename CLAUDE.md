@@ -58,7 +58,7 @@ Pure CSS splash in `index.html` (`#loader`). Dismissed by `main.jsx` after BOTH 
 
 One Worker, `akash-portfolio`, serves everything: `dist/` as static assets (`not_found_handling: single-page-application`) and the Veronica API from `worker/index.js` (`run_worker_first: ["/api/*"]`). Config in `wrangler.jsonc`.
 
-- GitHub Actions (`.github/workflows/deploy.yml`): build → prerender (headless Chrome) → `wrangler deploy`. Needs repo secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`. Local: `npm run deploy` (build + deploy, no prerender).
+- GitHub Actions (`.github/workflows/deploy.yml`): build → prerender (headless Chrome) → `wrangler deploy`. Needs repo secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`. Local: `npm run deploy` (`scripts/deploy.sh`: sources gitignored `.env.cloudflare`, build → prerender if Chrome is present → deploy).
 - Worker vars: `YT_CHANNEL_ID`, `YT_MAX`, `MODEL`, `TEMPERATURE` (in `wrangler.jsonc`). Secret: `OPENROUTER_API_KEY` via `npx wrangler secret put`.
 - Custom domains attach via `routes` with `custom_domain: true` once the zone is on Cloudflare. workers.dev URL: `https://akash-portfolio.akash-james2096.workers.dev`.
 - The API is same-origin in production; `API_BASE` in `ChatPage.jsx` / `prefetch.js` is `VITE_API_BASE ?? ''`. Dev: Vite proxies `/api` to `npm run worker:dev` (:8787) or `DEV_API_TARGET`.

@@ -9,7 +9,7 @@
     "prerender": "node scripts/prerender.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "./scripts/deploy.sh",
     "worker:dev": "wrangler dev"
   },
   "dependencies": {
