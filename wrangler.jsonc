@@ -16,16 +16,15 @@
     // requests for the scrub videos — static assets alone return full 200s.
     "run_worker_first": ["/api/*", "/story/*"]
   },
-  // Custom domains are attached once the new zone is active on Cloudflare:
-  // "routes": [
-  //   { "pattern": "<domain>", "custom_domain": true },
-  //   { "pattern": "www.<domain>", "custom_domain": true }
-  // ],
+  // akashjames.com zone lives on Cloudflare (same account as copcars.in).
+  "routes": [
+    { "pattern": "akashjames.com", "custom_domain": true },
+    { "pattern": "www.akashjames.com", "custom_domain": true }
+  ],
   "vars": {
-    // Set to Akash's channel id — the youtube-feed route 502s without it.
-    "YT_CHANNEL_ID": "",
+    "YT_CHANNEL_ID": "UCgJZkbxrBpbuHv4jOFuR8zQ",
     "YT_MAX": "9",
-    "MODEL": "nvidia/nemotron-3-nano-30b-a3b:free",
+    "MODEL": "nvidia/nemotron-3-nano-30b-a3b",
     "TEMPERATURE": "0.6"
   },
   "observability": { "enabled": true }

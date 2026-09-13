@@ -16,7 +16,7 @@ export const CHAT_SUGGESTIONS = [
 export const LINKS = {
   linkedin: 'https://linkedin.com/in/akashjames',
   medium: 'https://akash-james.medium.com',
-  github: 'https://kingardor.github.io',
+  github: 'https://github.com/kingardor',
   twitter: 'https://twitter.com/king_ardor',
   instagram: 'https://instagram.com/lifeofakashjames',
   email: 'mailto:akashjamesofficial@gmail.com'

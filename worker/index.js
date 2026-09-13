@@ -15,7 +15,7 @@
  */
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-const DEFAULT_MODEL = 'nvidia/nemotron-3-nano-30b-a3b:free'
+const DEFAULT_MODEL = 'nvidia/nemotron-3-nano-30b-a3b'
 const DEFAULT_TEMPERATURE = 0.6
 const MAX_TOOL_LOOPS = 3
 const YT_CACHE_TTL = 600
