@@ -1,6 +1,6 @@
 import { fetchGithubProjects } from './fetchGithubProjects.js'
 
-const API_BASE = 'https://veronica-proxy-vercel.vercel.app'
+const API_BASE = import.meta.env.VITE_API_BASE ?? ''
 
 // Promises are created on first import — import this module as early as
 // possible (main.jsx) so data is in-flight during the loader window.

@@ -10,7 +10,7 @@ import ThinkingBlock from './components/ThinkingBlock'
 import ChatBlocks    from './blocks/ChatBlocks'
 import { Entropy }   from './components/Entropy'
 
-const API_BASE = 'https://veronica-proxy-vercel.vercel.app'
+const API_BASE = import.meta.env.VITE_API_BASE ?? ''
 const SEED_KEY = 'chat:seed'
 const MAX_TURNS = 10
 

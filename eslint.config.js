@@ -26,4 +26,13 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  // Node-side files (build config, scripts) and the Cloudflare Worker.
+  {
+    files: ['vite.config.js', 'scripts/**/*.{js,mjs}'],
+    languageOptions: { globals: globals.node },
+  },
+  {
+    files: ['worker/**/*.js'],
+    languageOptions: { globals: globals.serviceworker },
+  },
 ])

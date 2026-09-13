@@ -1,0 +1,32 @@
+// Cloudflare Workers deployment: static site (dist/) + Veronica API (worker/).
+// Build with `npm run build` (+ `npm run prerender` in CI), deploy with
+// `npm run deploy`. Secrets: `npx wrangler secret put OPENROUTER_API_KEY`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "akash-portfolio",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-09-12",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // Hash routes (/#/chat) never reach the server, but deep links like
+    // /chat or stale paths should still land on the app shell.
+    "not_found_handling": "single-page-application",
+    // /story/* is worker-first so the Worker can answer byte-range (206)
+    // requests for the scrub videos — static assets alone return full 200s.
+    "run_worker_first": ["/api/*", "/story/*"]
+  },
+  // Custom domains are attached once the new zone is active on Cloudflare:
+  // "routes": [
+  //   { "pattern": "<domain>", "custom_domain": true },
+  //   { "pattern": "www.<domain>", "custom_domain": true }
+  // ],
+  "vars": {
+    // Set to Akash's channel id — the youtube-feed route 502s without it.
+    "YT_CHANNEL_ID": "",
+    "YT_MAX": "9",
+    "MODEL": "nvidia/nemotron-3-nano-30b-a3b:free",
+    "TEMPERATURE": "0.6"
+  },
+  "observability": { "enabled": true }
+}

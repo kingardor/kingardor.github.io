@@ -46,7 +46,7 @@ Site content lives in `src/data.js`, mapped to component shape by `src/component
 
 ### Chat ("Veronica" AI)
 
-- SSE via `src/shared/utils/openSSE.js` to the Vercel proxy; typed events (text/thinking/tool/block) render rich blocks in `src/sections/Chat/blocks/`
+- SSE via `src/shared/utils/openSSE.js` to `/api/chat` on the Worker; typed events (text/thinking/tool/block) render rich blocks in `src/sections/Chat/blocks/`
 - Seeding: hero prompt bar / palette set `sessionStorage 'chat:seed'` + `#/chat?q=…`
 - Styled entirely by the `--nm-*` token aliases — recolor by editing tokens, not components
 
@@ -54,13 +54,19 @@ Site content lives in `src/data.js`, mapped to component shape by `src/component
 
 Pure CSS splash in `index.html` (`#loader`). Dismissed by `main.jsx` after BOTH ~1.7s minimum AND `window.__resolveHeroReady` (called by `HeroSection` once Clash Display is loaded; 4s safety timeout). `window.__PRERENDER` skips dismissal during the prerender snapshot.
 
-### Deployment
+### Deployment (Cloudflare Workers)
 
-GitHub Actions (`.github/workflows/pages.yml`): build → prerender (headless Chrome) → copy `dist/index.html` to `dist/404.html` (SPA fallback) → deploy to GitHub Pages.
+One Worker, `akash-portfolio`, serves everything: `dist/` as static assets (`not_found_handling: single-page-application`) and the Veronica API from `worker/index.js` (`run_worker_first: ["/api/*"]`). Config in `wrangler.jsonc`.
+
+- GitHub Actions (`.github/workflows/deploy.yml`): build → prerender (headless Chrome) → `wrangler deploy`. Needs repo secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`. Local: `npm run deploy` (build + deploy, no prerender).
+- Worker vars: `YT_CHANNEL_ID`, `YT_MAX`, `MODEL`, `TEMPERATURE` (in `wrangler.jsonc`). Secret: `OPENROUTER_API_KEY` via `npx wrangler secret put`.
+- Custom domains attach via `routes` with `custom_domain: true` once the zone is on Cloudflare. workers.dev URL: `https://akash-portfolio.akash-james2096.workers.dev`.
+- The API is same-origin in production; `API_BASE` in `ChatPage.jsx` / `prefetch.js` is `VITE_API_BASE ?? ''`. Dev: Vite proxies `/api` to `npm run worker:dev` (:8787) or `DEV_API_TARGET`.
+- History: previously GitHub Pages (`pages.yml`) + a Python/FastAPI proxy on Vercel (`kingardor/veronica-proxy-vercel`), ported 1:1 into `worker/index.js` (OpenRouter agentic loop → typed SSE, YouTube RSS → JSON).
 
 ### External APIs
 
 - **CounterAPI** — visitor counter (`src/shared/hooks/useSiteViews.js`)
 - **GitHub API** — repos (`fetchGithubProjects.js`, prefetched during loader) + public events ticker (`shared/utils/telemetry.js`)
-- **YouTube feed** — via the Veronica Vercel proxy (`shared/utils/prefetch.js`)
-- **SSE endpoint** — the Veronica chat agent
+- **YouTube feed** — `/api/youtube-feed` on the Worker (`shared/utils/prefetch.js`)
+- **SSE endpoint** — `/api/chat` on the Worker → OpenRouter (the Veronica chat agent)
