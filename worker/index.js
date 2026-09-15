@@ -233,19 +233,23 @@ async function fetchYoutubeFeed(env) {
   if (!channelId) return { error: 'Missing YT_CHANNEL_ID', items: [] }
 
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`
-  let xml
-  try {
-    // Cache successful feeds at the edge; never cache upstream errors (a
-    // transient YouTube 404/5xx would otherwise be pinned for minutes).
-    const r = await fetch(feedUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; akashjames.com feed fetcher)', Accept: 'application/atom+xml, application/xml;q=0.9, */*;q=0.8' },
-      cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': YT_CACHE_TTL, '400-599': 0 } },
-    })
-    if (!r.ok) throw new Error(`HTTP ${r.status}`)
-    xml = await r.text()
-  } catch (e) {
-    return { error: `Failed to fetch YouTube RSS: ${e.message}`, items: [] }
+  // YouTube's feed endpoint intermittently answers 404/500 for a request and
+  // 200 for the identical next one, so retry a couple of times. Cache
+  // successful feeds at the edge; never cache upstream errors.
+  let xml, lastErr
+  for (let attempt = 0; attempt < 3 && xml === undefined; attempt++) {
+    try {
+      const r = await fetch(feedUrl, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; akashjames.com feed fetcher)', Accept: 'application/atom+xml, application/xml;q=0.9, */*;q=0.8' },
+        cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': YT_CACHE_TTL, '400-599': 0 } },
+      })
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      xml = await r.text()
+    } catch (e) {
+      lastErr = e
+    }
   }
+  if (xml === undefined) return { error: `Failed to fetch YouTube RSS: ${lastErr?.message}`, items: [] }
 
   const items = []
   for (const m of xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)) {
