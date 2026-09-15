@@ -203,13 +203,13 @@ const TOOL_DEFINITIONS = [
   ['get_honours', "Returns Akash's awards, patents, and recognition."],
 ].map(([name, description]) => ({ type: 'function', function: { name, description, parameters: noArgs } }))
 
-async function executeTool(name, env) {
+async function executeTool(name, env, ctx) {
   switch (name) {
     case 'get_bio': return BIO
     case 'get_career_timeline': return { career: CAREER }
     case 'get_projects': return { projects: PROJECTS }
     case 'get_skills': return SKILLS
-    case 'get_youtube_videos': return fetchYoutubeFeed(env)
+    case 'get_youtube_videos': return fetchYoutubeFeed(env, ctx)
     case 'get_publications': return { publications: PUBLICATIONS }
     case 'get_honours': return { honours: HONOURS }
     default: return { error: `Unknown tool: ${name}` }
@@ -227,29 +227,43 @@ const decodeEntities = (s) => s
   .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   .replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
 
-async function fetchYoutubeFeed(env) {
+async function fetchYoutubeFeed(env, ctx) {
   const channelId = env.YT_CHANNEL_ID || ''
   const maxItems = parseInt(env.YT_MAX || '9', 10)
   if (!channelId) return { error: 'Missing YT_CHANNEL_ID', items: [] }
 
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`
-  // YouTube's feed endpoint intermittently answers 404/500 for a request and
-  // 200 for the identical next one, so retry a couple of times. Cache
-  // successful feeds at the edge; never cache upstream errors.
-  let xml, lastErr
-  for (let attempt = 0; attempt < 3 && xml === undefined; attempt++) {
-    try {
-      const r = await fetch(feedUrl, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; akashjames.com feed fetcher)', Accept: 'application/atom+xml, application/xml;q=0.9, */*;q=0.8' },
-        cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': YT_CACHE_TTL, '400-599': 0 } },
-      })
-      if (!r.ok) throw new Error(`HTTP ${r.status}`)
-      xml = await r.text()
-    } catch (e) {
-      lastErr = e
+  const cache = caches.default
+  const cacheKey = new Request(feedUrl, { method: 'GET' })
+
+  let xml
+  const hit = await cache.match(cacheKey)
+  if (hit) {
+    xml = await hit.text()
+  } else {
+    // YouTube's feed endpoint intermittently answers 404/500 for a request and
+    // 200 for the identical next one, so retry a few times. Only successful
+    // bodies are cached (Cache API, YT_CACHE_TTL) — never upstream errors.
+    let lastErr
+    for (let attempt = 0; attempt < 3 && xml === undefined; attempt++) {
+      try {
+        const r = await fetch(feedUrl, { headers: { Accept: 'application/atom+xml, application/xml;q=0.9, */*;q=0.8' } })
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        const body = await r.text()
+        // YouTube sometimes returns 200 with an interstitial/HTML body instead
+        // of the Atom feed; treat that as a failed attempt, never cache it.
+        if (!body.includes('<entry>')) throw new Error(`HTTP 200 but no <entry> in body (starts: ${body.slice(0, 80).replace(/\s+/g, ' ')})`)
+        xml = body
+      } catch (e) {
+        lastErr = e
+      }
     }
+    if (xml === undefined) return { error: `Failed to fetch YouTube RSS: ${lastErr?.message}`, items: [] }
+    const store = cache.put(cacheKey, new Response(xml, {
+      headers: { 'Content-Type': 'application/atom+xml', 'Cache-Control': `public, max-age=${YT_CACHE_TTL}` },
+    }))
+    if (ctx) ctx.waitUntil(store); else await store
   }
-  if (xml === undefined) return { error: `Failed to fetch YouTube RSS: ${lastErr?.message}`, items: [] }
 
   const items = []
   for (const m of xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)) {
@@ -285,7 +299,7 @@ function buildMessages(history, userText) {
   return msgs
 }
 
-async function runChat({ text, history, env, origin, write }) {
+async function runChat({ text, history, env, ctx, origin, write }) {
   const headers = {
     Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
     'Content-Type': 'application/json',
@@ -320,7 +334,7 @@ async function runChat({ text, history, env, origin, write }) {
     for (const tc of toolCalls) {
       const fnName = tc?.function?.name || ''
       await write({ t: 'tool', name: fnName, status: 'running' })
-      const result = await executeTool(fnName, env)
+      const result = await executeTool(fnName, env, ctx)
       await write({ t: 'block', name: fnName, data: result })
       messages.push({ role: 'tool', tool_call_id: tc.id || '', content: JSON.stringify(result) })
     }
@@ -381,7 +395,7 @@ function handleChat(request, env, ctx) {
 
   ctx.waitUntil((async () => {
     try {
-      await runChat({ text, history, env, origin, write })
+      await runChat({ text, history, env, ctx, origin, write })
     } catch (e) {
       try { await write({ t: 'text', v: `[Error: ${e.message}]` }) } catch { /* closed */ }
     } finally {
@@ -471,7 +485,7 @@ export default {
       case '/api/health':
         return json({ ok: true })
       case '/api/youtube-feed': {
-        const result = await fetchYoutubeFeed(env)
+        const result = await fetchYoutubeFeed(env, ctx)
         if (result.error && !result.items.length) return json({ detail: result.error }, 502)
         return json(result, 200, { 'Cache-Control': `public, max-age=${YT_CACHE_TTL}` })
       }
