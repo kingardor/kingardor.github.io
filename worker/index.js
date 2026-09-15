@@ -235,7 +235,12 @@ async function fetchYoutubeFeed(env) {
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`
   let xml
   try {
-    const r = await fetch(feedUrl, { cf: { cacheTtl: YT_CACHE_TTL, cacheEverything: true } })
+    // Cache successful feeds at the edge; never cache upstream errors (a
+    // transient YouTube 404/5xx would otherwise be pinned for minutes).
+    const r = await fetch(feedUrl, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; akashjames.com feed fetcher)', Accept: 'application/atom+xml, application/xml;q=0.9, */*;q=0.8' },
+      cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': YT_CACHE_TTL, '400-599': 0 } },
+    })
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
     xml = await r.text()
   } catch (e) {
