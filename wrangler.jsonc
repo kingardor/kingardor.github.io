@@ -12,9 +12,9 @@
     // Hash routes (/#/chat) never reach the server, but deep links like
     // /chat or stale paths should still land on the app shell.
     "not_found_handling": "single-page-application",
-    // /story/* is worker-first so the Worker can answer byte-range (206)
-    // requests for the scrub videos — static assets alone return full 200s.
-    "run_worker_first": ["/api/*", "/story/*"]
+    // /story/* and /media/* are worker-first so the Worker can answer
+    // byte-range (206) requests for video — static assets alone return full 200s.
+    "run_worker_first": ["/api/*", "/story/*", "/media/*"]
   },
   // Keep the workers.dev URL alive alongside the custom domains — wrangler
   // otherwise disables it as soon as routes are configured.
@@ -31,7 +31,13 @@
     "YT_CHANNEL_ID": "UCgJZkbxrBpbuHv4jOFuR8zQ",
     "YT_MAX": "9",
     "MODEL": "nvidia/nemotron-3-nano-30b-a3b",
-    "TEMPERATURE": "0.6"
+    "TEMPERATURE": "0.6",
+    // Browser origins allowed to call /api/chat besides the request's own.
+    "ALLOWED_ORIGINS": "https://akashjames.com,https://www.akashjames.com,https://akash-portfolio.akash-james2096.workers.dev"
   },
+  // Per-IP budget for /api/chat (per Cloudflare location; approximate by design).
+  "ratelimits": [
+    { "name": "CHAT_LIMITER", "namespace_id": "2096", "simple": { "limit": 12, "period": 60 } }
+  ],
   "observability": { "enabled": true }
 }

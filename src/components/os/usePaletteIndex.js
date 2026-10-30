@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { DATA } from '../../components/prototype/dataAdapter.js'
-import { prefetched } from '../../shared/utils/prefetch.js'
+import { PROJECTS } from '../../content/index.js'
 import navigate from '../../shared/utils/navigate.js'
 
 const SEED_KEY = 'chat:seed'
@@ -41,20 +41,10 @@ const SECTION_ENTRIES = [
 }))
 
 /**
- * Builds the command palette index: sections, commands, projects (static +
- * live GitHub once the prefetch resolves), writing, socials.
+ * Builds the command palette index: sections, commands, curated projects,
+ * writing, socials.
  */
 export default function usePaletteIndex() {
-  const [ghProjects, setGhProjects] = useState([])
-
-  useEffect(() => {
-    let mounted = true
-    prefetched.github
-      .then(repos => { if (mounted && repos?.length) setGhProjects(repos) })
-      .catch(() => {})
-    return () => { mounted = false }
-  }, [])
-
   return useMemo(() => {
     const commands = [
       {
@@ -71,23 +61,12 @@ export default function usePaletteIndex() {
       },
     ]
 
-    const projects = [
-      ...DATA.projects.map(p => ({
+    const work = PROJECTS.map(p => {
+      const href = p.href || p.repo
+      return {
         type: 'WORK', label: p.name, sub: (p.desc || '').slice(0, 80), keywords: (p.tags || []).join(' '),
-        action: () => p.href?.startsWith('#') ? navigate(p.href.slice(1)) : p.href && window.open(p.href, '_blank'),
-      })),
-      ...ghProjects.map(p => ({
-        type: 'WORK', label: p.name, sub: (p.desc || '').slice(0, 80), keywords: (p.tags || []).join(' '),
-        action: () => p.url && window.open(p.url, '_blank'),
-      })),
-    ]
-    // Dedup by label (static list may overlap the live fetch)
-    const seen = new Set()
-    const work = projects.filter(p => {
-      const k = p.label.toLowerCase()
-      if (seen.has(k)) return false
-      seen.add(k)
-      return true
+        action: () => href?.startsWith('#') ? navigate(href.slice(1)) : href && window.open(href, '_blank'),
+      }
     })
 
     const notes = DATA.writing.map(w => ({
@@ -101,5 +80,5 @@ export default function usePaletteIndex() {
     }))
 
     return [...commands, ...SECTION_ENTRIES, ...work, ...notes, ...socials]
-  }, [ghProjects])
+  }, [])
 }

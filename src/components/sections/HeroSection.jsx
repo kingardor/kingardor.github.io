@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
 import { DATA } from '../prototype/dataAdapter.js'
-import { CHAT_SUGGESTIONS } from '../../data.js'
+import { CHAT_SUGGESTIONS } from '../../content/index.js'
 import DecryptedText from '../prototype/reactbits/DecryptedText.jsx'
 import HeroParticles from '../prototype/HeroParticles.jsx'
 import navigate from '../../shared/utils/navigate.js'

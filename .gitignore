@@ -34,3 +34,6 @@ dist-ssr
 # cloudflare
 .wrangler/
 .dev.vars
+
+# browser automation artifacts
+.playwright-mcp/

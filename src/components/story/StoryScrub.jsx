@@ -97,17 +97,21 @@ export default function StoryScrub() {
     // [anchor_i, anchor_i+1) where an anchor sits just before its section
     // scrolls into view. Anchors only pick WHICH scene is active — playback
     // within the scene is time-driven, not position-driven. ──
+    // anchors[i] always belongs to SEGMENTS[i]: a missing section (e.g. no
+    // video feed) inherits the previous anchor, so it owns an empty range
+    // instead of shifting every later scene onto the wrong segment.
     let anchors = []
     const measure = () => {
       const vh = window.innerHeight
       const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh)
-      anchors = SEGMENTS.map((s, i) => {
-        if (i === 0) return 0
-        const el = document.getElementById(s.id)
-        if (!el) return null
+      anchors = []
+      SEGMENTS.forEach((s, i) => {
+        const el = i === 0 ? null : document.getElementById(s.id)
+        const prev = i === 0 ? 0 : anchors[i - 1]
+        if (i === 0 || !el) { anchors.push(prev); return }
         const top = el.getBoundingClientRect().top + window.scrollY
-        return Math.min(maxScroll - 1, Math.max(0, top - vh * 0.85))
-      }).filter(a => a !== null)
+        anchors.push(Math.max(prev, Math.min(maxScroll - 1, Math.max(0, top - vh * 0.85))))
+      })
       anchors.push(maxScroll)
     }
     measure()
@@ -145,8 +149,8 @@ export default function StoryScrub() {
 
       let active = 0
       for (let i = 0; i < anchors.length - 1; i++) {
-        if (y >= anchors[i]) active = i
-        else break
+        if (y < anchors[i]) break
+        if (anchors[i + 1] > anchors[i]) active = i // skip empty (missing) ranges
       }
       if (active !== lastActive) {
         videos.forEach((v, i) => {

@@ -13,6 +13,9 @@ export default defineConfig({
       '/api': {
         target: process.env.DEV_API_TARGET || 'http://127.0.0.1:8787',
         changeOrigin: true,
+        // The worker rejects foreign browser Origins on /api/chat; the dev
+        // proxy is a server-side hop, so present it as a non-browser caller.
+        configure: (proxy) => proxy.on('proxyReq', (req) => req.removeHeader('origin')),
       },
     },
   },

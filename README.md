@@ -41,7 +41,7 @@ akashjames.com ──▶ Cloudflare Worker `akash-portfolio` (wrangler.jsonc)
 
 - **Site** — `src/`. Hash-routed SPA (`/#/chat` is the Veronica chat). Scroll-driven story videos in `public/story/`. See `CLAUDE.md` for the design system and component map.
 - **Worker** — `worker/index.js`. Ported from the old Python proxy; no framework.
-  - `GET /api/chat?text=…&history=…` — SSE stream. Runs an OpenRouter tool-calling loop (bio, career, projects, skills, publications, honours, YouTube), then streams the answer as typed events `{t: text|thinking|tool|block}` ending in `[DONE]`.
+  - `POST /api/chat` with `{ text, history }` — SSE stream. Runs a streamed OpenRouter tool-calling loop (bio, career, projects, skills, publications, honours, YouTube) and emits typed events `{t: text|thinking|tool|block|error}` ending in `[DONE]`. Same-origin only, rate-limited per IP (`CHAT_LIMITER`), 64KB body cap.
   - `GET /api/youtube-feed` — channel RSS → JSON, edge-cached 10 min. Retries and refuses to cache YouTube's occasional bad 200 bodies.
   - `GET /api/health`
   - `/story/*` — answers HTTP Range requests with 206. Workers static assets return full 200s, and Safari won't seek `<video>` without ranges.

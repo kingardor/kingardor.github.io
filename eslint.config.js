@@ -23,7 +23,13 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // `motion` is only referenced as <motion.div> (a JSX member expression),
+      // which core no-unused-vars can't see without eslint-plugin-react.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^([A-Z_]|motion$)' }],
+      // `catch {}` is the house idiom for best-effort browser APIs.
+      'no-empty': ['error', { allowEmptyCatch: true }],
+      // Providers that also export their hooks only cost fast-refresh fidelity.
+      'react-refresh/only-export-components': 'warn',
     },
   },
   // Node-side files (build config, scripts) and the Cloudflare Worker.

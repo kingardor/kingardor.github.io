@@ -42,12 +42,13 @@ A fixed full-viewport video layer (`src/components/story/StoryScrub.jsx`) behind
 
 ### Content / Data
 
-Site content lives in `src/data.js`, mapped to component shape by `src/components/prototype/dataAdapter.js` (career chapters, projects with Veronica pinned first, honours keys, writing rows, manifesto words, stats).
+All content lives in `src/content/index.js` — the single source imported by both the SPA and the Worker (Veronica's tools read it, so the page and the agent can't drift). `src/components/prototype/dataAdapter.js` only reshapes it for the home sections (career chapters, curated projects with Veronica pinned first, honours keys, writing rows, manifesto words, stats). Projects are curated there — no GitHub repo auto-listing.
 
 ### Chat ("Veronica" AI)
 
-- SSE via `src/shared/utils/openSSE.js` to `/api/chat` on the Worker; typed events (text/thinking/tool/block) render rich blocks in `src/sections/Chat/blocks/`
-- Seeding: hero prompt bar / palette set `sessionStorage 'chat:seed'` + `#/chat?q=…`
+- `POST /api/chat` `{ text, history }` via `src/shared/utils/streamChat.js` (fetch + ReadableStream, inactivity timeout); typed SSE events (text/thinking/tool/block/error) render rich blocks in `src/sections/Chat/blocks/`. A stop, timeout or dropped stream keeps whatever already streamed.
+- The Worker streams every round (tool calls are stitched from deltas) — one generation per answer. `/api/chat` guards: foreign browser `Origin` → 403 (`ALLOWED_ORIGINS` + same-origin), per-IP `CHAT_LIMITER` rate limit → 429, 64KB body cap → 413, history sanitised to user/assistant string messages. Owner Mode is server-checked against the optional `OWNER_TOKEN` secret; the token never reaches the model.
+- Seeding: hero prompt bar / palette set `sessionStorage 'chat:seed'` + `#/chat?q=…`; only a stashed seed auto-sends — a bare `?q=` (e.g. a third-party link) just pre-fills the input
 - Styled entirely by the `--nm-*` token aliases — recolor by editing tokens, not components
 
 ### Loading Screen
@@ -56,17 +57,18 @@ Pure CSS splash in `index.html` (`#loader`). Dismissed by `main.jsx` after BOTH 
 
 ### Deployment (Cloudflare Workers)
 
-One Worker, `akash-portfolio`, serves everything: `dist/` as static assets (`not_found_handling: single-page-application`) and the Veronica API from `worker/index.js` (`run_worker_first: ["/api/*"]`). Config in `wrangler.jsonc`.
+One Worker, `akash-portfolio`, serves everything: `dist/` as static assets (`not_found_handling: single-page-application`) and the Veronica API from `worker/index.js` (`run_worker_first: ["/api/*", "/story/*", "/media/*"]` — the media paths get byte-range 206s for Safari video). Config in `wrangler.jsonc`.
 
 - GitHub Actions (`.github/workflows/deploy.yml`): build → prerender (headless Chrome) → `wrangler deploy`. Needs repo secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`. Local: `npm run deploy` (`scripts/deploy.sh`: sources gitignored `.env.cloudflare`, build → prerender if Chrome is present → deploy).
-- Worker vars: `YT_CHANNEL_ID`, `YT_MAX`, `MODEL`, `TEMPERATURE` (in `wrangler.jsonc`). Secret: `OPENROUTER_API_KEY` via `npx wrangler secret put`.
+- Worker vars: `YT_CHANNEL_ID`, `YT_MAX`, `MODEL`, `TEMPERATURE`, `ALLOWED_ORIGINS` (in `wrangler.jsonc`); rate-limit binding `CHAT_LIMITER`. Secrets via `npx wrangler secret put`: `OPENROUTER_API_KEY` (required), `OWNER_TOKEN` (optional — enables `/admin <token>` Owner Mode).
 - Custom domains attach via `routes` with `custom_domain: true` once the zone is on Cloudflare. workers.dev URL: `https://akash-portfolio.akash-james2096.workers.dev`.
-- The API is same-origin in production; `API_BASE` in `ChatPage.jsx` / `prefetch.js` is `VITE_API_BASE ?? ''`. Dev: Vite proxies `/api` to `npm run worker:dev` (:8787) or `DEV_API_TARGET`.
+- The API is same-origin in production (no CORS headers); `API_BASE` in `ChatPage.jsx` / `prefetch.js` is `VITE_API_BASE ?? ''`. Dev: Vite proxies `/api` to `npm run worker:dev` (:8787, runs with `DEV_LOOPBACK=1` so localhost origins pass) or `DEV_API_TARGET`; the proxy strips `Origin`.
+- Security headers (CSP etc.) and `/assets/*` immutable caching live in `public/_headers` (applies to static-asset responses only). No inline scripts — the loader timestamp is `public/boot.js`. `main.jsx` uses `createRoot` (never hydrate): the prerender snapshot is post-effect and can't match a first render.
 - History: previously GitHub Pages (`pages.yml`) + a Python/FastAPI proxy on Vercel (`kingardor/veronica-proxy-vercel`), ported 1:1 into `worker/index.js` (OpenRouter agentic loop → typed SSE, YouTube RSS → JSON).
 
 ### External APIs
 
 - **CounterAPI** — visitor counter (`src/shared/hooks/useSiteViews.js`)
-- **GitHub API** — repos (`fetchGithubProjects.js`, prefetched during loader) + public events ticker (`shared/utils/telemetry.js`)
+- **GitHub API** — public events ticker only (`shared/utils/telemetry.js`)
 - **YouTube feed** — `/api/youtube-feed` on the Worker (`shared/utils/prefetch.js`)
-- **SSE endpoint** — `/api/chat` on the Worker → OpenRouter (the Veronica chat agent)
+- **Chat endpoint** — `POST /api/chat` on the Worker → OpenRouter (the Veronica chat agent)

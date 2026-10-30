@@ -13,10 +13,8 @@ import HonoursSection from '../sections/HonoursSection.jsx';
 import ContactSection from '../sections/ContactSection.jsx';
 import { TopNav } from './Chrome.jsx';
 import { useReveal } from './hooks.js';
-import { DATA } from './dataAdapter.js';
 import { prefetched } from '../../shared/utils/prefetch.js';
 import StoryScrub from '../story/StoryScrub.jsx';
-import SectionGate from '../os/SectionGate.jsx';
 import navigate from '../../shared/utils/navigate.js';
 
 function toVideoItem(v, i) {
@@ -40,25 +38,10 @@ function toVideoItem(v, i) {
 }
 
 export default function Home() {
-  const [projects, setProjects] = useState(null);
   const [videos, setVideos] = useState(null);
-  useReveal([projects, videos]);
+  useReveal([videos]);
 
-  // Consume pre-fetched promises kicked off in main.jsx during the loader window
-  useEffect(() => {
-    prefetched.github.then(repos => {
-      if (!repos.length) return;
-      const ghCards = repos.map((p, i) => ({
-        code: `PRJ · ${String(i + 2).padStart(2, '0')}`,
-        name: p.name,
-        desc: p.desc,
-        tags: p.tags.map(t => t.toUpperCase()),
-        href: p.url,
-      }));
-      setProjects([DATA.projects[0], ...ghCards]);
-    }).catch(() => {});
-  }, []);
-
+  // Consume the feed pre-fetched in main.jsx during the loader window
   useEffect(() => {
     prefetched.youtube.then(data => {
       if (data?.items?.length) {
@@ -72,9 +55,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Must precede the sections: its capture wheel listener has to register
-          before CareerSection's chapter stepper */}
-      <SectionGate />
       <StoryScrub />
       <TelemetryHud />
       <GuidedTour />
@@ -86,7 +66,7 @@ export default function Home() {
         <StatsStrip />
         <CareerSection />
         <SkillsSection />
-        <ProjectsSection projects={projects || undefined} />
+        <ProjectsSection />
         <VideosSection videos={videos || undefined} />
         <WritingSection />
         <HonoursSection />

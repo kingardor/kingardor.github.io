@@ -310,12 +310,8 @@
     </style>
   </head>
   <body>
-    <!-- Timestamp so main.jsx can compute how long loader has been visible -->
-    <!-- pageshow reload handles bfcache restores (back nav on mobile) where loader was already removed -->
-    <script>
-      window.__LOADER_START = Date.now();
-      window.addEventListener('pageshow', function(e) { if (e.persisted) location.reload(); });
-    </script>
+    <!-- Loader timestamp + bfcache reload; external so the CSP needs no inline script -->
+    <script src="/boot.js"></script>
 
     <div id="loader" aria-hidden="true">
       <p class="loader-logo">AJ<span class="dot">.</span></p>

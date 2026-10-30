@@ -3,9 +3,9 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowUp, Square, User } from 'lucide-react'
-import { ASSISTANT, CHAT_SUGGESTIONS } from '../../data'
+import { ASSISTANT, CHAT_SUGGESTIONS } from '../../content/index.js'
 import parseSearch from '../../shared/utils/parseSearch'
-import { openSSE } from '../../shared/utils/openSSE'
+import { streamChat } from '../../shared/utils/streamChat'
 import ThinkingBlock from './components/ThinkingBlock'
 import ChatBlocks    from './blocks/ChatBlocks'
 import { Entropy }   from './components/Entropy'
@@ -28,7 +28,7 @@ const TOOL_STATUS_LABELS = {
 function prepareHistory(history) {
   const arr = Array.isArray(history) ? history : []
   // Strip blocks and thinking — only prose content goes to API
-  const clean = arr.map(m => ({ role: m.role, content: m.content || '' }))
+  const clean = arr.map(m => ({ role: m.role, content: m.content || '' })).filter(m => m.content)
   const base = (clean.length && clean[clean.length - 1]?.role === 'user') ? clean.slice(0, -1) : clean.slice()
   const userIdxs = []
   for (let i = 0; i < base.length; i++) if (base[i]?.role === 'user') userIdxs.push(i)
@@ -244,7 +244,7 @@ function UserMessage({ content }) {
   )
 }
 
-function AIMessage({ content, thinking, blocks }) {
+function AIMessage({ content, thinking, blocks, notice }) {
   return (
     <motion.div
       className="flex items-end gap-2"
@@ -286,6 +286,11 @@ function AIMessage({ content, thinking, blocks }) {
           {content}
         </ReactMarkdown>
         <ChatBlocks blocks={blocks} />
+        {notice && (
+          <div className="hud-text" role="status" style={{ marginTop: content ? '0.6rem' : 0, fontSize: '0.72rem', letterSpacing: '0.1em', color: 'var(--nm-accent-2)' }}>
+            {notice}
+          </div>
+        )}
       </div>
     </motion.div>
   )
@@ -531,13 +536,29 @@ export default function ChatPage() {
     if (loading) scrollToBottom()
   }, [loading, scrollToBottom])
 
-  const stop = React.useCallback(() => {
-    try { streamRef.current?.close?.() } catch {}
+  // Ends the current turn. Whatever already streamed is kept as the reply —
+  // a stop, timeout or dropped connection never throws an answer away.
+  const finishTurn = React.useCallback((notice, phase = 'idle') => {
     streamRef.current = null
     setLoading(false)
     setToolStatus(null)
     setLiveThinking('')
+    clearTimeout(phaseTimerRef.current)
+    setChatPhase(phase)
+    if (phase === 'error') phaseTimerRef.current = setTimeout(() => setChatPhase('idle'), 2500)
+    const { content, thinking, blocks, error } = pendingRef.current
+    pendingRef.current = { content: '', thinking: '', blocks: [], error: '' }
+    const note = error || notice || ''
+    if (content || blocks.length || thinking || note) {
+      setMessages(m => [...m, { role: 'model', content, thinking, blocks, notice: note }])
+    }
   }, [])
+
+  const stop = React.useCallback(() => {
+    if (!streamRef.current) return
+    try { streamRef.current.close() } catch {}
+    finishTurn('INTERRUPTED')
+  }, [finishTurn])
 
   const appendUser = text => setMessages(m => [...m, { role: 'user', content: text, thinking: '', blocks: [] }])
 
@@ -553,10 +574,10 @@ export default function ChatPage() {
     setChatPhase('loading')
     setToolStatus(null)
     setLiveThinking('')
-    // Reset buffer — accumulate silently, render only on done
-    pendingRef.current = { content: '', thinking: '', blocks: [] }
+    // Reset buffer — accumulate silently, render when the turn ends
+    pendingRef.current = { content: '', thinking: '', blocks: [], error: '' }
     const turnsHistory = prepareHistory(messages.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
-    const handle = openSSE({
+    const handle = streamChat({
       base: API_BASE,
       text: q,
       history: turnsHistory,
@@ -571,41 +592,31 @@ export default function ChatPage() {
         } else if (event.t === 'block') {
           pendingRef.current.blocks.push({ type: event.name, data: event.data })
           setToolStatus(null)
+        } else if (event.t === 'error') {
+          pendingRef.current.error = event.v
         }
       },
-      onDone: () => {
-        streamRef.current = null
-        setLoading(false)
-        setToolStatus(null)
-        setLiveThinking('')
-        setChatPhase('idle')
-        const { content, thinking, blocks } = pendingRef.current
-        // Single newlines between word chars are streaming token-boundary artifacts — normalise to space.
-        // Double newlines (paragraph breaks) and list markers are unaffected because \w never matches '-'/'*'/'#'.
-        const normalised = content.replace(/(\w)\n(\w)/g, '$1 $2')
-        setMessages(m => [...m, { role: 'model', content: normalised, thinking, blocks }])
-      },
-      onError: () => {
-        streamRef.current = null
-        setLoading(false)
-        setToolStatus(null)
-        setLiveThinking('')
-        setChatPhase('error')
-      },
+      onDone: () => finishTurn('', pendingRef.current.error ? 'error' : 'idle'),
+      onError: (err) => finishTurn(err?.message || 'Veronica is unavailable right now.', 'error'),
     })
     streamRef.current = handle
-  }, [loading, messages, stop])
+  }, [loading, messages, finishTurn])
 
+  // The hero prompt bar and ⌘K stash their question in sessionStorage before
+  // navigating, so a stashed seed is the visitor's own words: send it. A bare
+  // `?q=` can come from any third-party link, so it only pre-fills the input.
   const seedFromAny = React.useCallback(() => {
     if (seededOnceRef.current) return
-    const q = parseSearch(location.hash.split('?')[1] || '').q || ''
-    const stash = sessionStorage.getItem(SEED_KEY) || ''
-    const seed = (q || stash).trim()
+    const q = (parseSearch(location.hash.split('?')[1] || '').q || '').trim()
+    let stash = ''
+    try { stash = (sessionStorage.getItem(SEED_KEY) || '').trim() } catch {}
+    const seed = stash || q
     if (seed && seed !== lastSeedRef.current) {
       lastSeedRef.current = seed
       try { sessionStorage.removeItem(SEED_KEY) } catch {}
       seededOnceRef.current = true
-      setTimeout(() => send(seed), 0)
+      if (stash) setTimeout(() => send(stash), 0)
+      else setInput(q.slice(0, 2000))
       stripQueryFromHash()
     }
   }, [send])
@@ -672,6 +683,7 @@ export default function ChatPage() {
                           content={m.content}
                           thinking={m.thinking}
                           blocks={m.blocks}
+                          notice={m.notice}
                         />
                   )}
                   {loading && <LoadingBubble key="loading" toolStatus={toolStatus} thinking={liveThinking} />}

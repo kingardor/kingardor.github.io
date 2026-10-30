@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot, hydrateRoot } from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import './index.css'
 import './shared/utils/prefetch.js' // kick off API fetches during loader window
 import App from './App.jsx'
@@ -11,7 +11,6 @@ import('./sections/Chat/ChatPage').catch(() => {})
 const loader = document.getElementById('loader')
 const rootEl = document.getElementById('root')
 
-const isPrerendered = rootEl.hasChildNodes()
 const MIN_MS = 1700 // minimum loader display time so CSS animations complete
 
 // Resolved by HeroSection.jsx once the display font is usable; 4s safety-release
@@ -28,11 +27,12 @@ const app = (
   </StrictMode>
 )
 
-if (isPrerendered) {
-  hydrateRoot(rootEl, app)
-} else {
-  createRoot(rootEl).render(app)
-}
+// The prerendered markup in #root exists for crawlers and no-JS visitors. It is
+// a snapshot taken after effects ran (live clock, fetched data, finished
+// intros), so it can never match a first client render — hydrating it always
+// failed (React #418) and re-rendered anyway. Render fresh instead: React
+// replaces the snapshot on first commit, hidden under the loader.
+createRoot(rootEl).render(app)
 
 // Skip loader dismissal during build-time prerender so the snapshot includes the
 // loader div. window.__PRERENDER is injected by prerender.mjs via evaluateOnNewDocument
