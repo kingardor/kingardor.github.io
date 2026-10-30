@@ -221,12 +221,10 @@ section { position: relative; }
   pointer-events: none;
   background: var(--ob-void);
 }
-.story-video {
+.story-canvas {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center 22%;
-  transition: opacity 0.25s ease;
+  display: block;
 }
 .story-scrim {
   position: absolute; inset: 0;
@@ -249,6 +247,8 @@ main { position: relative; z-index: 1; }
   font-family: var(--font-mono);
   text-transform: uppercase;
   letter-spacing: 0.22em;
+  /* sits over live footage — a soft void halo keeps it legible */
+  text-shadow: 0 0 12px rgba(5, 5, 5, 0.9), 0 1px 2px rgba(5, 5, 5, 0.9);
 }
 
 /* ── Hero ── */
@@ -285,9 +285,6 @@ main { position: relative; z-index: 1; }
 .ob-line-inner.d2 { animation-delay: 0.3s; }
 @keyframes obLineRise { to { transform: translateY(0); } }
 .ob-ember { color: var(--ob-ember); }
-
-/* Mono HUD labels sit over live footage — a soft void halo keeps them legible */
-.mono-ob { text-shadow: 0 0 12px rgba(5, 5, 5, 0.9), 0 1px 2px rgba(5, 5, 5, 0.9); }
 
 .ob-hero-tag {
   margin: 30px 0 0;
@@ -882,7 +879,7 @@ main { position: relative; z-index: 1; }
   cursor: pointer;
   transition: color 0.25s ease, padding-left 0.3s var(--ease-out-l);
 }
-.ob-episode:hover { color: var(--ob-bone-60); padding-left: 12px; }
+.ob-episode:hover { color: var(--ob-bone); padding-left: 12px; }
 .ob-episode.active { color: var(--ob-bone); }
 .ob-episode.active .ob-episode-num { color: var(--ob-ember); }
 .ob-episode-num { color: var(--ob-bone-60); transition: color 0.25s ease; }

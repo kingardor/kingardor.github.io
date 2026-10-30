@@ -13,6 +13,8 @@ import { Entropy }   from './components/Entropy'
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
 const SEED_KEY = 'chat:seed'
 const MAX_TURNS = 10
+const MAX_MSG_CHARS = 4000   // mirrors the Worker's per-message cap
+const HISTORY_BUDGET = 48000 // JSON chars, leaves headroom under the 64KB body cap
 
 const TOOL_STATUS_LABELS = {
   get_youtube_videos:  'SCANNING VIDEOS...',
@@ -25,15 +27,31 @@ const TOOL_STATUS_LABELS = {
 }
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
+// What the model sees of a turn: its prose, or a stand-in when the turn was
+// only data blocks / an interruption, so roles keep alternating.
+function turnText(m) {
+  if (m.content) return m.content
+  if (m.role !== 'user' && m.blocks?.length) return `[showed: ${m.blocks.map(b => b.type).join(', ')}]`
+  if (m.role !== 'user' && m.notice) return `[${m.notice.toLowerCase()}]`
+  return ''
+}
+
+// Last MAX_TURNS turns, each capped like the Worker caps them, oldest dropped
+// until the JSON fits under the Worker's 64KB body limit. An Owner Mode
+// command is pinned so it doesn't silently expire.
 function prepareHistory(history) {
   const arr = Array.isArray(history) ? history : []
-  // Strip blocks and thinking — only prose content goes to API
-  const clean = arr.map(m => ({ role: m.role, content: m.content || '' })).filter(m => m.content)
+  const clean = arr
+    .map(m => ({ role: m.role, content: turnText(m).slice(0, MAX_MSG_CHARS) }))
+    .filter(m => m.content)
   const base = (clean.length && clean[clean.length - 1]?.role === 'user') ? clean.slice(0, -1) : clean.slice()
   const userIdxs = []
   for (let i = 0; i < base.length; i++) if (base[i]?.role === 'user') userIdxs.push(i)
-  if (userIdxs.length <= MAX_TURNS) return base
-  return base.slice(userIdxs[userIdxs.length - MAX_TURNS])
+  let out = userIdxs.length <= MAX_TURNS ? base : base.slice(userIdxs[userIdxs.length - MAX_TURNS])
+  while (out.length > 1 && JSON.stringify(out).length > HISTORY_BUDGET) out = out.slice(1)
+  const admin = [...base].reverse().find(m => m.role === 'user' && /^\/admin\b/i.test(m.content.trim()))
+  if (admin && !out.includes(admin)) out = [admin, ...out]
+  return out
 }
 function stripQueryFromHash() {
   if (location.hash !== '#/chat') { try { history.replaceState(null, '', '#/chat') } catch {} }

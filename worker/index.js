@@ -8,14 +8,13 @@
  *   POST /api/chat          → body { text, history } → SSE stream, Veronica v2 protocol:
  *       { t:'text', v }  { t:'thinking', v }  { t:'tool', name, status }
  *       { t:'block', name, data }  { t:'error', v }  and a final `[DONE]` sentinel
- *   GET  /story/*, /media/* → byte-range (206) video serving for Safari
+ *   GET  /media/*           → byte-range (206) video serving for Safari
  *
- * Abuse controls on /api/chat: same-origin / ALLOWED_ORIGINS check for browser
- * callers, a per-IP CHAT_LIMITER rate limit, a body cap, and history
+ * Abuse controls on /api/chat: a same-origin check for browser callers, a per-IP CHAT_LIMITER rate limit, a body cap, and history
  * sanitising (user/assistant roles only, string content, length caps).
  *
  * Bindings (wrangler.jsonc): ASSETS, CHAT_LIMITER. Vars: YT_CHANNEL_ID, YT_MAX,
- * MODEL, TEMPERATURE, ALLOWED_ORIGINS. Secrets: OPENROUTER_API_KEY, and
+ * MODEL, TEMPERATURE. Secrets: OPENROUTER_API_KEY, and
  * optionally OWNER_TOKEN (enables `/admin <token>` Owner Mode).
  */
 
@@ -25,7 +24,8 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const DEFAULT_MODEL = 'nvidia/nemotron-3-nano-30b-a3b'
 const DEFAULT_TEMPERATURE = 0.6
 const MAX_TOOL_ROUNDS = 3
-const UPSTREAM_TIMEOUT_MS = 60_000
+const HEADERS_TIMEOUT_MS = 30_000 // OpenRouter must start answering within this
+const IDLE_TIMEOUT_MS = 45_000    // …and never go quiet mid-stream for longer
 const YT_CACHE_TTL = 600
 
 const MAX_BODY_BYTES = 64 * 1024
@@ -208,15 +208,14 @@ async function fetchYoutubeFeed(env, ctx) {
 
 // ── Chat request hygiene ────────────────────────────────────────────────────
 
-// Browsers always send Origin on cross-origin and POST requests; a foreign one
-// means another site is trying to spend the key. Non-browser callers (no
-// Origin) are left to the rate limiter.
+// Browsers always send Origin on POST; a foreign one means another site is
+// trying to spend the key (a text/plain POST skips CORS preflight, so this
+// check is what stops it). The site only ever calls its own origin.
+// Non-browser callers (no Origin) are left to the rate limiter.
 function originAllowed(request, env) {
   const origin = request.headers.get('Origin')
   if (!origin) return true
   if (origin === new URL(request.url).origin) return true
-  const allowed = (env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean)
-  if (allowed.includes(origin)) return true
   if (env.DEV_LOOPBACK === '1') {
     try {
       const host = new URL(origin).hostname
@@ -230,23 +229,25 @@ const ADMIN_RE = /^\/admin\s+(\S+)\s*$/i
 const isAdminCommand = (s) => /^\/admin\b/i.test(s.trim())
 const isAdminReply = (s) => s.startsWith('[Owner Mode') || s === 'Access denied.'
 
-function safeEqual(a, b) {
-  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false
+// Compares SHA-256 digests in constant time — fixed length, so neither the
+// content nor the length of OWNER_TOKEN leaks through response timing.
+async function tokenMatches(given, token) {
+  if (!token) return false
+  const digest = (s) => crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(b => new Uint8Array(b))
+  const [a, b] = await Promise.all([digest(given), digest(token)])
   let diff = 0
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i]
   return diff === 0
 }
 
 // Owner Mode is server state: the last `/admin …` command the visitor sent
 // decides it, and it only exists when an OWNER_TOKEN secret is configured.
-function ownerModeFrom(commands, env) {
-  let on = false
-  for (const c of commands) {
-    const m = ADMIN_RE.exec(c.trim())
-    if (!m) continue
-    on = m[1].toLowerCase() === 'off' ? false : !!env.OWNER_TOKEN && safeEqual(m[1], env.OWNER_TOKEN)
-  }
-  return on
+// (The client keeps that command in the history it sends, however long the
+// chat gets.)
+async function ownerModeFrom(commands, env) {
+  const last = commands.map(c => ADMIN_RE.exec(c.trim())).filter(Boolean).at(-1)
+  if (!last || last[1].toLowerCase() === 'off') return false
+  return tokenMatches(last[1], env.OWNER_TOKEN)
 }
 
 function cleanHistory(raw) {
@@ -304,6 +305,22 @@ async function* sseChunks(body) {
 // One streamed completion. Prose and reasoning go straight to the visitor;
 // tool-call deltas are stitched together and returned for execution.
 async function streamCompletion({ env, payload, write }) {
+  // Two clocks instead of one wall-clock budget: a long answer that keeps
+  // streaming is never cut off, a stalled one is.
+  const ctrl = new AbortController()
+  let timer = setTimeout(() => ctrl.abort(new Error('upstream headers timeout')), HEADERS_TIMEOUT_MS)
+  const idle = () => {
+    clearTimeout(timer)
+    timer = setTimeout(() => ctrl.abort(new Error('upstream stream stalled')), IDLE_TIMEOUT_MS)
+  }
+  try {
+    return await readCompletion({ env, payload, write, signal: ctrl.signal, idle })
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+async function readCompletion({ env, payload, write, signal, idle }) {
   const r = await fetch(OPENROUTER_URL, {
     method: 'POST',
     headers: {
@@ -313,8 +330,9 @@ async function streamCompletion({ env, payload, write }) {
       'X-Title': 'Veronica - Akash James Portfolio',
     },
     body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    signal,
   })
+  idle()
   if (!r.ok || !r.body) {
     const detail = await r.text().catch(() => '')
     throw new UpstreamError(`OpenRouter HTTP ${r.status}: ${detail.slice(0, 500)}`)
@@ -323,6 +341,7 @@ async function streamCompletion({ env, payload, write }) {
   let content = ''
   const calls = []
   for await (const chunk of sseChunks(r.body)) {
+    idle()
     if (chunk?.error) throw new UpstreamError(`OpenRouter stream error: ${JSON.stringify(chunk.error).slice(0, 500)}`)
     const delta = chunk?.choices?.[0]?.delta ?? {}
     const thinking = delta.reasoning_content || delta.reasoning || ''
@@ -430,7 +449,7 @@ async function handleChat(request, env, ctx) {
   // Owner Mode commands are answered here and never sent upstream
   if (isAdminCommand(text)) {
     const m = ADMIN_RE.exec(text)
-    const on = ownerModeFrom([...userCommands, text], env)
+    const on = await ownerModeFrom([...userCommands, text], env)
     const reply = m && m[1].toLowerCase() === 'off'
       ? '[Owner Mode: OFF]'
       : on ? '[Owner Mode: ON]' : 'Access denied.'
@@ -439,7 +458,7 @@ async function handleChat(request, env, ctx) {
     return response
   }
 
-  const owner = ownerModeFrom(userCommands, env)
+  const owner = await ownerModeFrom(userCommands, env)
   const { done, response } = sseResponse(write => runChat({ text, history, owner, env, ctx, write }))
   ctx.waitUntil(done)
   return response
@@ -448,7 +467,7 @@ async function handleChat(request, env, ctx) {
 // ── Byte-range media ────────────────────────────────────────────────────────
 // Workers static assets answer Range requests with a full 200 and no
 // Accept-Ranges. Safari (iOS especially) will not play or seek <video> from an
-// origin that can't do 206s. So /story/* and /media/* run worker-first: fetch
+// origin that can't do 206s. So /media/* runs worker-first: fetch
 // the whole asset from the edge-local ASSETS store and slice the requested
 // window ourselves.
 
@@ -507,7 +526,7 @@ const json = (body, status = 200, extra = {}) =>
 export default {
   async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url)
-    if (pathname.startsWith('/story/') || pathname.startsWith('/media/')) return serveMedia(request, env)
+    if (pathname.startsWith('/media/')) return serveMedia(request, env)
     if (!pathname.startsWith('/api/')) return env.ASSETS.fetch(request)
 
     const route = `${request.method} ${pathname}`

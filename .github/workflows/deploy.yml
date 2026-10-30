@@ -29,6 +29,20 @@ jobs:
           node-version: 24
           cache: 'npm'
       - run: npm ci
+
+      # Story frame sequences are generated from media-src/ (ffmpeg → AVIF);
+      # cached on the sources + the generator so most deploys skip it.
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            public/seq
+            src/components/story/sequences.generated.json
+          key: seq-${{ hashFiles('media-src/story/**', 'scripts/build-sequences.mjs') }}
+      - name: Install ffmpeg
+        run: |
+          if [ ! -f src/components/story/sequences.generated.json ]; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg
+          fi
       - run: npm run build
 
       # Install a modern Chrome for the prerender step

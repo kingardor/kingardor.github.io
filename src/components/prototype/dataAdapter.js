@@ -40,7 +40,7 @@ const career = CAREER.map((r, i) => {
 const honours = HONOURS.map(h => ({ k: h.key, t: h.title, href: h.url || null }));
 
 /* ── Projects: curated order, Veronica pinned first ── */
-const projects = PROJECTS.slice(0, 6).map((p, i) => ({
+const projects = PROJECTS.map((p, i) => ({
   code: `PRJ · ${String(i + 1).padStart(2, '0')}`,
   name: p.name,
   feature: !!p.featured,
@@ -76,8 +76,6 @@ const socials = [
   { k: 'TWITTER',  v: '@king_ardor',            href: LINKS.twitter },
 ];
 
-const HUGE = { 'Vision & Edge': 'V', 'Agents & LLMs': 'A', Modeling: 'M', Infra: 'I' };
-
 export const DATA = {
   profile: {
     name: PROFILE.name.toUpperCase(),
@@ -97,7 +95,7 @@ export const DATA = {
     idx: String(i + 1).padStart(2, '0'),
     name: g.name,
     items: g.items,
-    huge: HUGE[g.name] || g.name[0],
+    huge: g.name[0],
   })),
   career,
   honours,

@@ -5,8 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev        # Start Vite dev server (localhost:5173)
-npm run build      # Production build → dist/
+npm run dev        # Build frame sequences (cached) + Vite dev server (localhost:5173)
+npm run build      # Frame sequences (cached) + production build → dist/
+npm run sequences  # Rebuild story frame sequences only (needs ffmpeg; --force to ignore cache)
 npm run prerender  # Snapshot dist/index.html via headless Chrome (needs PUPPETEER_EXECUTABLE_PATH)
 npm run lint       # ESLint
 npm run preview    # Preview production build locally
@@ -20,14 +21,16 @@ npm run preview    # Preview production build locally
 
 Hash-based via the custom `useHashPath` hook — no React Router. `App.jsx` branches: `/#/chat` → lazy ChatPage, everything else → `Home`. Route swaps go through `src/shared/utils/navigate.js`, which wraps the hash change in the View Transitions API (clip-wipe + blur; instant fallback).
 
-### The Story Layer (scroll-driven video centerpiece)
+### The Story Layer (scroll-scrubbed footage centerpiece)
 
-A fixed full-viewport video layer (`src/components/story/StoryScrub.jsx`) behind all home content. Eight AI-generated segments (`public/story/story-{1..8}.mp4` + `-m` mobile variants) tell one continuous transformation — Akash's real selfie at the Golden Gate progressively becoming a half-chrome cyborg (ember palette), themed per section: circuits wake (hero/manifesto), armor assembles (career), PCB head reveal (skills), schematics (projects), red eye + REC (signals), glyph rain (notes), mirror polish (honours), final-form push-in (contact).
+A fixed full-viewport canvas (`src/components/story/SequenceCanvas.jsx`) behind all home content. Eight AI-generated segments tell one continuous transformation — Akash's real selfie at the Golden Gate progressively becoming a half-chrome cyborg (ember palette), themed per section: circuits wake (hero/manifesto), armor assembles (career), PCB head reveal (skills), schematics (projects), red eye + REC (signals), glyph rain (notes), mirror polish (honours), final-form push-in (contact).
 
-- Scroll space is partitioned contiguously: segment *i* owns `[anchor_i, anchor_i+1)` (anchor ≈ section top − 0.85vh) — but anchors only pick the ACTIVE scene. Playback is event-driven, not positional: entering a section plays its snippet from the shared boundary keyframe through to the far end at the cinematic rate (`MAX_RATE` 1.5× cap, exponential chase) — identically for short and tall/pinned sections. Scrolling up rewinds; a direction flip needs `DIR_PX` of intentional counter-scroll so jitter can't reverse a scene. Consecutive segments share boundary keyframes, so handoffs are pixel-identical.
-- Mobile machinery ported from the old hero: iOS gesture priming (all videos primed in the first `touchstart`), single-seek-in-flight gating per video, decoder wake on tab restore. Mobile uses the `-m` encodes (720px, 15fps, `-g 5` for fast seeks).
-- Reduced-motion / prerender renders a static poster (`.story-poster`, hero.webp).
-- Asset pipeline (regeneration): keyframes via Higgsfield `nano_banana_pro` chained edits — every generation references the previous keyframe PLUS TWO ground-truth photos of Akash's face (¾ `public/hero.webp` + a frontal selfie) so identity holds through head turns; the storyboard alternates front ↔ ¾ angles per section for camera/head motion (never full profiles — no profile GT exists). Never let prompts "re-compose/zoom/re-center" (causes likeness drift); state head angle + framing explicitly. Segments via `wan2_7` with `start_image`/`end_image` and motion described in the prompt (turns, bows, ignitions); encode desktop `1024w CRF30 -g 6` (dense keyframes — Safari can't repaint per-frame backward seeks across long GOPs, so reverse scrubbing needs short ones), mobile `720w fps15 CRF30 -g 5`, `+faststart`, no audio.
+- **Footage is an image sequence, never a `<video>`.** Seeking video per scroll frame was the old bottleneck (≈9 visible updates/s, Safari worse in reverse). `scripts/build-sequences.mjs` (run by `npm run dev`/`build`, cached by source hash) turns `media-src/story/<name>.mp4` (+ `-m` mobile) into 15fps AVIF q45 frames under `public/seq/<name>-<hash>/{d,m}/` (gitignored, immutable-cached via `_headers`) plus `src/components/story/sequences.generated.json`. Per-sequence byte budgets fail the build. CI caches the output and installs ffmpeg only on a miss.
+- **Frame = f(scroll).** `ACTS` maps section ids → sequences; act *k* owns `[start_k, start_k+1)` (start ≈ section top − 0.85vh) and P = k + progress. A light exponential follow smooths wheel steps; jumps > 1.5 acts cut instead of scrubbing; adjacent frames crossfade by the fractional position. Missing sections are simply skipped (acts are explicit, never index-shifted). Consecutive segments share boundary keyframes, so act handoffs are invisible.
+- `sequenceStore.js`: compressed blobs fetched coarse-to-fine (every 8th frame first), active act + neighbours prioritised; decoded `ImageBitmap`s held only within ±8 frames of the playhead and `close()`d after, so memory stays flat.
+- `src/shared/scroll/scrollStore.js` is the single rAF for scroll-driven visuals: woken by `scroll`/`resize`, sleeps when no subscriber is still easing — an idle page draws nothing.
+- Reduced motion / prerender / no AVIF decode → static poster (`.story-poster`). `?seqdebug` exposes `window.__seq` (act, frame, frac, act ranges).
+- Asset pipeline (regeneration): keyframes via Higgsfield `nano_banana_pro` chained edits — every generation references the previous keyframe PLUS TWO ground-truth photos of Akash's face (¾ `public/hero.webp` + a frontal selfie) so identity holds through head turns; the storyboard alternates front ↔ ¾ angles per section for camera/head motion (never full profiles — no profile GT exists). Never let prompts "re-compose/zoom/re-center" (causes likeness drift); state head angle + framing explicitly. Segments via `wan2_7` with `start_image`/`end_image` and motion described in the prompt (turns, bows, ignitions). Drop masters into `media-src/story/` and rebuild — no hand encoding.
 
 ### Sections
 

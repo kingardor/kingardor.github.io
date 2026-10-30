@@ -14,7 +14,7 @@ import ContactSection from '../sections/ContactSection.jsx';
 import { TopNav } from './Chrome.jsx';
 import { useReveal } from './hooks.js';
 import { prefetched } from '../../shared/utils/prefetch.js';
-import StoryScrub from '../story/StoryScrub.jsx';
+import SequenceCanvas from '../story/SequenceCanvas.jsx';
 import navigate from '../../shared/utils/navigate.js';
 
 function toVideoItem(v, i) {
@@ -55,7 +55,7 @@ export default function Home() {
 
   return (
     <>
-      <StoryScrub />
+      <SequenceCanvas />
       <TelemetryHud />
       <GuidedTour />
       <div className="grain" />
