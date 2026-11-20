@@ -15,6 +15,11 @@ export const TOUR_STOPS = [
     dwellMs: 2600,
   },
   {
+    id: 'spotlight', frac: 0,
+    caption: 'Two projects from the workbench: Vector, a palm-sized robot, and Hermes, a drone-assisted wildfire detector.',
+    dwellMs: 2800,
+  },
+  {
     id: 'career', frac: 0.06,
     caption: 'Eight years of building. Presently Director of AI at MyBlue; previously SparkCognition, UC Berkeley, Integration Wizards.',
     dwellMs: 3000,

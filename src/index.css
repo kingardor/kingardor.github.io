@@ -1287,3 +1287,15 @@ body.ob-touring .ob-hud { transform: translateY(100%); }
   object-fit: cover;
   object-position: center 22%;
 }
+
+/* Carry the portfolio's opaque reading surfaces into the conversation. */
+.veronica-chat {
+  --nm-surface: #202327;
+  --nm-surface-2: #292c30;
+  --nm-text: #f0f2f0;
+  --nm-text-muted: #b8bfc0;
+  --nm-text-subtle: #a7afb2;
+  --nm-accent: #ccb8ff;
+  --nm-accent-2: #bba2f5;
+}
+.veronica-chat .nm-bar { background: var(--nm-surface); }

@@ -387,10 +387,8 @@ function ChatHeader({ loading }) {
           className="relative flex items-center px-4 py-2.5 rounded-2xl"
           data-no-transition
           style={{
-            background: 'var(--glass-bg)',
+            background: 'var(--nm-surface)',
             border: '1px solid var(--glass-border)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
             boxShadow: '0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
           }}
         >
@@ -461,6 +459,7 @@ function InputBar({ value, onChange, onSubmit, loading, onStop }) {
             <input
               value={value}
               onChange={onChange}
+              aria-label={`Message ${ASSISTANT.name}`}
               placeholder={`Message ${ASSISTANT.name}…`}
               className="flex-1 bg-transparent outline-none text-[16px] sm:text-sm"
               style={{
@@ -658,7 +657,7 @@ export default function ChatPage() {
   const isEmpty = messages.length === 0
 
   return (
-    <div style={{ height: '100svh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'transparent', color: 'var(--nm-text)', position: 'relative' }}>
+    <div className="veronica-chat" style={{ height: '100svh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'transparent', color: 'var(--nm-text)', position: 'relative' }}>
       {/* Neural-net background — full-screen, phase-reactive */}
       <Entropy phase={chatPhase} />
 

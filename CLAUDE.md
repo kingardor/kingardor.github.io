@@ -34,12 +34,12 @@ A fixed full-viewport canvas (`src/components/story/SequenceCanvas.jsx`) behind 
 
 ### Sections
 
-`src/components/sections/` — one file per section (HeroSection, CareerSection, SkillsSection, ProjectsSection, VideosSection, WritingSection, HonoursSection, ContactSection), orchestrated by `src/components/prototype/Home.jsx`. Shared helpers in `sections/lib/effects.jsx` (ScrambleText, TypewriterKicker, MagneticButton, SectionHead). Career is a pinned vertical chapter crossfade (stacked list ≤900px). Top chrome is `Chrome.jsx` (wordmark + numbered index + TOUR + ⌘K + Ask Veronica).
+The homepage is composed in `src/components/portfolio/Home.jsx`. It retains `HeroSection` and the eight-act story canvas. After the hero, `PortfolioSections.jsx` presents the work gallery, experience, toolkit, projects, talks, writing, recognition and contact. `portfolio.css` reserves a film column on desktop and full-width reading space after the hero on phones. Search opens the command palette. The live video feed falls back to the curated talks in `src/content/index.js`.
 
 ### Veronica OS layer (`src/components/os/`)
 
 - `CommandPalette.jsx` — ⌘K/Ctrl+K/`/`; fuzzy index (`usePaletteIndex.js`, scorer in `shared/utils/fuzzy.js`) over sections/projects/posts/socials/commands; unmatched queries route to the chat as a seeded question.
-- `GuidedTour.jsx` + `tourScript.js` — canned Veronica captions, Lenis-driven autopilot; wheel pauses, Esc exits; entries: TOUR button, palette, `?tour=1`. Disabled on mobile/reduced-motion.
+- `GuidedTour.jsx` + `tourScript.js` — canned Veronica captions, Lenis-driven autopilot; wheel pauses, Esc exits; entries: palette, `?tour=1`. Disabled on mobile/reduced-motion.
 - `TelemetryHud.jsx` — bottom strip: GitHub events ticker (unauth API, sessionStorage TTL, hides on failure), YouTube count, CounterAPI visitors, IST clock, SYS status.
 - `ContextChip.jsx` — per-section "ASK VERONICA ABOUT THIS" handoff.
 

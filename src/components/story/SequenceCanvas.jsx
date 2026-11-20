@@ -47,11 +47,17 @@ export default function SequenceCanvas() {
 
     // ── Timeline: act k owns [start_k, start_k+1); P = k + progress ──
     let acts = []
+    const compact = window.matchMedia('(max-width: 900px), (max-width: 1000px) and (max-height: 500px)')
     let maxScroll = 1
     const measure = () => {
       const vh = window.innerHeight
       maxScroll = Math.max(1, document.documentElement.scrollHeight - vh)
-      acts = ACTS
+      const visibleActs = compact.matches ? ACTS.slice(0, 1) : ACTS
+      if (compact.matches) {
+        const pane = document.querySelector('.portfolio')
+        if (pane) maxScroll = Math.max(1, pane.getBoundingClientRect().top + window.scrollY)
+      }
+      acts = visibleActs
         .map(a => ({ ...a, el: document.getElementById(a.id) }))
         .filter(a => a.el && store.countOf(a.seq))
         .map((a, k) => ({
@@ -62,6 +68,7 @@ export default function SequenceCanvas() {
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
       canvas.width = Math.round(window.innerWidth * dpr)
       canvas.height = Math.round(window.innerHeight * dpr)
+      visibleActs.forEach(a => store.load(a.seq))
       dirty = true
       kick()
     }
@@ -120,19 +127,19 @@ export default function SequenceCanvas() {
 
     store.onReady = () => { dirty = true; kick() }
     const off = subscribe((y, now, dt) => {
-      if (!acts.length) return false
+      if (!acts.length || (compact.matches && y >= maxScroll)) return false
       const target = targetOf(y)
+      const previous = shown
       if (shown < 0 || Math.abs(target - shown) > SNAP_ACTS) shown = target
       else shown += (target - shown) * (1 - Math.exp(-FOLLOW * dt))
       const settling = Math.abs(target - shown) > 1e-4
       if (!settling) shown = target
-      if (settling || dirty) { dirty = false; draw(shown) }
+      if (shown !== previous || dirty) { dirty = false; draw(shown) }
       return settling
     })
 
     measure()
     store.prioritise([acts[0]?.seq, acts[1]?.seq].filter(Boolean))
-    ACTS.forEach(a => store.load(a.seq)) // everything else trails in, nearest first
 
     // A browser that can't decode AVIF (pre-16 Safari) gets the poster
     if (acts[0]) {

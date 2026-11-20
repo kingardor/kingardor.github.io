@@ -25,11 +25,12 @@ function jumpTo(id) {
 
 const SECTION_ENTRIES = [
   { id: 'top', label: 'Home', keywords: 'hero start top' },
-  { id: 'career', label: 'Career', keywords: 'roles history myblue sparkcognition berkeley chapters' },
-  { id: 'skills', label: 'Stack', keywords: 'skills arsenal tools deepstream pytorch' },
+  { id: 'spotlight', label: 'Selected work', keywords: 'work gallery vector hermes' },
+  { id: 'career', label: 'Experience', keywords: 'roles history myblue sparkcognition berkeley chapters' },
+  { id: 'skills', label: 'Toolkit', keywords: 'skills arsenal tools deepstream pytorch' },
   { id: 'projects', label: 'Work', keywords: 'projects mission files repos' },
-  { id: 'videos', label: 'Signals', keywords: 'videos youtube workshop' },
-  { id: 'writing', label: 'Notes', keywords: 'writing articles medium blog' },
+  { id: 'videos', label: 'Talks', keywords: 'videos youtube workshop' },
+  { id: 'writing', label: 'Writing', keywords: 'writing articles medium blog' },
   { id: 'honours', label: 'Honours', keywords: 'awards patent nvidia speaking' },
   { id: 'contact', label: 'Contact', keywords: 'email transmission reach out hire' },
 ].map(s => ({

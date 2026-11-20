@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect } from 'react'
 import useHashPath from './shared/hooks/useHashPath'
 import { useLenis } from './shared/components/SmoothScroll'
-import Home from './components/prototype/Home'
+import Home from './components/portfolio/Home'
 import CommandPalette from './components/os/CommandPalette.jsx'
 
 const ChatPage = React.lazy(() => import('./sections/Chat/ChatPage'))

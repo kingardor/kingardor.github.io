@@ -167,8 +167,8 @@ export default function HeroSection() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const scrollToCareer = () => {
-    document.getElementById('career')?.scrollIntoView({ behavior: 'smooth' })
+  const scrollToWork = () => {
+    document.getElementById('spotlight')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
   }
 
   return (
@@ -214,8 +214,8 @@ export default function HeroSection() {
         <button
           className="ob-hero-cue mono-ob"
           ref={cueRef}
-          onClick={scrollToCareer}
-          aria-label="Scroll to career"
+          onClick={scrollToWork}
+          aria-label="Scroll to selected work"
         >
           <span className="ob-cue-line" />
           SCROLL
