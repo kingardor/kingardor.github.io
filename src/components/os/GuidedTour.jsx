@@ -25,16 +25,11 @@ export default function GuidedTour() {
   const sleep = (ms) => new Promise(r => setTimeout(r, ms))
   const aborted = (id) => ctrl.current.run !== id
 
-  const setPhase = (s) => {
-    setState(s)
-    document.body.classList.toggle('ob-touring', s !== 'idle')
-  }
-
   const exit = () => {
     ctrl.current.run++
     ctrl.current.paused = false
     setCaption('')
-    setPhase('idle')
+    setState('idle')
   }
 
   const scrollToStop = (stop) => {
@@ -54,7 +49,7 @@ export default function GuidedTour() {
   const playFrom = async (fromIdx) => {
     const id = ++ctrl.current.run
     ctrl.current.paused = false
-    setPhase('playing')
+    setState('playing')
     for (let i = fromIdx; i < TOUR_STOPS.length; i++) {
       if (aborted(id)) return
       ctrl.current.idx = i
@@ -96,7 +91,7 @@ export default function GuidedTour() {
     const pause = () => {
       if (stateRef.current === 'playing') {
         ctrl.current.paused = true
-        setPhase('paused')
+        setState('paused')
       }
     }
     const onKey = (e) => { if (e.key === 'Escape') exit() }
@@ -115,7 +110,7 @@ export default function GuidedTour() {
 
   const resume = () => {
     ctrl.current.paused = false
-    setPhase('playing')
+    setState('playing')
     scrollToStop(TOUR_STOPS[ctrl.current.idx]) // re-align after manual scroll
   }
   const skip = () => {

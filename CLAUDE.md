@@ -40,8 +40,6 @@ The homepage is composed in `src/components/portfolio/Home.jsx`. It retains `Her
 
 - `CommandPalette.jsx` — ⌘K/Ctrl+K/`/`; fuzzy index (`usePaletteIndex.js`, scorer in `shared/utils/fuzzy.js`) over sections/projects/posts/socials/commands; unmatched queries route to the chat as a seeded question.
 - `GuidedTour.jsx` + `tourScript.js` — canned Veronica captions, Lenis-driven autopilot; wheel pauses, Esc exits; entries: palette, `?tour=1`. Disabled on mobile/reduced-motion.
-- `TelemetryHud.jsx` — bottom strip: GitHub events ticker (unauth API, sessionStorage TTL, hides on failure), YouTube count, CounterAPI visitors, IST clock, SYS status.
-- `ContextChip.jsx` — per-section "ASK VERONICA ABOUT THIS" handoff.
 
 ### Content / Data
 
