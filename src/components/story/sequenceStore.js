@@ -15,9 +15,13 @@ const WINDOW = 8 // decoded frames kept on each side of the playhead
 
 export const FPS = manifest.fps
 
-export function createSequenceStore({ variant }) {
+export function createSequenceStore({ variant, onProgress, onError }) {
   const seqs = new Map() // name → { blobs[], bitmaps Map, decoding Set }
   const queue = []
+  const controller = new AbortController()
+  let total = 0
+  let completed = 0
+  let decoding = 0
   let inflight = 0
   let onReady = () => {}
 
@@ -29,7 +33,7 @@ export function createSequenceStore({ variant }) {
   const seq = (name) => {
     let s = seqs.get(name)
     if (!s) {
-      s = { blobs: new Array(countOf(name)), bitmaps: new Map(), decoding: new Set(), queued: false }
+      s = { blobs: new Array(countOf(name)), bitmaps: new Map(), previews: new Map(), decoding: new Set(), center: -Infinity, queued: false }
       seqs.set(name, s)
     }
     return s
@@ -37,15 +41,31 @@ export function createSequenceStore({ variant }) {
 
   const pump = () => {
     while (inflight < CONCURRENCY && queue.length) {
-      const { name, i } = queue.shift()
+      const job = queue.shift()
+      const { name, i } = job
       const s = seq(name)
-      if (s.blobs[i]) continue
       inflight++
-      fetch(frameUrl(name, i))
-        .then(r => (r.ok ? r.blob() : null))
-        .then(b => { if (b) { s.blobs[i] = b; onReady() } })
-        .catch(() => {})
-        .finally(() => { inflight--; pump() })
+      fetch(frameUrl(name, i), { signal: controller.signal })
+        .then(async response => {
+          if (!response.ok) throw new Error('Frame unavailable')
+          const blob = await response.blob()
+          // Keep sparse, small decoded frames for immediate display after a jump.
+          if (i % 8 === 0 || i === countOf(name) - 1) {
+            const preview = await createImageBitmap(blob, { resizeWidth: 256 })
+            if (controller.signal.aborted) { preview.close(); return }
+            s.previews.set(i, preview)
+          }
+          if (controller.signal.aborted) return
+          s.blobs[i] = blob
+          onProgress?.(++completed, total)
+          onReady()
+        })
+        .catch(() => {
+          if (controller.signal.aborted) return
+          if (!job.retried) queue.unshift({ ...job, retried: true })
+          else { controller.abort(); queue.length = 0; onError() }
+        })
+        .finally(() => { inflight--; if (!controller.signal.aborted) pump() })
     }
   }
 
@@ -56,6 +76,7 @@ export function createSequenceStore({ variant }) {
     if (s.queued) return
     s.queued = true
     const n = countOf(name)
+    total += n
     const seen = new Set()
     for (const step of [8, 4, 2, 1]) {
       for (let i = 0; i < n; i += step) if (!seen.has(i)) { seen.add(i); queue.push({ name, i }) }
@@ -79,23 +100,31 @@ export function createSequenceStore({ variant }) {
   const focus = (name, center) => {
     const s = seqs.get(name)
     if (!s) return
+    s.center = center
     const lo = Math.max(0, center - WINDOW)
     const hi = Math.min(s.blobs.length - 1, center + WINDOW)
     for (const [i, bmp] of s.bitmaps) {
       if (i < lo || i > hi) { bmp.close?.(); s.bitmaps.delete(i) }
     }
-    for (let i = lo; i <= hi; i++) {
+    // Admit the target first and bound outstanding decodes across scroll events.
+    for (let d = 0; d <= WINDOW * 2 && decoding < 3; d++) {
+      const i = center + (d % 2 ? (d + 1) / 2 : -d / 2)
+      if (i < lo || i > hi) continue
       if (s.bitmaps.has(i) || s.decoding.has(i) || !s.blobs[i]) continue
+      decoding++
       s.decoding.add(i)
       createImageBitmap(s.blobs[i])
         .then(bmp => {
-          s.decoding.delete(i)
           // Playhead may have moved on while decoding
-          if (Math.abs(i - center) > WINDOW * 2) { bmp.close?.(); return }
+          if (controller.signal.aborted || Math.abs(i - s.center) > WINDOW) { bmp.close?.(); return }
           s.bitmaps.set(i, bmp)
-          onReady()
         })
-        .catch(() => s.decoding.delete(i))
+        .catch(() => { if (!controller.signal.aborted) onError() })
+        .finally(() => {
+          decoding--
+          s.decoding.delete(i)
+          if (!controller.signal.aborted) onReady()
+        })
     }
   }
 
@@ -108,12 +137,17 @@ export function createSequenceStore({ variant }) {
       if (s.bitmaps.has(i - d)) return { bmp: s.bitmaps.get(i - d), i: i - d }
       if (s.bitmaps.has(i + d)) return { bmp: s.bitmaps.get(i + d), i: i + d }
     }
-    return null
+    let best = null
+    for (const [index, bmp] of s.previews) {
+      if (!best || Math.abs(index - i) < Math.abs(best.i - i)) best = { bmp, i: index }
+    }
+    return best
   }
 
   const releaseOthers = (keep) => {
     for (const [name, s] of seqs) {
       if (keep.includes(name)) continue
+      s.center = -Infinity
       for (const bmp of s.bitmaps.values()) bmp.close?.()
       s.bitmaps.clear()
     }
@@ -122,6 +156,14 @@ export function createSequenceStore({ variant }) {
   return {
     countOf, frameUrl, load, prioritise, focus, nearest, releaseOthers,
     set onReady(fn) { onReady = fn },
-    dispose() { releaseOthers([]); queue.length = 0 },
+    dispose() {
+      controller.abort()
+      queue.length = 0
+      releaseOthers([])
+      for (const s of seqs.values()) {
+        for (const bmp of s.previews.values()) bmp.close()
+        s.previews.clear()
+      }
+    },
   }
 }

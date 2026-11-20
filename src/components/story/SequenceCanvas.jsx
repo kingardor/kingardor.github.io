@@ -39,11 +39,16 @@ export default function SequenceCanvas() {
   )
 
   useEffect(() => {
-    if (fallback) return
+    if (fallback) { window.__storyProgress?.(1, 1); return }
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d', { alpha: false })
+    if (!ctx || typeof createImageBitmap !== 'function') { setFallback(true); return }
     const mobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches
-    const store = createSequenceStore({ variant: mobile ? 'm' : 'd' })
+    const store = createSequenceStore({
+      variant: mobile ? 'm' : 'd',
+      onProgress: (done, total) => window.__storyProgress?.(done, total),
+      onError: () => setFallback(true),
+    })
 
     // ── Timeline: act k owns [start_k, start_k+1); P = k + progress ──
     let acts = []
@@ -66,8 +71,10 @@ export default function SequenceCanvas() {
         }))
       acts.forEach((a, k) => { a.end = k < acts.length - 1 ? Math.max(a.start + 1, acts[k + 1].start) : maxScroll })
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
-      canvas.width = Math.round(window.innerWidth * dpr)
-      canvas.height = Math.round(window.innerHeight * dpr)
+      const width = Math.round(window.innerWidth * dpr)
+      const height = Math.round(vh * dpr)
+      if (canvas.width !== width) canvas.width = width
+      if (canvas.height !== height) canvas.height = height
       visibleActs.forEach(a => store.load(a.seq))
       dirty = true
       kick()
@@ -120,7 +127,7 @@ export default function SequenceCanvas() {
       }
       if (debug) Object.assign(debug, { P, k, i0, frac, base: base?.i, acts: acts.map(a => [a.id, Math.round(a.start), Math.round(a.end)]) })
       // The full-res still covers the opening frames (1024w footage reads soft)
-      if (stillRef.current) {
+      if (stillRef.current && base) {
         stillRef.current.style.opacity = k === 0 ? String(Math.max(0, 1 - f / 3).toFixed(3)) : '0'
       }
     }
@@ -140,15 +147,6 @@ export default function SequenceCanvas() {
 
     measure()
     store.prioritise([acts[0]?.seq, acts[1]?.seq].filter(Boolean))
-
-    // A browser that can't decode AVIF (pre-16 Safari) gets the poster
-    if (acts[0]) {
-      fetch(store.frameUrl(acts[0].seq, 0))
-        .then(r => r.blob())
-        .then(b => createImageBitmap(b))
-        .then(bmp => bmp.close?.())
-        .catch(() => setFallback(true))
-    }
 
     const ro = new ResizeObserver(measure)
     ro.observe(document.body)
