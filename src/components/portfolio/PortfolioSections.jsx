@@ -293,20 +293,30 @@ export function Footer() {
           ))}
         </div>
       </section>
-      <section id="contact" className="contact surface">
-        <h2>
-          Get in touch<span>.</span>
-        </h2>
-        <LinkOut to={'mailto:' + EMAIL}>{EMAIL}</LinkOut>
-        <div className="last">
-          <a href={LINKS.github}>GitHub ↗</a>
-          <a href={LINKS.linkedin}>LinkedIn ↗</a>
-          <a href="#/chat">Ask Veronica</a>
-          <a href="#top">
-            Back to top <ArrowUp size={16} />
-          </a>
+      <footer id="contact">
+        <div className="footer-art">
+          <div className="footer-scene">
+            <img src="/footer/neon-handheld.webp" width="1672" height="941" loading="lazy"
+              alt="A neon city and a handheld computer. The words “This guy makes AI look easy” point to Akash." />
+            <img className="footer-portrait" src="/footer/akash.webp" width="640" height="640"
+              loading="lazy" alt="Akash James in sunglasses and a black blazer" />
+          </div>
         </div>
-      </section>
+        <div className="contact surface">
+          <h2>
+            Get in touch<span>.</span>
+          </h2>
+          <LinkOut to={'mailto:' + EMAIL}>{EMAIL}</LinkOut>
+          <div className="last">
+            <a href={LINKS.github}>GitHub ↗</a>
+            <a href={LINKS.linkedin}>LinkedIn ↗</a>
+            <a href="#/chat">Ask Veronica</a>
+            <a href="#top">
+              Back to top <ArrowUp size={16} />
+            </a>
+          </div>
+        </div>
+      </footer>
     </>
   )
 }

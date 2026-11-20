@@ -537,3 +537,35 @@ html:has(.portfolio) {
   outline: 3px solid currentColor;
   outline-offset: 3px;
 }
+
+.footer-art {
+  overflow: hidden;
+  container-type: inline-size;
+  background: #190e27;
+}
+.footer-scene {
+  position: relative;
+}
+.footer-scene > img:first-child {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Coordinates follow the arrow printed into the original artwork. */
+.footer-portrait {
+  position: absolute;
+  top: 32%;
+  left: 6%;
+  width: 23%;
+  height: auto;
+  border: 2px solid #dbc7ee;
+  border-bottom-width: 6px;
+  box-shadow: 0 6px 16px #12071980;
+  transform: rotate(-4deg);
+}
+@container (max-width: 540px) {
+  .footer-scene {
+    width: 138%;
+    margin-left: -6%;
+  }
+}
