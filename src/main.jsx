@@ -16,12 +16,15 @@ const heroReadyPromise = new Promise(resolve => {
   setTimeout(resolve, 4000)
 })
 
-// Wait for the compressed sequence and its seek previews on the first home visit.
+// Wait for the opening act's coarse frames (see sequenceStore) on the first
+// home visit — never longer than STORY_CAP_MS from boot, however slow the link.
+const STORY_CAP_MS = 5000
 const isChat = () => location.hash.startsWith('#/chat')
 const storyReady = new Promise(resolve => {
   if (!loader || window.__PRERENDER || isChat()) { resolve(); return }
   const bar = loader.querySelector('.loader-bar-fill')
-  let timer
+  const sinceBoot = Date.now() - (window.__LOADER_START ?? Date.now())
+  const timer = setTimeout(finish, Math.max(0, STORY_CAP_MS - sinceBoot))
   function finish() {
     clearTimeout(timer)
     window.removeEventListener('hashchange', routeChanged)
@@ -31,15 +34,12 @@ const storyReady = new Promise(resolve => {
   function routeChanged() { if (isChat()) finish() }
   window.addEventListener('hashchange', routeChanged)
   window.__storyProgress = (done, total) => {
-    clearTimeout(timer)
     if (bar) {
       bar.style.animation = 'none'
       bar.style.width = (100 * done / total) + '%'
     }
-    if (done === total) finish()
-    else timer = setTimeout(finish, 12000) // A stalled connection must leave the page usable.
+    if (done >= total) finish()
   }
-  window.__storyProgress(0, 1)
 })
 
 const app = (

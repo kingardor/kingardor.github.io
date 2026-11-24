@@ -10,7 +10,9 @@ import manifest from './sequences.generated.json'
  * memory stays flat however far the visitor scrolls.
  */
 
-const CONCURRENCY = 6
+// Frames are served over HTTP/2, so more parallel requests mostly hide the
+// per-request round trip rather than competing for one connection.
+const CONCURRENCY = 16
 const WINDOW = 8 // decoded frames kept on each side of the playhead
 
 export const FPS = manifest.fps
@@ -19,8 +21,12 @@ export function createSequenceStore({ variant, onProgress, onError }) {
   const seqs = new Map() // name → { blobs[], bitmaps Map, decoding Set }
   const queue = []
   const controller = new AbortController()
-  let total = 0
-  let completed = 0
+  // The loader only waits on the first sequence's coarse pass (every 8th frame
+  // + the last): enough to draw the opening shot and scrub the first act. The
+  // rest keeps streaming after the page is shown.
+  let bootSeq = null
+  let bootTotal = 0
+  let bootDone = 0
   let decoding = 0
   let inflight = 0
   let onReady = () => {}
@@ -57,7 +63,7 @@ export function createSequenceStore({ variant, onProgress, onError }) {
           }
           if (controller.signal.aborted) return
           s.blobs[i] = blob
-          onProgress?.(++completed, total)
+          if (job.boot) onProgress?.(++bootDone, bootTotal)
           onReady()
         })
         .catch(() => {
@@ -76,12 +82,19 @@ export function createSequenceStore({ variant, onProgress, onError }) {
     if (s.queued) return
     s.queued = true
     const n = countOf(name)
-    total += n
+    const boot = bootSeq === null
+    if (boot) bootSeq = name
     const seen = new Set()
-    for (const step of [8, 4, 2, 1]) {
-      for (let i = 0; i < n; i += step) if (!seen.has(i)) { seen.add(i); queue.push({ name, i }) }
+    const add = (i, isBoot) => {
+      seen.add(i)
+      queue.push({ name, i, boot: isBoot })
+      if (isBoot) bootTotal++
     }
-    if (!seen.has(n - 1)) queue.push({ name, i: n - 1 })
+    for (let i = 0; i < n; i += 8) add(i, boot)
+    if (!seen.has(n - 1)) add(n - 1, boot)
+    for (const step of [4, 2, 1]) {
+      for (let i = 0; i < n; i += step) if (!seen.has(i)) add(i, false)
+    }
     pump()
   }
 
