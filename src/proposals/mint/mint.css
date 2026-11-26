@@ -407,3 +407,34 @@
   .mb-root *, .mb-root *::before, .mb-root *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
 .mb-hero.is-static .mb-hero-scrollhint { display: none; }
+
+/* Phones on their side (wide but very short), at any width: the desktop
+   three columns, pared down to what fits in ~360-430px of height. Overrides
+   the stacked portrait-phone layout above. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mb-hero-grid {
+    grid-template-columns: minmax(0, 1fr) min(34vw, 380px) minmax(0, 1fr);
+    grid-template-rows: 12svh minmax(0, 1fr) 13svh;
+    column-gap: 14px; padding: 0 14px;
+  }
+  .mb-hero-head { font-size: 0.55rem; letter-spacing: 0.08em; }
+  .mb-hero-head > span:first-child, .mb-hero-head-r { max-width: none; }
+  .mb-hide-sm { display: inline; }
+  .mb-hero-win { grid-column: 2; grid-row: 2; margin: 0; }
+  .mb-hero-left { grid-column: 1; grid-row: 2; align-self: center; margin-top: 0; gap: 0.6rem; }
+  .mb-hero-left .mb-pill, .mb-hero-says, .mb-hero-badges, .mb-hero-marks, .mb-hero-foot .mb-fine { display: none; }
+  .mb-hero-role { display: block; font-size: 0.58rem; }
+  .mb-hero-logo { font-size: clamp(2rem, 14svh, 4rem); }
+  .mb-hero-logo-b { margin-left: 0.18em; margin-top: 0; }
+  .mb-hero-tape { font-size: 0.72rem; }
+  .mb-hero-right { grid-column: 3; grid-row: 2; align-self: center; justify-items: end; margin-top: 0; gap: 0.5rem; }
+  .mb-callouts { grid-template-columns: minmax(0, 1fr); justify-items: end; gap: 0.35rem; }
+  .mb-callout { padding: 0.25rem 0.5rem 0.25rem 1rem; gap: 0.4rem; max-width: 100%; }
+  .mb-callout b { font-size: 1.15rem; }
+  .mb-callout span { font-size: 0.62rem; }
+  .mb-callout small { display: none; }
+  .mb-callout--c, .mb-callout--e { transform: none; }
+  .mb-hero-foot { grid-row: 3; grid-template-columns: 1fr; padding: 0; }
+  .mb-hero-scrollhint { justify-self: start; font-size: 0.66rem; }
+  .mb-hero-burst { width: 84px; font-size: 1rem; left: calc(50% + min(17vw, 190px) - 56px); right: auto; top: 12svh; }
+}
