@@ -30,7 +30,7 @@ export default function EditionPicker() {
         <h1 className="ed-name">Akash <span>James<b>.</b></span></h1>
         <header className="ed-head">
           <p className="ed-k">Director AI - BLUE</p>
-          <p className="ed-sub">Two editions of this site are in review. Pick one; switch any time from the bar at the bottom.</p>
+          <p className="ed-sub">Two editions of this site are in review. Pick one; once you scroll, a bar at the bottom switches between them.</p>
         </header>
         <div className="ed-cards">
           {ORDER.map(k => {

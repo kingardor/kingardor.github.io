@@ -17,23 +17,29 @@ export default function EditionRoute({ edition }) {
     const id = EDITIONS[edition].acts[act]?.id
     const to = (y) => {
       const l = lenis?.current
+      // Lenis caches the page height; the new edition just mounted, so
+      // re-measure first or it clamps the target to the old page's limit.
+      l?.resize?.()
       if (l) l.scrollTo(y, { immediate: true, force: true })
       else window.scrollTo(0, y)
     }
     if (!act || !id) { clearPlace(); to(0); return }
     // The page mounts lazily and lays out over a few frames: wait for the
-    // section, then land a little above it so its header is in view.
+    // section, land a little above it, and re-land until the page settles.
     let tries = 0
     let timer = 0
     const go = () => {
       const el = document.getElementById(id)
-      if (el && document.documentElement.scrollHeight > window.innerHeight * 2) {
-        to(Math.max(0, el.getBoundingClientRect().top + window.scrollY))
-        clearPlace()
-      } else if (tries++ < 50) timer = setTimeout(go, 100)
+      const ready = el && document.documentElement.scrollHeight > window.innerHeight * 2
+      if (ready) {
+        const y = Math.max(0, el.getBoundingClientRect().top + window.scrollY)
+        if (Math.abs(window.scrollY - y) < 4 && tries > 2) { clearPlace(); return }
+        to(y)
+      }
+      if (tries++ < 60) timer = setTimeout(go, ready ? 150 : 100)
       else clearPlace()
     }
-    timer = setTimeout(go, 250)
+    timer = setTimeout(go, 200)
     return () => clearTimeout(timer)
   }, [edition, lenis])
 

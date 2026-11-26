@@ -72,9 +72,9 @@ export default function LabIndex() {
         <h1>Three ways to be<br />impossible to forget.</h1>
         <p className="lab-lede">
           Each proposal is a working homepage, not a mockup. All three run on the same rewritten content
-          (LinkedIn, eight project READMEs, the YouTube channel and Medium) and share the one thing that
-          is already his: the studio portrait, lit and layered behind every section. Mint in Box and Versus
-          are in peer review at the <a href="#/">front door</a>.
+          (LinkedIn, eight project READMEs, the YouTube channel and Medium). Mint in Box and Versus now share
+          the studio portrait, lit and layered behind every section, and are in peer review at
+          the <a href="#/">front door</a>. Subject 001 still runs the cyborg film it was built around.
         </p>
       </header>
 

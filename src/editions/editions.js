@@ -31,11 +31,22 @@ export function rememberEdition(key) {
   try { localStorage.setItem(KEY, key) } catch { /* private mode: fine */ }
 }
 
-/** Jump to the other edition at the same act (same story beat), not the top. */
-export function switchEdition(to) {
-  try { sessionStorage.setItem(PLACE, String(getFilm().act || 0)) } catch { /* fine */ }
+/** Open an edition at a given act (0 = the top). */
+export function openEdition(to, act = 0) {
+  try { sessionStorage.setItem(PLACE, String(act || 0)) } catch { /* fine */ }
   rememberEdition(to)
   navigate(`#/${to}`)
+}
+
+/** Jump to the other edition at the same act (same story beat), not the top. */
+export function switchEdition(to) {
+  openEdition(to, getFilm().act || 0)
+}
+
+/** The edition on screen, if any. */
+export function currentEdition() {
+  const m = location.hash.match(/^#\/(mint|versus)\b/)
+  return m ? m[1] : null
 }
 
 /** The act to land on after a switch, or 0. Cleared once the page has landed
