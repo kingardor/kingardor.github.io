@@ -362,8 +362,11 @@
     grid-template-rows: 6svh 46svh 46vw auto minmax(0, 1fr) auto;
     column-gap: 10px; padding: 0 14px;
   }
-  .mb-hero-head { font-size: 0.55rem; letter-spacing: 0.1em; }
-  .mb-hero-head > span:first-child { max-width: 30%; }
+  /* One line each side of the hanger hole (centred, ~60px wide). */
+  .mb-hero-head { font-size: 0.56rem; letter-spacing: 0.04em; white-space: nowrap; }
+  .mb-hero-head > span:first-child { max-width: calc(50% - 40px); overflow: hidden; text-overflow: ellipsis; }
+  .mb-hero-head-r { max-width: calc(50% - 40px); overflow: hidden; text-overflow: ellipsis; padding: 0.35em 0.45em; }
+  .mb-hide-sm { display: none; }
   .mb-hero-win { grid-column: 1 / -1; grid-row: 2; margin: 6px 0 0; }
   .mb-hero-left { grid-column: 1 / -1; grid-row: 3; gap: 0.5rem; margin-top: 12px; align-self: start; }
   .mb-hero-left .mb-pill, .mb-hero-says, .mb-hero-role { display: none; }
@@ -381,7 +384,8 @@
   .mb-callout--c { transform: none; }
   .mb-hero-badges { display: none; }
   .mb-hero-foot { grid-row: 6; grid-template-columns: 1fr; gap: 6px; padding: 8px 0 10px; }
-  .mb-hero-foot .mb-fine { font-size: 0.5rem; }
+  /* The diagonal stripes run under the fine print; give it a printed panel. */
+  .mb-hero-foot .mb-fine { font-size: 0.56rem; line-height: 1.4; background: rgba(255, 61, 0, 0.92); padding: 4px 6px; box-shadow: 0 0 0 1px rgba(20, 4, 2, 0.25); }
   .mb-hero-marks { display: none; }
   .mb-hero-scrollhint { justify-self: start; font-size: 0.65rem; }
   .mb-hero-burst { width: 96px; font-size: 1.15rem; left: auto; right: 6px; top: calc(6svh + 46svh - 64px); }
@@ -390,6 +394,9 @@
   .mb-top-count { font-size: 0.66rem; padding: 0.45rem 0.55rem; }
   .mb-top-count i { display: none; }
   .mb-top-ask { font-size: 0.66rem; padding: 0.5rem 0.6rem; }
+}
+@media (max-width: 380px) {
+  .mb-hero-head { font-size: 0.52rem; letter-spacing: 0; }
 }
 @media (max-width: 760px) and (max-height: 700px) {
   .mb-hero-grid { grid-template-rows: 6svh 40svh 46vw auto minmax(0, 1fr) auto; }

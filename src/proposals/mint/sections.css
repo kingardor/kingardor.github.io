@@ -548,3 +548,10 @@
 
 .mb-cover::after, .mb-guide::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: var(--mb-noise); opacity: 0.12; mix-blend-mode: multiply; }
 .mb-guide { position: relative; }
+
+/* Phones: the label's links and checkboxes are thumb-sized. */
+@media (max-width: 760px) {
+  .mb-label-links { gap: 2px 18px; }
+  .mb-label-links a { min-height: 40px; font-size: 0.9rem; }
+  .mb-colophon a { display: inline-block; padding: 10px 0; }
+}

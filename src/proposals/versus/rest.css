@@ -333,3 +333,26 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   .vs-move-hit { grid-column: 1; grid-row: 3; }
   .vs-move-notes { grid-column: 1 / -1; }
 }
+
+/* ═══ Phones: keep the arcade furniture off the text ═══ */
+@media (max-width: 600px) {
+  /* Combo meter: small, top-left under the HUD bars (it only shows while
+     you scroll, and bottom-left sat on every card's text). */
+  .vs-combo { top: 66px; bottom: auto; left: 10px; }
+  .vs-combo-num { font-size: 2.3rem; text-shadow: -2px 2px 0 var(--vs-pink), 2px -1px 0 var(--vs-ember), 0 0 12px rgba(10, 10, 10, 0.85); }
+  .vs-combo-hits { font-size: 0.7rem; padding: 1px 6px 0; margin-top: 2px; }
+  .vs-combo-rate { font-size: 0.95rem; margin-top: 3px; }
+
+  /* ACQUIRED! stamp: below its card, in the gap, not over the tag line. */
+  .vs-finisher { width: 170px; right: 2vw; bottom: -178px; }
+  .vs-round.has-finisher { margin-bottom: 96px; }
+  .vs-finisher-big { font-size: 2.2rem; }
+  .vs-finisher-small { font-size: 0.55rem; }
+
+  /* VS splash: the burst sits in the middle of the screen, right where the
+     P1 stat box landed; the stats are on the record bar anyway. */
+  .vs-vs-stats { display: none; }
+
+  /* Continue screen: thumb-sized letter arrows. */
+  .vs-slot-arrow { height: 40px; }
+}
