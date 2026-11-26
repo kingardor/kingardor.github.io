@@ -1,4 +1,5 @@
 import PortraitStage from '../../components/portrait/PortraitStage.jsx'
+import FlankName from '../../components/portrait/FlankName.jsx'
 import useLoaderRelease from '../shared/useLoaderRelease.js'
 import './portrait-lab.css'
 
@@ -20,16 +21,6 @@ const REFLECTIONS = [
   '/work/noir/rover.webp', '/work/vector/vector.webp', '/work/copcars/garage.webp',
   '/work/q-pocket/board.webp', '/work/hermes/console.webp', '/work/veronica/hud.webp',
 ]
-
-/** The name, set in photo space between the backdrop and him (desktop). */
-function FlankName() {
-  return (
-    <div className="ptn" aria-hidden="true">
-      <span className="ptn-a">AKASH</span>
-      <span className="ptn-b">JAMES<b>.</b></span>
-    </div>
-  )
-}
 
 const CHAPTERS = [
   {
@@ -62,7 +53,7 @@ export default function PortraitLab() {
       <main className="lab-root pt-main">
         <section id="pt-cover" className="pt-hero">
           <h1 className="pt-name-front">AKASH <span>JAMES<b>.</b></span></h1>
-          <p className="pt-tag">Director of AI @ BLUE.<br />I teach cameras to remember.</p>
+          <p className="pt-tag">Director AI - BLUE.<br />I teach cameras to remember.</p>
           <p className="pt-cue">Scroll<span className="pt-cue-ptr"> · move the cursor</span></p>
         </section>
         {CHAPTERS.map(c => (
@@ -78,11 +69,11 @@ export default function PortraitLab() {
           <div className="pt-card">
             <p className="pt-label"><span>06</span> In place</p>
             <h2>See it under the real pages.</h2>
-            <p>The stage is a drop-in for the cyborg film: same sections, same hooks for overlays. Open any page with <code>?bg=portrait</code>.</p>
+            <p>It replaces the cyborg film everywhere: same sections, same hooks for overlays. Add <code>?bg=film</code> to any page to compare with the old film.</p>
             <ul className="pt-links">
-              <li><a href="/?bg=portrait#top">Current homepage</a></li>
-              <li><a href="/?bg=portrait#/lab/mint">Mint in Box</a></li>
-              <li><a href="/?bg=portrait#/lab/versus">Versus</a></li>
+              <li><a href="#/mint">Mint in Box</a></li>
+              <li><a href="#/versus">Versus</a></li>
+              <li><a href="#/">Pick an edition</a></li>
               <li><a href="#/lab">Back to the lab</a></li>
             </ul>
           </div>

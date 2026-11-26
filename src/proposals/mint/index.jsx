@@ -16,21 +16,11 @@ import ShipLabel from './ShipLabel.jsx'
 import { StickerLayer } from './Stickers.jsx'
 import { Chrome } from './parts.jsx'
 import { useCollection } from './collection.js'
+import '../shared/film.css' // pins the stage (.lab-film); also loaded outside the lab router
 import './mint.css'
 import './sections.css'
 import './box.css'
-
-// Section → story act, in scroll order. mb-blue rides act 1 with the hero.
-const ACTS = [
-  { id: 'mb-box', seq: 'story-1' },
-  { id: 'mb-provenance', seq: 'story-2' },
-  { id: 'mb-accessories', seq: 'story-3' },
-  { id: 'mb-wall', seq: 'story-4' },
-  { id: 'mb-tv', seq: 'story-5' },
-  { id: 'mb-manuals', seq: 'story-6' },
-  { id: 'mb-shelf', seq: 'story-7' },
-  { id: 'mb-ship', seq: 'story-8' },
-]
+import { ACTS } from './acts.js'
 
 function TopTag() {
   const { opened } = useCollection()

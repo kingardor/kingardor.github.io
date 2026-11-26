@@ -142,7 +142,7 @@ const TOOL_DEFINITIONS = [
   ['get_bio', "Returns Akash James's general background, current role, affiliations, highlights, and contact links."],
   ['get_career_timeline', "Returns Akash's full career history: companies, roles, periods, and what he built at each."],
   ['get_projects', "Returns Akash's projects with descriptions, measured facts, links and tech tags, plus older open-source work. Projects marked source_private have no public repo: never invent one."],
-  ['get_blue_work', "Returns what Akash builds as founding Director of AI at BLUE: Hyper Memory, BLUE Agent, Helyx, BLUE Copilot, BLUE Mini Edge and the inference stack."],
+  ['get_blue_work', "Returns what Akash builds as Director AI at BLUE: Hyper Memory, BLUE Agent, Helyx, BLUE Copilot, BLUE Mini Edge and the inference stack."],
   ['get_talks', "Returns Akash's talks, stage appearances, booth demos, workshops and panels."],
   ['get_skills', "Returns Akash's skill proficiency scores by domain (for radar chart) and years of experience per technology (for bar chart)."],
   ['get_youtube_videos', "Fetches Akash's latest YouTube videos from his channel feed."],

@@ -10,16 +10,16 @@ const KILLED = [
   ['Fake OS desktop', 'Draggable windows and a taskbar. PostHog did it properly; a hundred Win95 clones did it badly. Says nothing about him.'],
   ['Terminal portfolio', '`> whoami`. The most generic developer portfolio ever made.'],
   ['Bento grid', 'Apple keynote leftovers. Rounded boxes in a grid are a template, not an idea.'],
-  ['Neo-brutalism', 'The design tool’s own first pick: cream, thick borders, hard shadows, Inter, blue. Light-first kills the film.'],
+  ['Neo-brutalism', 'The design tool’s own first pick: cream, thick borders, hard shadows, Inter, blue. Light-first kills the portrait’s lighting.'],
   ['Classified dossier', 'Redacted bars and red stamps now ship as a component library. Commodity.'],
   ['3D room / driving game', 'Henry Heffernan and Bruno Simon own those, and they cost seconds of load for one trick.'],
-  ['Twitch stream overlay', 'Tempting (facecam, chat, alerts), but the jokes date in a month and undercut a Director of AI.'],
+  ['Twitch stream overlay', 'Tempting (facecam, chat, alerts), but the jokes date in a month and undercut the Director AI title.'],
   ['Tabloid front page', 'Great headlines, but print is static. Kept its loudness, dropped the format.'],
-  ['Ember on black, with grain', 'The current look. Killian Herzer and half of Awwwards wear it. The film is unique; the wrapper isn’t.'],
+  ['Ember on black, with grain', 'The current look. Killian Herzer and half of Awwwards wear it. The portrait is unique; the wrapper isn’t.'],
 ]
 
 const RECEIPTS = [
-  ['BLUE, in detail', 'Founding Director of AI since Mar 2025 (stealth until Feb 2026): Hyper Memory, BLUE Agent, Helyx and Mendel-James, BLUE Copilot, BLUE Mini Edge, vLLM down to Jetson Thor.'],
+  ['BLUE, in detail', 'Director AI - BLUE since Mar 2025 (stealth until Feb 2026): Hyper Memory, BLUE Agent, Helyx and Mendel-James, BLUE Copilot, BLUE Mini Edge, vLLM down to Jetson Thor.'],
   ['Roles the site never had', 'CopCars.in founder, Sentics sensor fusion (30,000+ points/s), Z by HP ambassador 2023–25, NVIDIA Jetson ambassador 2021–25, IoT & ML engineer 2018–20, iB Hubs 2017.'],
   ['Stages', 'GTC 2025 HP session, two GTC 2024 booth demos, the Boost webinar, Comet’s show, TFUG Coimbatore, Aura8 panel, MIT ADT workshop, India AI Impact Summit.'],
   ['Wins', 'NASA Space Apps 2019 and 2020, Employee of the Year 2019, Top 10 Smart India Hackathon, Best Paper REVA ’18.'],
@@ -49,7 +49,7 @@ const PROPOSALS = [
     name: 'Mint in Box',
     line: 'Akash James, AI architect action figure. 1:1 scale. Batteries not included.',
     why: 'He founded a diecast store and builds palm-sized machines. Packaging is the most shameless bragging format there is: starbursts, “NEW!”, “INCLUDES”, “collect them all”.',
-    moves: ['The hero is a blister pack with the film inside; scroll and he comes out of the box', 'Projects hang on a pegboard: pick one up, flip it, tear it open', 'Open all eight and a gold chase variant appears', 'Career as a graded slab; contact as a shipping label'],
+    moves: ['The hero is a blister pack with him inside; scroll and he comes out of the box', 'Projects hang on a pegboard: pick one up, flip it, tear it open', 'Open all eight and a gold chase variant appears', 'Career as a graded slab; contact as a shipping label'],
     risk: 'One cheap texture and it becomes a toy shop. It needs real lighting, glare and print detail everywhere.',
   },
   {
@@ -58,7 +58,7 @@ const PROPOSALS = [
     name: 'Versus',
     line: 'Player 1: Akash James. Class: AI architect. Difficulty: unfair.',
     why: 'A gamer whose robots trash-talk people. Fighting-game menus are bragging by design: stats, titles, taunts, ratings, and his career even has an acquisition finisher.',
-    moves: ['Title-screen slam over the pixel hero', 'Scroll speed fills a combo counter', 'Projects as a character-select roster with VS screens', 'The film’s acts fire super cut-ins; contact is a continue countdown'],
+    moves: ['Title-screen slam over his portrait', 'Scroll speed fills a combo counter', 'Projects as a character-select roster with VS screens', 'Each section change fires a super cut-in; contact is a continue countdown'],
     risk: 'The loudest of the three. Some recruiters will love it; some won’t get past the title screen.',
   },
 ]
@@ -72,8 +72,9 @@ export default function LabIndex() {
         <h1>Three ways to be<br />impossible to forget.</h1>
         <p className="lab-lede">
           Each proposal is a working homepage, not a mockup. All three run on the same rewritten content
-          (LinkedIn, eight project READMEs, the YouTube channel and Medium) and keep the two things that
-          are already his: the pixel-assembled selfie and the cyborg film.
+          (LinkedIn, eight project READMEs, the YouTube channel and Medium) and share the one thing that
+          is already his: the studio portrait, lit and layered behind every section. Mint in Box and Versus
+          are in peer review at the <a href="#/">front door</a>.
         </p>
       </header>
 
@@ -105,7 +106,7 @@ export default function LabIndex() {
         <p className="lab-lede">
           It’s the only one where the gimmick is the job. Cameras that remember is what he sells at BLUE, and the page proves
           it on the visitor: it watches, it remembers, and it hands you a cited write-up of your own visit. That ending is the
-          screenshot people send around, and it still reads as a Director of AI rather than a toy.
+          screenshot people send around, and it still reads as Director AI - BLUE rather than a toy.
         </p>
         <ul className="lab-pick-notes">
           <li><strong>Subject 001.</strong> Best concept, best copy, most credible. Weakest point: it’s dense. The graph and the class list reward people who read; skimmers only get the boxes.</li>

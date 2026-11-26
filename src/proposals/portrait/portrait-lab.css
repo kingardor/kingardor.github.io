@@ -3,24 +3,6 @@
 .pt-main { pointer-events: none; }
 .pt-main a, .pt-card { pointer-events: auto; }
 
-/* The name, in photo pixels (the midground is a size container: 1cqh = 1% of
-   the photo's height). Each word's inner end tucks behind his head. */
-.ptn {
-  position: absolute; inset: 0;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 15cqh;
-  line-height: 1;
-  letter-spacing: -0.035em;
-  color: var(--ob-bone, #ece9e2);
-  opacity: clamp(0, 1 - var(--ps-p, 0) * 1.7, 1);
-  white-space: nowrap;
-}
-.ptn-a, .ptn-b { position: absolute; top: 19.5%; }
-.ptn-a { right: 58.4%; }
-.ptn-b { left: 55.6%; }
-.ptn b { color: var(--ob-ember, #ff3d00); font-weight: inherit; }
-
 /* Hero */
 .pt-hero {
   position: relative;
@@ -83,7 +65,6 @@
 
 /* Phones: no room beside his head, so the name comes to the front. */
 @media (max-width: 900px), (max-width: 1000px) and (max-height: 500px) {
-  .ptn { display: none; }
   .pt-hero { justify-content: flex-end; align-items: center; text-align: center; padding-bottom: 9vh; }
   .pt-cue { position: static; margin-top: 16px; }
   .pt-name-front {
@@ -99,3 +80,16 @@
   .pt-left, .pt-right { justify-content: center; }
 }
 @media (hover: none), (pointer: coarse) { .pt-cue-ptr { display: none; } }
+
+/* Any screen on the tall shot (narrow windows too): name to the front. */
+body:has(.portrait-stage[data-set='tall']) .pt-hero { justify-content: flex-end; align-items: center; text-align: center; padding-bottom: 9vh; }
+body:has(.portrait-stage[data-set='tall']) .pt-cue { position: static; margin-top: 16px; }
+body:has(.portrait-stage[data-set='tall']) .pt-name-front {
+  position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal;
+  margin: 0 0 14px;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(56px, 17vw, 120px); line-height: 0.92; letter-spacing: -0.035em;
+  text-shadow: 0 2px 30px rgba(5, 5, 5, 0.6);
+}
+body:has(.portrait-stage[data-set='tall']) .pt-name-front span { display: block; }
+body:has(.portrait-stage[data-set='tall']) .pt-name-front b { color: var(--ob-ember, #ff3d00); font-weight: inherit; }

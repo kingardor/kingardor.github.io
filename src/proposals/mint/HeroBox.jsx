@@ -11,9 +11,10 @@ const seg = (p, a, b) => clamp((p - a) / (b - a))
 const easeInOut = t => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2)
 
 /**
- * The mega-box. Pixels assemble into the selfie, then the card slams down
- * around him. Scroll: the blister hinges open, the card drops off the bottom
- * of the screen, the film is left full-bleed. Every frame is f(scroll).
+ * The mega-box: the card slams down around his portrait (the pixel-assembly
+ * intro only runs under ?bg=film). Scroll: the blister hinges open, the card
+ * drops off the bottom of the screen, the portrait is left full-bleed.
+ * Every frame is f(scroll).
  */
 export default function HeroBox() {
   const reduced = useRef(isReduced()).current
@@ -135,7 +136,7 @@ export default function HeroBox() {
                   <PrintMarks className="mb-hero-marks" />
                   <p className="mb-fine">
                     WARNING: CHOKING HAZARD. Contains small agents. Not suitable for clouds. Figure ships with opinions
-                    pre-installed; colours and cyborg parts may vary as you scroll. Made in Bengaluru, IN.
+                    pre-installed; colours and lighting may vary as you scroll. Made in Bengaluru, IN.
                   </p>
                   <span className="mb-hero-scrollhint">PULL TAB: SCROLL TO OPEN ▾</span>
                 </div>

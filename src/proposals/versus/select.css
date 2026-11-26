@@ -194,6 +194,7 @@
   position: absolute; left: -12%; top: 0; width: 70%; height: 100%; object-fit: cover; object-position: 50% 22%;
   filter: grayscale(1) contrast(1.5) brightness(1.05); mix-blend-mode: multiply;
 }
+.vs-vs-p1 img.is-portrait { left: -6%; width: 62%; object-position: 50% 12%; }
 .vs-vs-portrait { left: 38% !important; }
 .vs-vs-portrait img { filter: grayscale(1) contrast(1.5) brightness(1.05); mix-blend-mode: multiply; }
 .vs-vs-p2 .vs-portrait { background: transparent; }

@@ -6,6 +6,10 @@ import CommandPalette from './components/os/CommandPalette.jsx'
 
 const ChatPage = React.lazy(() => import('./sections/Chat/ChatPage'))
 const LabRouter = React.lazy(() => import('./proposals/LabRouter.jsx'))
+// Peer-review build: the front door picks between the two candidate designs.
+const EditionPicker = React.lazy(() => import('./editions/EditionPicker.jsx'))
+const EditionRoute = React.lazy(() => import('./editions/EditionRoute.jsx'))
+const blank = <div style={{ minHeight: '100svh', background: '#050505' }} />
 
 function ChatLoader() {
   return (
@@ -102,10 +106,34 @@ export default function App() {
     )
   }
 
+  const edition = path.match(/^\/(mint|versus)\b/)?.[1]
+  if (edition) {
+    return (
+      <>
+        <CommandPalette />
+        <Suspense fallback={blank}>
+          <EditionRoute key={edition} edition={edition} />
+        </Suspense>
+      </>
+    )
+  }
+
+  // The pre-redesign homepage, kept for comparison.
+  if (path.startsWith('/classic')) {
+    return (
+      <>
+        <CommandPalette />
+        <Home />
+      </>
+    )
+  }
+
   return (
     <>
       <CommandPalette />
-      <Home />
+      <Suspense fallback={blank}>
+        <EditionPicker />
+      </Suspense>
     </>
   )
 }

@@ -13,6 +13,7 @@ import Replays from './Replays.jsx'
 import Lore from './Lore.jsx'
 import Trophies from './Trophies.jsx'
 import Continue from './Continue.jsx'
+import '../shared/film.css' // pins the stage (.lab-film); also loaded outside the lab router
 import './fonts.css'
 import './versus.css'
 import './sections.css'
@@ -21,8 +22,8 @@ import './rest.css'
 
 /**
  * VERSUS: the homepage as a fighting game's menu system, printed like a
- * riso fight poster. Akash is Player 1, the film is his transformation
- * super, the projects are the roster.
+ * riso fight poster. Akash is Player 1 (his lit portrait behind every
+ * screen), the projects are the roster.
  */
 export default function Versus() {
   useLoaderRelease('900 1rem "Big Shoulders Display"')

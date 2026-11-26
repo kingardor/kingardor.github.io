@@ -15,7 +15,7 @@ export default function ShipLabel() {
   return (
     <section id="mb-ship" className="mb-ship" aria-labelledby="mb-ship-title">
       <div className="mb-ship-side">
-        <Talker kicker="Act VIII · final form" title={<span id="mb-ship-title">Ship it to me</span>} sub="One of one. Not for sale. Available for the right project, the right stage, or the right argument about edge inference." tone="ember" />
+        <Talker kicker="Act VIII · contact" title={<span id="mb-ship-title">Ship it to me</span>} sub="One of one. Not for sale. Available for the right project, the right stage, or the right argument about edge inference." tone="ember" />
       </div>
 
       <div className="mb-parcel">

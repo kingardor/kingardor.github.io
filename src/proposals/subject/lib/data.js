@@ -177,7 +177,7 @@ export const GRAPH_NODES = [
   { id: 'hp', kind: 'role', label: 'Z by HP Ambassador', year: 2023.8, x: 0.6, y: 0.25, ref: { career: career('Z by HP Global Data Science Ambassador') } },
   { id: 'sentics', kind: 'role', label: 'Sr Developer · Sentics', year: 2024.85, x: 0.645, y: 0.45, ref: { career: career('Senior Software Developer (freelance)') } },
   { id: 'gtc', kind: 'event', label: 'NVIDIA GTC 2025 stage', year: 2025.15, x: 0.735, y: 0.25, ref: { product: 'gtc' } },
-  { id: 'blue', kind: 'role', label: 'Founding Director of AI', year: 2025.2, x: 0.79, y: 0.45, ref: { career: career('Founding Director of AI') } },
+  { id: 'blue', kind: 'role', label: 'Director AI - BLUE', year: 2025.2, x: 0.79, y: 0.45, ref: { career: career('Director AI') } },
   { id: 'blueorg', kind: 'org', label: 'BLUE', year: 2025.25, x: 0.875, y: 0.06 },
   { id: 'hm', kind: 'product', label: 'Hyper Memory', year: 2025.4, x: 0.77, y: 0.9, ref: { blue: blue('Hyper Memory') } },
   { id: 'agent', kind: 'product', label: 'BLUE Agent', year: 2025.5, x: 0.85, y: 0.9, ref: { blue: blue('BLUE Agent') } },

@@ -21,7 +21,7 @@ export const TOUR_STOPS = [
   },
   {
     id: 'career', frac: 0.06,
-    caption: 'Eight years of building. Presently Director of AI at MyBlue; previously SparkCognition, UC Berkeley, Integration Wizards.',
+    caption: 'Eight years of building. Presently Director AI at BLUE; previously SparkCognition, UC Berkeley, Integration Wizards.',
     dwellMs: 3000,
   },
   {

@@ -106,7 +106,7 @@ export default function TitleScreen({ live, onLive }) {
             <span className="vs-title-start-txt">PRESS START</span>
           </button>
           <span className="vs-title-corner vs-title-corner-l" aria-hidden="true">1P 2026</span>
-          <span className="vs-title-corner vs-title-corner-r" aria-hidden="true">FOUNDING DIRECTOR OF AI · BLUE</span>
+          <span className="vs-title-corner vs-title-corner-r" aria-hidden="true">DIRECTOR AI - BLUE</span>
         </div>
       </div>
     </section>

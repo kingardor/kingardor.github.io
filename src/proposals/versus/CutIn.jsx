@@ -1,17 +1,42 @@
 import { useEffect, useRef, useState } from 'react'
 import { useFilmAct } from '../shared/useFilm.js'
 import { getFilm } from '../../components/story/filmPosition.js'
+import { META, photoOf } from '../../components/portrait/portraitSets.js'
 import { SUPERS } from './data.js'
 import { reduced, isVsOpen } from './fx.js'
 import { Streaks } from './Art.jsx'
 
 // Where his eyes sit in each act's footage (v, 0..1), for the eye-line crop.
+// (Film only: under the portrait stage the crop comes from the photo itself.)
 const EYES = [0.33, 0.33, 0.36, 0.35, 0.37, 0.37, 0.45, 0.36]
 
+const photos = {}
+function photo(set) {
+  if (!photos[set]) { photos[set] = new Image(); photos[set].src = photoOf(set) }
+  return photos[set]
+}
+
+/** Eye line from the studio photo: centred on his sunglasses, strip-shaped. */
+function drawPhotoEyes(ctx, w, h) {
+  const set = document.querySelector('.portrait-stage')?.dataset.set || 'wide'
+  const m = META[set]
+  const img = photo(set)
+  const draw = () => {
+    const [a, b] = m.lenses
+    const cx = ((Math.min(a[0], b[0]) + Math.max(a[2], b[2])) / 2) * m.width
+    const cy = ((Math.min(a[1], b[1]) + Math.max(a[3], b[3])) / 2) * m.height
+    const sw = (Math.max(a[2], b[2]) - Math.min(a[0], b[0])) * m.width * 1.9
+    const sh = (sw * h) / w
+    ctx.drawImage(img, cx - sw / 2, cy - sh / 2, sw, sh, 0, 0, w, h)
+  }
+  if (img.complete && img.naturalWidth) draw()
+  else img.addEventListener('load', draw, { once: true })
+}
+
 /**
- * Super cut-in: on every act change of the film, a diagonal strip tears
- * across with that act's super name and a duotone crop of his eyes taken
- * live from the film canvas.
+ * Super cut-in: on every act change, a diagonal strip tears across with that
+ * act's super name and a duotone crop of his eyes, taken live from the film
+ * canvas or, under the portrait stage, from the studio photo.
  */
 export default function CutIn() {
   const act = useFilmAct()
@@ -34,7 +59,8 @@ export default function CutIn() {
     if (!shot) return
     const src = document.querySelector('.lab-film canvas')
     const dst = eyeRef.current
-    if (!src || !dst) return
+    if (!dst) return
+    if (!src) { drawPhotoEyes(dst.getContext('2d'), dst.width, dst.height); return }
     const { rect } = getFilm()
     if (!rect.w) return
     const dpr = src.width / window.innerWidth

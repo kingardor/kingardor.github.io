@@ -40,7 +40,7 @@ function Card({ g, gi }) {
 }
 
 /** SKILLS.groups as accessory blister cards: each item a tiny part in its own bubble.
- *  Two columns either side of the film, so act 3's PCB head stays in view. */
+ *  Two columns either side of him, so act 3's push-in on his face stays in view. */
 export default function Accessories() {
   const G = SKILLS.groups
   return (

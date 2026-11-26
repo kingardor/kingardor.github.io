@@ -10,7 +10,7 @@ export default function BlueSet() {
   const item = BLUE_STACK[sel]
   return (
     <section id="mb-blue" className="mb-blue" aria-labelledby="mb-blue-title">
-      <Talker kicker="Act I, continued · the day job" title={<span id="mb-blue-title">BLUE · Platinum Edition</span>} sub="Founding Director of AI. The world’s first semantic video data lake for the CCTV you already own. Six figures, one tray, no repos (it’s the day job)." tone="navy" />
+      <Talker kicker="Act I, continued · the day job" title={<span id="mb-blue-title">BLUE · Platinum Edition</span>} sub="Director AI - BLUE. The world’s first semantic video data lake for the CCTV you already own. Six figures, one tray, no repos (it’s the day job)." tone="navy" />
 
       <div className="mb-set">
         <div className="mb-set-lid">

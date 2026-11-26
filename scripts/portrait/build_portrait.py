@@ -3,37 +3,48 @@
 macOS only (the matte comes from Apple Vision via matte.swift). Run from the
 repo root:
 
-    swift scripts/portrait/matte.swift media-src/portrait/portrait-wide.png /tmp/portrait-matte.png
-    python3 scripts/portrait/build_portrait.py /tmp/portrait-matte.person.png
+    for SET in wide tall; do
+      swift scripts/portrait/matte.swift media-src/portrait/portrait-$SET.png /tmp/portrait-$SET.png
+      python3 scripts/portrait/build_portrait.py $SET /tmp/portrait-$SET.person.png
+    done
 
-Writes (all the same size as the photo, so they stack 1:1):
-  public/portrait/plate.webp       background with the subject painted out
-  public/portrait/subject.webp     the subject, RGBA, edge colours decontaminated
-  public/portrait/rim-warm.webp    ember rim light on left-facing edges (RGBA)
-  public/portrait/rim-cool.webp    blue rim light on right-facing edges (RGBA)
-  public/portrait/slash-warm.webp  alpha mask of the orange background slashes
-  public/portrait/slash-cool.webp  alpha mask of the blue background slashes
-  public/portrait/lens.webp        alpha mask of the two sunglass lenses
-  src/components/portrait/portrait.meta.json   geometry, in 0..1 image units
-Only numpy + Pillow are needed.
+Two shots of the same session: `wide` (1672x941) for landscape screens and
+`tall` (1086x1448) for portrait ones; PortraitStage picks by aspect ratio.
+Writes, per set, under public/portrait/<set>/ (same size as the photo, so the
+layers stack 1:1):
+  photo.webp       the untouched photo (VS screen, cut-ins, posters)
+  plate.webp       background with the subject painted out
+  subject.webp     the subject, RGBA, edge colours decontaminated
+  rim-warm.webp    ember rim light on left-facing edges (RGBA)
+  rim-cool.webp    blue rim light on right-facing edges (RGBA)
+  slash-warm.webp  alpha mask of the orange background slashes
+  slash-cool.webp  alpha mask of the blue background slashes
+  lens.webp        alpha mask of the two sunglass lenses
+and merges the set's geometry (0..1 image units) into
+src/components/portrait/portrait.meta.json. Only numpy + Pillow are needed.
 """
 import json
 import sys
-from collections import deque
 from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[2]
-SRC = ROOT / 'media-src/portrait/portrait-wide.png'
-OUT = ROOT / 'public/portrait'
 META = ROOT / 'src/components/portrait/portrait.meta.json'
 
-# Hand-measured on the 1672x941 master (glasses crop at 4x).
-LENS_BOXES = [(742, 253, 808, 308), (834, 245, 902, 297)]  # x0, y0, x1, y1
-CAMERA_DOT = (735, 262)   # capture camera, wearer's left temple
-LED_DOT = (905, 251)      # capture LED, wearer's right temple
+# Hand-measured on each master (glasses cropped at 4x). Boxes are x0, y0, x1, y1;
+# the camera sits at the wearer's left temple, the capture LED at the right.
+SETS = {
+    'wide': {'lenses': [(742, 253, 808, 308), (834, 245, 902, 297)], 'camera': (735, 262), 'led': (905, 251)},
+    'tall': {'lenses': [(430, 549, 511, 614), (546, 539, 630, 604)], 'camera': (420, 557), 'led': (636, 541)},
+}
+SET = sys.argv[1] if len(sys.argv) > 2 else 'wide'
+SRC = ROOT / f'media-src/portrait/portrait-{SET}.png'
+OUT = ROOT / 'public/portrait' / SET
+LENS_BOXES = SETS[SET]['lenses']
+CAMERA_DOT = SETS[SET]['camera']
+LED_DOT = SETS[SET]['led']
 
 
 def blur(a, r):
@@ -60,18 +71,6 @@ def push_pull(rgb, w):
     return rgb * w[..., None] + up * (1 - w[..., None])
 
 
-def flood(mask, seed):
-    h, w = mask.shape
-    out = np.zeros_like(mask, dtype=bool)
-    q = deque([seed])
-    while q:
-        y, x = q.popleft()
-        if 0 <= y < h and 0 <= x < w and mask[y, x] and not out[y, x]:
-            out[y, x] = True
-            q.extend(((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)))
-    return out
-
-
 def save_rgba(rgb, a, name, q=86):
     arr = np.dstack([np.clip(rgb * 255, 0, 255), np.clip(a * 255, 0, 255)]).astype(np.uint8)
     Image.fromarray(arr).save(OUT / name, 'WEBP', quality=q, method=6, exact=False)
@@ -83,9 +82,12 @@ def save_mask(a, name):
 
 
 def main(matte_path):
+    print(f'set: {SET} ({SRC.name})')
     OUT.mkdir(parents=True, exist_ok=True)
     META.parent.mkdir(parents=True, exist_ok=True)
-    img = np.asarray(Image.open(SRC).convert('RGB'), dtype=np.float32) / 255
+    photo = Image.open(SRC).convert('RGB')
+    photo.save(OUT / 'photo.webp', 'WEBP', quality=82, method=6)
+    img = np.asarray(photo, dtype=np.float32) / 255
     H, W = img.shape[:2]
     a = np.asarray(Image.open(matte_path).convert('L').resize((W, H), Image.BICUBIC), dtype=np.float32) / 255
 
@@ -130,30 +132,41 @@ def main(matte_path):
     save_mask(blur(s_warm, 2), 'slash-warm.webp')
     save_mask(blur(s_cool, 2), 'slash-cool.webp')
 
-    # 5) Lenses: dark glass inside each hand-measured box, flood-filled from
-    #    the centre so the frame and skin stay out.
+    # 5) Lenses: a rounded rectangle fitted inside each hand-measured box,
+    #    kept only where the glass is dark (so frame and skin stay out). A
+    #    flood fill alone loses the lighter reflections inside the glass.
     lum_img = 0.299 * img[..., 0] + 0.587 * img[..., 1] + 0.114 * img[..., 2]
     lens = np.zeros((H, W), np.float32)
+    yy, xx = np.mgrid[0:H, 0:W]
     for (x0, y0, x1, y1) in LENS_BOXES:
-        sub = lum_img[y0:y1, x0:x1] < 0.16
-        cy, cx = (y1 - y0) // 2, (x1 - x0) // 2
-        filled = flood(sub, (cy, cx))
-        lens[y0:y1, x0:x1] = np.maximum(lens[y0:y1, x0:x1], filled.astype(np.float32))
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        hw, hh = (x1 - x0) / 2, (y1 - y0) / 2
+        r = 0.42 * min(hw, hh)
+        dx = np.maximum(np.abs(xx - cx) - (hw - r), 0)
+        dy = np.maximum(np.abs(yy - cy) - (hh - r), 0)
+        inside = (dx * dx + dy * dy) <= r * r
+        lens = np.maximum(lens, (inside & (lum_img < 0.42)).astype(np.float32))
     lens = blur(blur(lens, 1.5) > 0.5, 0.8)  # close pinholes, soften the edge
     save_mask(lens, 'lens.webp')
 
     # 6) Geometry for the component.
     ys, xs = np.nonzero(am > 0.5)
     bbox = [xs.min() / W, ys.min() / H, xs.max() / W, ys.max() / H]
+    lx0 = min(b[0] for b in LENS_BOXES); lx1 = max(b[2] for b in LENS_BOXES)
+    ly0 = min(b[1] for b in LENS_BOXES); ly1 = max(b[3] for b in LENS_BOXES)
     meta = {
         'width': W, 'height': H,
         'subject': [round(v, 4) for v in bbox],
-        'face': [round(828 / W, 4), round(300 / H, 4)],
+        'face': [round((lx0 + lx1) / 2 / W, 4), round(((ly0 + ly1) / 2 + 0.02 * H) / H, 4)],
         'lenses': [[round(x0 / W, 4), round(y0 / H, 4), round(x1 / W, 4), round(y1 / H, 4)] for x0, y0, x1, y1 in LENS_BOXES],
         'camera': [round(CAMERA_DOT[0] / W, 4), round(CAMERA_DOT[1] / H, 4)],
         'led': [round(LED_DOT[0] / W, 4), round(LED_DOT[1] / H, 4)],
     }
-    META.write_text(json.dumps(meta, indent=2) + '\n')
+    allmeta = json.loads(META.read_text()) if META.exists() else {}
+    if 'width' in allmeta:  # pre-sets layout: a single wide entry
+        allmeta = {}
+    allmeta[SET] = meta
+    META.write_text(json.dumps(allmeta, indent=2) + '\n')
 
     # Report: how much of a centred two-line title the silhouette would hide.
     for vw, vh in [(1440, 900), (390, 844)]:
@@ -173,4 +186,4 @@ def main(matte_path):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(sys.argv[-1])

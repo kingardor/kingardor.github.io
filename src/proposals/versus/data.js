@@ -12,20 +12,11 @@ const STAT_LABEL = {
 }
 export const P1_RECORD = STATS.map(s => ({ num: s.num, label: STAT_LABEL[s.label] ?? s.label.toUpperCase(), sub: s.sub }))
 
-export const ACTS = [
-  { id: 'vs-title', seq: 'story-1' },
-  { id: 'vs-story', seq: 'story-2' },
-  { id: 'vs-moves', seq: 'story-3' },
-  { id: 'vs-select', seq: 'story-4' },
-  { id: 'vs-replays', seq: 'story-5' },
-  { id: 'vs-lore', seq: 'story-6' },
-  { id: 'vs-trophies', seq: 'story-7' },
-  { id: 'vs-continue', seq: 'story-8' },
-]
+export { ACTS } from './acts.js'
 
 export const SUPERS = [
-  'CIRCUIT WAKE', 'ARMOUR UP', 'OPEN MIND', 'CHROME PROTOCOL',
-  'RED EYE', 'GLYPH STORM', 'MIRROR FINISH', 'FINAL FORM',
+  'KEY LIGHT', 'EMBER RUSH', 'LENS LOCK', 'COLD SNAP',
+  'REC MODE', 'AFTERGLOW', 'REFLECTION', 'CLOSE-UP',
 ]
 
 export const MODES = [

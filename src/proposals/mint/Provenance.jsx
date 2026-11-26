@@ -27,7 +27,7 @@ export default function Provenance() {
           <div className="mb-slab-label">
             <div className="mb-slab-grade"><span>GEM MINT</span><b>10</b></div>
             <div className="mb-slab-id">
-              <b>AKASH JAMES — AI ARCHITECT</b>
+              <b>AKASH JAMES · DIRECTOR AI - BLUE</b>
               <span>2017–2026 · BENGALURU · BERKELEY · ON TOUR</span>
               <span>CERT No. AJ-2017-2026-001</span>
             </div>

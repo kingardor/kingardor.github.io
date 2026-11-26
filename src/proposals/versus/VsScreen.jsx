@@ -5,6 +5,7 @@ import { BLUE_STACK, P1_RECORD } from './data.js'
 import { reduced, shake, flash, setVsOpen } from './fx.js'
 import { Burst, SpeedLines, Mis } from './Art.jsx'
 import { Portrait } from './CharacterSelect.jsx'
+import { portraitBg } from '../../components/portrait/portraitFlag.js'
 
 /**
  * VS screen → stage. Diagonal split (P1 Akash vs the project), the VS crash,
@@ -78,11 +79,13 @@ export default function VsScreen({ fighter, onClose }) {
       {phase === 'vs' && (
         <div className="vs-vs" ref={vsRef} onClick={() => setPhase('stage')}>
           <div className="vs-vs-p1">
-            <img src="/hero.webp" alt="" width="1440" height="1080" />
+            {portraitBg()
+              ? <img src="/portrait/tall/subject.webp" alt="" width="1086" height="1448" className="is-portrait" />
+              : <img src="/hero.webp" alt="" width="1440" height="1080" />}
             <div className="vs-vs-label">
               <span className="vs-vs-tag">P1</span>
               <span className="vs-vs-name">AKASH JAMES</span>
-              <span className="vs-vs-sub">AI ARCHITECT · BENGALURU</span>
+              <span className="vs-vs-sub">DIRECTOR AI - BLUE · BENGALURU</span>
               <dl className="vs-vs-stats">
                 {P1_RECORD.slice(0, 4).map(s => <div key={s.label}><dt>{s.label}</dt><dd>{s.num}</dd></div>)}
               </dl>

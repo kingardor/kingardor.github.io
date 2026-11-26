@@ -38,9 +38,9 @@ export const LINKS = {
 export const PROFILE = {
   name: 'Akash James',
   pronouns: 'he/him',
-  role: 'Founding Director of AI · BLUE',
+  role: 'Director AI - BLUE',
   headline: 'Cameras record everything and remember nothing. I’m fixing that.',
-  bioTagline: 'Director of AI at BLUE · computer vision, VLMs, AI agents, edge AI · NVIDIA GTC speaker · ex-UC Berkeley',
+  bioTagline: 'Director AI - BLUE · computer vision, VLMs, AI agents, edge AI · NVIDIA GTC speaker · ex-UC Berkeley',
   tagline: 'I make machines see, remember and talk back. Then I sell them.',
   location: 'Bengaluru, India',
   tz: 'IST · UTC+5:30',
@@ -48,7 +48,7 @@ export const PROFILE = {
   currentFocus:
     'BLUE: the world’s first semantic video data lake for the CCTV cameras you already own. Hyper Memory, BLUE Agent, Helyx, BLUE Copilot, BLUE Mini Edge, and the GPU stack under all of it, down to NVIDIA Jetson Thor.',
   bio: [
-    'I’m Akash James, founding Director of AI at BLUE in Bengaluru. For 8+ years I’ve built computer vision and generative AI that understands video, taken it to production, and then stood in front of customers and sold it. In every role I’ve demoed the product and helped close the deal.',
+    'I’m Akash James, Director AI at BLUE, in Bengaluru. For 8+ years I’ve built computer vision and generative AI that understands video, taken it to production, and then stood in front of customers and sold it. In every role I’ve demoed the product and helped close the deal.',
     'Three video AI platforms built. One of them got its company acquired. ~1,000 Caltrans cameras watched for wildfire at UC Berkeley. Two NASA Space Apps wins. The NVIDIA GTC stage. 100+ students coached on Jetson.',
     'After hours I build robots with attitude problems, a fully local assistant with her own team of agents, and a diecast store that takes real money. When I’m not coding, I beatbox.',
   ],
@@ -84,7 +84,7 @@ export const ONE_LINERS = [
 // day jobs from ambassadorships and side ventures.
 export const CAREER = [
   {
-    role: 'Founding Director of AI', org: 'BLUE', orgUrl: 'https://myblue.ai', kind: 'role',
+    role: 'Director AI', org: 'BLUE', orgUrl: 'https://myblue.ai', kind: 'role',
     period: 'Mar 2025 — Present', startYear: 2025, endYear: null, current: true,
     location: 'Bengaluru · on-site',
     blurb: 'Building the world’s first semantic video data lake for the CCTV you already own. I head AI across BLUE, end to end: models, research, products and the platform they run on. In stealth until Feb 2026.',
@@ -560,6 +560,6 @@ export const MANIFESTO = [
 ]
 
 export const SKILLS_SENTENCE =
-  'The tool is a detail. The outcome isn’t. I take vision models from a notebook to a thousand cameras, quantised onto Jetsons, wrapped in agents that verify their own numbers. Three video AI platforms. One acquisition. Now founding Director of AI at BLUE, teaching CCTV to remember.'
+  'The tool is a detail. The outcome isn’t. I take vision models from a notebook to a thousand cameras, quantised onto Jetsons, wrapped in agents that verify their own numbers. Three video AI platforms. One acquisition. Now Director AI at BLUE, teaching CCTV to remember.'
 
 export const KEY_WORDS = ['Jetsons', 'remember', 'GTC', 'BLUE']

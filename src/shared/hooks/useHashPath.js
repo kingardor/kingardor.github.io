@@ -9,6 +9,12 @@ export default function useHashPath() {
   const currentRoute = React.useRef(path)
   React.useEffect(() => {
     const onHash = () => {
+      // An in-page anchor (#vs-story, #career) only scrolls: the browser has
+      // already jumped, so put the route back instead of leaving the page.
+      if (!location.hash.startsWith('#/') && location.hash.length > 1 && currentRoute.current !== '/') {
+        history.replaceState(history.state, '', `${location.pathname}${location.search}#${currentRoute.current}`)
+        return
+      }
       const newPath = readRoute()
       if (newPath === currentRoute.current) return
       currentRoute.current = newPath
