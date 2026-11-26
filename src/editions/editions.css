@@ -1,0 +1,207 @@
+/* Editions: the picker at / and the floating switch on both designs. */
+@font-face {
+  font-family: 'MB Mona';
+  src: url('/fonts/mint/MonaSans-VariableItalic.woff2') format('woff2');
+  font-weight: 200 900; font-stretch: 75% 125%; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'MB Bungee';
+  src: url('/fonts/mint/Bungee-Regular.woff2') format('woff2');
+  font-weight: 400; font-display: swap;
+}
+
+/* ── Picker ── */
+.ed-root { color: var(--ob-bone, #ece9e2); font-family: var(--font-body); }
+.ed-main {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(20px, 3.4vw, 48px) clamp(20px, 4vw, 64px) clamp(64px, 9vh, 96px);
+  pointer-events: none;
+}
+.ed-main a { pointer-events: auto; }
+
+/* The name lives behind him on the wide shot (FlankName); the tall shot has
+   no room beside his head, so there it comes to the front. */
+.ed-name {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+body:has(.portrait-stage[data-set='tall']) .ed-name {
+  position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal;
+  grid-column: 1 / -1; grid-row: 2; align-self: end;
+  margin: 0 0 10px;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(54px, 15vw, 120px); line-height: 0.9; letter-spacing: -0.035em;
+  text-shadow: 0 2px 30px rgba(5, 5, 5, 0.65);
+}
+.ed-name span { display: block; }
+.ed-name b { color: var(--ob-ember, #ff3d00); font-weight: inherit; }
+
+.ed-head { grid-column: 1 / -1; grid-row: 1; max-width: 25em; }
+.ed-k, .ed-sub { margin: 0; text-shadow: 0 0 14px rgba(5, 5, 5, 0.9); }
+.ed-k {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--ob-ember, #ff3d00);
+}
+.ed-sub { margin-top: 10px; font-size: 15px; line-height: 1.5; color: rgba(236, 233, 226, 0.78); }
+
+.ed-cards {
+  grid-column: 1 / -1; grid-row: 3;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 24px;
+}
+.ed-card {
+  position: relative; display: block;
+  width: min(330px, 100%);
+  color: inherit; text-decoration: none;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+}
+.ed-card-in { position: relative; display: grid; gap: 10px; padding: 20px 22px 18px; }
+.ed-kind, .ed-cta, .ed-last { justify-self: start; }
+.ed-title { line-height: 0.88; text-transform: uppercase; }
+.ed-pitch { font-size: 14px; line-height: 1.45; }
+.ed-cta i { font-style: normal; display: inline-block; transition: transform 0.3s ease; }
+.ed-card:hover .ed-cta i, .ed-card:focus-visible .ed-cta i { transform: translateX(4px); }
+.ed-last {
+  position: absolute; top: -12px; right: 14px;
+  font: 600 10px/1 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 6px 9px; background: var(--ob-bone, #ece9e2); color: #111;
+}
+
+/* Mint in Box: an orange blister card, chrome-italic type. */
+.ed-card-mint {
+  border-radius: 18px;
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1.4px) 0 0 / 9px 9px,
+    linear-gradient(160deg, #ff5a1a, #e53600 70%);
+  box-shadow: 0 0 0 3px #111, 9px 9px 0 #111;
+  transform: rotate(-1.6deg);
+  color: #fff;
+}
+.ed-card-mint:hover, .ed-card-mint:focus-visible { transform: rotate(-0.4deg) translateY(-4px); box-shadow: 0 0 0 3px #111, 12px 14px 0 #111; }
+.ed-card-mint .ed-kind {
+  font-family: 'MB Bungee', var(--font-display); font-size: 11px; letter-spacing: 0.04em;
+  padding: 5px 11px; border-radius: 999px; background: #111; color: #ffd400;
+}
+.ed-card-mint .ed-title {
+  font-family: 'MB Mona', var(--font-display); font-style: italic; font-weight: 900; font-stretch: 125%;
+  font-size: 46px; letter-spacing: -0.02em;
+  color: #fff; text-shadow: 0 3px 0 #a52300, 0 6px 0 #111;
+}
+.ed-card-mint .ed-pitch { color: rgba(255, 255, 255, 0.92); }
+.ed-card-mint .ed-cta {
+  font-family: 'MB Bungee', var(--font-display); font-size: 13px;
+  padding: 8px 14px; background: #ffd400; color: #111; box-shadow: 3px 3px 0 #111;
+}
+
+/* Versus: a skewed riso fight card, yellow and pink on ink. */
+.ed-card-versus {
+  background: #0b0b10;
+  border: 3px solid #ffe14d;
+  box-shadow: 9px 9px 0 #ff3fa4;
+  transform: skewX(-7deg);
+}
+.ed-card-versus .ed-card-in { transform: skewX(7deg); }
+.ed-card-versus:hover, .ed-card-versus:focus-visible { transform: skewX(-7deg) translateY(-4px); box-shadow: 12px 14px 0 #ff3fa4; }
+.ed-card-versus .ed-kind {
+  font: 600 11px/1 var(--font-mono); letter-spacing: 0.22em; text-transform: uppercase; color: #ff3fa4;
+}
+.ed-card-versus .ed-title {
+  font-family: 'Big Shoulders Display', var(--font-display); font-weight: 900; font-size: 68px; letter-spacing: 0.01em;
+  color: #ffe14d; text-shadow: 3px 3px 0 #ff3fa4;
+}
+.ed-card-versus .ed-pitch { color: rgba(244, 241, 234, 0.85); }
+.ed-card-versus .ed-cta {
+  font: 700 12px/1 var(--font-mono); letter-spacing: 0.24em; text-transform: uppercase;
+  color: #ffe14d; animation: ed-blink 1.1s steps(2, start) 4;
+}
+@keyframes ed-blink { to { visibility: hidden; } }
+
+/* Tall shot (phones upright, narrow windows): stack under him. */
+body:has(.portrait-stage[data-set='tall']) .ed-main { grid-template-rows: auto 1fr auto; }
+body:has(.portrait-stage[data-set='tall']) .ed-cards { flex-direction: column; align-items: stretch; gap: 18px; }
+body:has(.portrait-stage[data-set='tall']) .ed-card { width: 100%; }
+body:has(.portrait-stage[data-set='tall']) .ed-card-in { gap: 7px; padding: 14px 16px 13px; }
+body:has(.portrait-stage[data-set='tall']) .ed-card-mint .ed-title { font-size: 34px; }
+body:has(.portrait-stage[data-set='tall']) .ed-card-versus .ed-title { font-size: 46px; }
+body:has(.portrait-stage[data-set='tall']) .ed-pitch { font-size: 13px; }
+@media (max-width: 520px) {
+  .ed-pitch { display: none; }
+  .ed-sub { font-size: 13px; }
+}
+/* Phones on their side get the wide shot but no flanking name (no room):
+   bring the name to the front, small, and tighten everything else. */
+@media (max-width: 1000px) and (max-height: 500px) {
+  .ed-main { padding-top: 16px; padding-bottom: 60px; }
+  .ed-sub { display: none; }
+  .ed-name {
+    position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: nowrap;
+    grid-column: 1 / -1; grid-row: 1; align-self: start; justify-self: start;
+    margin: 18px 0 0;
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 34px; line-height: 0.92; letter-spacing: -0.03em;
+    text-shadow: 0 2px 24px rgba(5, 5, 5, 0.7);
+  }
+  .ed-name span { display: inline; margin-left: 0.25em; }
+  .ed-head { grid-row: 1; }
+  .ed-card { width: min(250px, 42vw); }
+  .ed-card-in { gap: 6px; padding: 12px 14px 11px; }
+  .ed-pitch { display: none; }
+  .ed-card-mint .ed-title { font-size: 28px; }
+  .ed-card-versus .ed-title { font-size: 38px; }
+}
+
+/* ── Floating switch on both editions ── */
+.ed-switch {
+  position: fixed; left: 50%; bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex; align-items: center; gap: 2px;
+  padding: 4px;
+  background: rgba(8, 9, 12, 0.8);
+  border: 1px solid rgba(236, 233, 226, 0.16);
+  border-radius: 999px;
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  font: 500 11px/1 var(--font-mono, monospace); letter-spacing: 0.14em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.ed-switch-k { padding: 0 10px 0 12px; color: rgba(236, 233, 226, 0.55); text-decoration: none; }
+.ed-switch-k:hover { color: #fff; }
+.ed-switch-b {
+  border: 0; border-radius: 999px; padding: 9px 14px;
+  background: transparent; color: rgba(236, 233, 226, 0.82);
+  font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.ed-switch-b:not(.is-on):hover { background: rgba(236, 233, 226, 0.1); color: #fff; }
+.ed-switch-b.is-on { cursor: default; }
+.ed-switch-b.is-on.ed-mint { background: #ff3d00; color: #fff; }
+.ed-switch-b.is-on.ed-versus { background: #ffe14d; color: #111; }
+.ed-switch-b:focus-visible, .ed-switch-k:focus-visible { outline: 2px solid #ffe14d; outline-offset: 2px; }
+@media (max-width: 520px) {
+  .ed-switch { font-size: 10px; letter-spacing: 0.1em; }
+  .ed-switch-k { padding: 0 8px 0 10px; }
+  .ed-switch-b { padding: 8px 11px; }
+}
+
+/* Hidden on the title screen, in once the visitor scrolls. */
+.ed-switch {
+  opacity: 0; visibility: hidden;
+  transform: translate(-50%, 18px);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.35s;
+}
+.ed-switch.is-on {
+  opacity: 1; visibility: visible;
+  transform: translate(-50%, 0);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) { .ed-switch, .ed-switch.is-on { transition: none; } }
+
+/* Narrow screens: while the switch shows, the always-on corner badges sit above it. */
+@media (max-width: 900px) {
+  .ed-has-switch .vs-credits, .ed-has-switch .vs-toasts { transition: bottom 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .ed-switch-on .vs-credits { bottom: 66px; }
+  .ed-switch-on .vs-toasts { bottom: 104px; }
+}

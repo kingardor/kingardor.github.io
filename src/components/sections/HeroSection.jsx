@@ -4,6 +4,7 @@ import { CHAT_SUGGESTIONS } from '../../content/index.js'
 import DecryptedText from '../prototype/reactbits/DecryptedText.jsx'
 import HeroParticles from '../prototype/HeroParticles.jsx'
 import navigate from '../../shared/utils/navigate.js'
+import { portraitBg } from '../portrait/portraitFlag.js'
 
 const SEED_KEY = 'chat:seed'
 
@@ -91,7 +92,7 @@ export default function HeroSection() {
   // story video's first frame, which is the same image) → 'done' (unmounted)
   const [assembly, setAssembly] = useState(
     typeof window !== 'undefined' &&
-      (window.__PRERENDER || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      (window.__PRERENDER || portraitBg() || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
       ? 'done'
       : 'assembling'
   )
@@ -186,7 +187,7 @@ export default function HeroSection() {
           </h1>
           <p className="ob-hero-tag mono-ob">
             <DecryptedText
-              text="AI ARCHITECT — GPU TO PROD. AGENTS THAT CLOSE LOOPS."
+              text="DIRECTOR AI - BLUE · I TEACH CAMERAS TO REMEMBER."
               animateOn="view"
               sequential
               speed={16}

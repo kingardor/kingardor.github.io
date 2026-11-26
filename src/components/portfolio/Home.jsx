@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react'
 import GuidedTour from '../os/GuidedTour'
-import SequenceCanvas from '../story/SequenceCanvas'
+import FilmStage from '../portrait/FilmStage'
 import HeroSection from '../sections/HeroSection'
 import {
   PortfolioNav,
@@ -41,7 +41,7 @@ export default function Home() {
 
   return (
     <>
-      <SequenceCanvas />
+      <FilmStage />
       <GuidedTour />
       <main>
         <HeroSection />

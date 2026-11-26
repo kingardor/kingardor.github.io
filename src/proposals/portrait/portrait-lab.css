@@ -1,0 +1,95 @@
+/* /#/lab/portrait: a showcase for the portrait stage. */
+.pt-root { color: var(--ob-bone, #ece9e2); font-family: var(--font-body); }
+.pt-main { pointer-events: none; }
+.pt-main a, .pt-card { pointer-events: auto; }
+
+/* Hero */
+.pt-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
+  padding: 0 clamp(20px, 5vw, 80px) 7vh;
+}
+.pt-name-front {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+.pt-tag, .pt-cue, .pt-label {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  text-shadow: 0 0 12px rgba(5, 5, 5, 0.9);
+}
+.pt-tag { margin: 0; max-width: 23em; line-height: 1.9; color: rgba(236, 233, 226, 0.82); }
+.pt-cue { position: absolute; right: clamp(20px, 5vw, 80px); bottom: 7vh; margin: 0; color: rgba(236, 233, 226, 0.45); font-size: 10px; }
+
+/* Chapters: a card on one side, him on the other. */
+.pt-ch {
+  min-height: 135vh;
+  display: flex; align-items: center;
+  padding: 0 clamp(20px, 5vw, 80px);
+}
+.pt-left { justify-content: flex-start; }
+.pt-right { justify-content: flex-end; }
+.pt-final { justify-content: center; min-height: 120vh; }
+.pt-card {
+  width: min(380px, 100%);
+  padding: 26px 26px 24px;
+  background: rgba(7, 9, 12, 0.62);
+  border: 1px solid rgba(236, 233, 226, 0.1);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+.pt-label { margin: 0 0 14px; color: rgba(236, 233, 226, 0.55); font-size: 10px; }
+.pt-label span { color: var(--ob-ember, #ff3d00); margin-right: 6px; }
+.pt-card h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(28px, 2.6vw, 40px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+.pt-card p:not(.pt-label) { margin: 0; font-size: 15px; line-height: 1.55; color: rgba(236, 233, 226, 0.78); }
+.pt-card code { font-family: var(--font-mono); font-size: 0.85em; color: var(--ob-bone, #ece9e2); }
+.pt-links { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 8px; }
+.pt-links a {
+  display: flex; justify-content: space-between;
+  padding: 10px 12px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ob-bone, #ece9e2); text-decoration: none;
+  border: 1px solid rgba(236, 233, 226, 0.16);
+}
+.pt-links a::after { content: '↗'; color: var(--ob-ember, #ff3d00); }
+.pt-links a:hover { border-color: rgba(255, 61, 0, 0.6); }
+
+/* Phones: no room beside his head, so the name comes to the front. */
+@media (max-width: 900px), (max-width: 1000px) and (max-height: 500px) {
+  .pt-hero { justify-content: flex-end; align-items: center; text-align: center; padding-bottom: 9vh; }
+  .pt-cue { position: static; margin-top: 16px; }
+  .pt-name-front {
+    position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal;
+    margin: 0 0 14px;
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(56px, 17vw, 96px); line-height: 0.92; letter-spacing: -0.035em;
+    text-shadow: 0 2px 30px rgba(5, 5, 5, 0.6);
+  }
+  .pt-name-front span { display: block; }
+  .pt-name-front b { color: var(--ob-ember, #ff3d00); font-weight: inherit; }
+  .pt-ch { min-height: 110vh; align-items: flex-end; padding-bottom: 8vh; }
+  .pt-left, .pt-right { justify-content: center; }
+}
+@media (hover: none), (pointer: coarse) { .pt-cue-ptr { display: none; } }
+
+/* Any screen on the tall shot (narrow windows too): name to the front. */
+body:has(.portrait-stage[data-set='tall']) .pt-hero { justify-content: flex-end; align-items: center; text-align: center; padding-bottom: 9vh; }
+body:has(.portrait-stage[data-set='tall']) .pt-cue { position: static; margin-top: 16px; }
+body:has(.portrait-stage[data-set='tall']) .pt-name-front {
+  position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal;
+  margin: 0 0 14px;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(56px, 17vw, 120px); line-height: 0.92; letter-spacing: -0.035em;
+  text-shadow: 0 2px 30px rgba(5, 5, 5, 0.6);
+}
+body:has(.portrait-stage[data-set='tall']) .pt-name-front span { display: block; }
+body:has(.portrait-stage[data-set='tall']) .pt-name-front b { color: var(--ob-ember, #ff3d00); font-weight: inherit; }

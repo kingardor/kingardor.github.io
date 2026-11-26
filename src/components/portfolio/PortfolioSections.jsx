@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowUp, ArrowUpRight, Play, Search } from 'lucide-react'
 import {
+  ARCHIVE,
   CAREER,
   PROJECTS,
   SKILLS,
@@ -11,29 +12,16 @@ import {
   LINKS,
 } from '../../content'
 import { prefetched } from '../../shared/utils/prefetch'
-const work = (id) => PROJECTS.find((project) => project.slug === id)
 const assets = '/work/'
-const cases = {
-  hermes: {
-    name: 'Hermes',
-    field: 'Computer vision',
-    image: 'rig.webp',
-    alt: 'Tello drone and Jetson Xavier NX side by side on a workbench',
-    summary:
-      'A drone streams video to a Jetson Xavier NX. DeepStream and YOLO look for signs of wildfire in the feed.',
-    link: 'Explore Hermes',
-    project: work('hermes'),
-  },
-  vector: {
-    name: 'Vector',
-    field: 'Robotics',
-    image: 'vector.webp',
-    alt: 'A handheld Anki Vector robot with violet eyes',
-    summary:
-      'An experiment in bringing language models to Anki Vector, a palm-sized robot with a camera, tracks and a remarkably expressive face.',
-    link: 'Explore Vector',
-    project: work('vector'),
-  },
+const featured = PROJECTS.filter((p) => p.featured)
+const project = (slug) => PROJECTS.find((p) => p.slug === slug)
+// Covers: a photo of the real thing when there is one, else the first screen
+const coverOf = (p) => p.images.find((i) => i.kind !== 'ui') || p.images[0]
+const linkOf = (p) => p.repo || p.href
+const linkLabel = (p) => {
+  if (p.repo) return 'Source on GitHub'
+  if (p.href?.startsWith('#')) return 'Talk to her web twin'
+  return 'Visit ' + new URL(p.href).hostname
 }
 function LinkOut({ to, children }) {
   return (
@@ -63,8 +51,9 @@ export function PortfolioNav() {
   )
 }
 export function ProjectGallery() {
-  const [selected, setSelected] = useState('vector')
-  const item = cases[selected]
+  const [selected, setSelected] = useState(featured[0].slug)
+  const item = project(selected)
+  const cover = coverOf(item)
   return (
     <section id="spotlight" className="gallery">
       <header>
@@ -72,26 +61,35 @@ export function ProjectGallery() {
           Selected work<span>.</span>
         </h2>
         <div role="group" aria-label="Choose a project">
-          {['vector', 'hermes'].map((key) => (
+          {featured.map((p) => (
             <button
-              key={key}
-              aria-pressed={selected === key}
-              onClick={() => setSelected(key)}
+              key={p.slug}
+              aria-pressed={selected === p.slug}
+              onClick={() => setSelected(p.slug)}
             >
-              {cases[key].name}
+              {p.name}
             </button>
           ))}
         </div>
       </header>
       <div className="gallery-stage" aria-live="polite">
         <figure>
-          <img loading="lazy" src={assets + item.image} alt={item.alt} />
+          <img loading="lazy" src={cover.src} width={cover.w} height={cover.h} alt={cover.alt} />
         </figure>
         <div className="gallery-caption">
-          <span>{item.field}</span>
+          <span>{item.kicker}</span>
           <h3>{item.name}</h3>
-          <p>{item.summary}</p>
-          <LinkOut to={item.project.repo}>{item.link}</LinkOut>
+          <p className="gallery-pitch">{item.pitch}</p>
+          <p>{item.desc}</p>
+          <dl className="gallery-facts">
+            {item.facts.slice(0, 2).map((f) => (
+              <div key={f.k}>
+                <dt>{f.k}</dt>
+                <dd>{f.v}</dd>
+              </div>
+            ))}
+          </dl>
+          <LinkOut to={linkOf(item)}>{linkLabel(item)}</LinkOut>
         </div>
       </div>
     </section>
@@ -107,7 +105,7 @@ export function Experience() {
       </div>
       <div className="positions">
         {CAREER.map((r) => (
-          <article key={r.org}>
+          <article key={r.org + r.role}>
             <time>{r.period}</time>
             <div>
               <h3>{r.org}</h3>
@@ -136,7 +134,8 @@ export function Skills() {
   )
 }
 export function Projects() {
-  const item = cases.hermes
+  const item = project('hermes')
+  const photo = coverOf(item)
   return (
     <section id="projects" className="projects surface">
       <h2>
@@ -144,11 +143,11 @@ export function Projects() {
       </h2>
       <div className="pair">
         <article className="picture-case">
-          <img loading="lazy" src={assets + item.image} alt={item.alt} />
+          <img loading="lazy" src={photo.src} width={photo.w} height={photo.h} alt={photo.alt} />
           <div>
             <h3>{item.name}</h3>
-            <p>{item.summary}</p>
-            <LinkOut to={item.project.repo}>{item.link}</LinkOut>
+            <p>{item.pitch}</p>
+            <LinkOut to={linkOf(item)}>Explore Hermes</LinkOut>
           </div>
         </article>
         <article className="veronica-case">
@@ -167,10 +166,10 @@ export function Projects() {
       </div>
       <details>
         <summary>
-          All projects <span>{PROJECTS.length}</span>
+          All projects <span>{PROJECTS.length + ARCHIVE.length}</span>
         </summary>
-        {PROJECTS.map((p) => (
-          <a key={p.name} href={p.href || p.repo}>
+        {[...PROJECTS, ...ARCHIVE].map((p) => (
+          <a key={p.name} href={linkOf(p) || LINKS.github}>
             <strong>{p.name}</strong>
             <small>{p.desc}</small>
             <ArrowUpRight size={18} />
@@ -286,7 +285,7 @@ export function Footer() {
         <h2>Recognition</h2>
         <div>
           {HONOURS.map((h) => (
-            <article key={h.key}>
+            <article key={h.title}>
               <strong>{h.key}</strong>
               <p>{h.url ? <a href={h.url}>{h.title} ↗</a> : h.title}</p>
             </article>

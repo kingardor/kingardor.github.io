@@ -37,8 +37,25 @@ export function LenisProvider({ children }) {
     }
     rafId = requestAnimationFrame(raf)
 
+    // Keep the scroll limit in step with content that grows mid-scroll (lazy
+    // images, layouts that build as you scroll). Lenis' own observer is
+    // debounced 250 ms, so it never settles while anything resizes every
+    // frame, and the page hits an invisible floor. Refresh the measurements
+    // only (lenis.resize() would also reset the scroll target), once a frame.
+    let measureId = 0
+    const growth = new ResizeObserver(() => {
+      if (measureId) return
+      measureId = requestAnimationFrame(() => {
+        measureId = 0
+        lenis.dimensions?.resize?.()
+      })
+    })
+    growth.observe(document.documentElement)
+
     return () => {
       cancelAnimationFrame(rafId)
+      cancelAnimationFrame(measureId)
+      growth.disconnect()
       lenis.destroy()
       lenisRef.current = null
     }

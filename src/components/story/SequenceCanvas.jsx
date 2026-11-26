@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { subscribe, kick } from '../../shared/scroll/scrollStore.js'
 import { createSequenceStore } from './sequenceStore.js'
+import { setFilm } from './filmPosition.js'
 
 // Scroll acts: each section scrubs its own footage. Consecutive segments
 // share boundary keyframes, so act i's last frame is act i+1's first and the
@@ -30,7 +31,14 @@ const MAX_DPR = 1.5
  * seeks, symmetric forwards and backwards on every browser.
  * Reduced motion / prerender / no AVIF → static poster.
  */
-export default function SequenceCanvas() {
+export default function SequenceCanvas({
+  acts: ACT_LIST = ACTS,     // [{ id: sectionId, seq: 'story-n' }] in scroll order
+  compactActs = 1,           // acts that play on phones / short landscape screens
+  pane = '.portfolio',       // compact mode: the film stops where this element starts
+  layerClass = 'story-layer',
+  scrim = true,
+  still = true,
+} = {}) {
   const canvasRef = useRef(null)
   const stillRef = useRef(null)
   const [fallback, setFallback] = useState(
@@ -57,10 +65,10 @@ export default function SequenceCanvas() {
     const measure = () => {
       const vh = window.innerHeight
       maxScroll = Math.max(1, document.documentElement.scrollHeight - vh)
-      const visibleActs = compact.matches ? ACTS.slice(0, 1) : ACTS
-      if (compact.matches) {
-        const pane = document.querySelector('.portfolio')
-        if (pane) maxScroll = Math.max(1, pane.getBoundingClientRect().top + window.scrollY)
+      const visibleActs = compact.matches ? ACT_LIST.slice(0, compactActs) : ACT_LIST
+      if (compact.matches && pane) {
+        const paneEl = document.querySelector(pane)
+        if (paneEl) maxScroll = Math.max(1, paneEl.getBoundingClientRect().top + window.scrollY)
       }
       acts = visibleActs
         .map(a => ({ ...a, el: document.getElementById(a.id) }))
@@ -116,8 +124,14 @@ export default function SequenceCanvas() {
 
       const base = store.nearest(act.seq, i0)
       if (base) {
+        const r = cover(base.bmp)
+        const dpr = canvas.width / window.innerWidth
+        setFilm({
+          P, act: k, id: act.id, seq: act.seq, t: P - k, frame: i0, n,
+          rect: { x: r[0] / dpr, y: r[1] / dpr, w: r[2] / dpr, h: r[3] / dpr },
+        })
         ctx.globalAlpha = 1
-        ctx.drawImage(base.bmp, ...cover(base.bmp))
+        ctx.drawImage(base.bmp, ...r)
         const next = base.i === i0 && frac > 0.02 ? store.nearest(act.seq, i0 + 1) : null
         if (next && next.i === i0 + 1) {
           ctx.globalAlpha = frac
@@ -157,15 +171,17 @@ export default function SequenceCanvas() {
       window.removeEventListener('resize', measure)
       store.dispose()
     }
+    // acts/pane are read once per mount: layouts pass stable module constants
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fallback])
 
-  if (fallback) return <div className="story-layer story-poster" aria-hidden="true" />
+  if (fallback) return <div className={`${layerClass} story-poster`} aria-hidden="true" />
 
   return (
-    <div className="story-layer" aria-hidden="true">
+    <div className={layerClass} aria-hidden="true">
       <canvas ref={canvasRef} className="story-canvas" />
-      <img ref={stillRef} className="story-still" src="/hero.webp" alt="" />
-      <div className="story-scrim" />
+      {still && <img ref={stillRef} className="story-still" src="/hero.webp" alt="" />}
+      {scrim && <div className="story-scrim" />}
     </div>
   )
 }

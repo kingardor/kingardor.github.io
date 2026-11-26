@@ -9,6 +9,7 @@ import { streamChat } from '../../shared/utils/streamChat'
 import ThinkingBlock from './components/ThinkingBlock'
 import ChatBlocks    from './blocks/ChatBlocks'
 import { Entropy }   from './components/Entropy'
+import { lastEdition } from '../../editions/editions.js'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
 const SEED_KEY = 'chat:seed'
@@ -24,6 +25,8 @@ const TOOL_STATUS_LABELS = {
   get_bio:             'PULLING BIO...',
   get_publications:    'FINDING ARTICLES...',
   get_honours:         'CHECKING HONOURS...',
+  get_blue_work:       'OPENING THE BLUE FILES...',
+  get_talks:           'PULLING STAGE TIME...',
 }
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
@@ -394,12 +397,12 @@ function ChatHeader({ loading }) {
         >
           {/* Back */}
           <a
-            href="#/"
+            href={`#/${lastEdition() ?? ''}`}
             className="flex items-center gap-1.5 hud-text"
             style={{ fontSize: '0.62rem', color: 'var(--nm-text-muted)', letterSpacing: '0.1em', textDecoration: 'none' }}
           >
             <ArrowLeft size={11} aria-hidden />
-            HOME
+            BACK
           </a>
 
           {/* Center: Veronica identity */}

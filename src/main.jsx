@@ -20,8 +20,10 @@ const heroReadyPromise = new Promise(resolve => {
 // home visit — never longer than STORY_CAP_MS from boot, however slow the link.
 const STORY_CAP_MS = 5000
 const isChat = () => location.hash.startsWith('#/chat')
+// Pages without the story film: the chat, and the /lab index of design proposals
+const noFilm = () => isChat() || /^#\/lab(\/bench)?\/?$/.test(location.hash)
 const storyReady = new Promise(resolve => {
-  if (!loader || window.__PRERENDER || isChat()) { resolve(); return }
+  if (!loader || window.__PRERENDER || noFilm()) { resolve(); return }
   const bar = loader.querySelector('.loader-bar-fill')
   const sinceBoot = Date.now() - (window.__LOADER_START ?? Date.now())
   const timer = setTimeout(finish, Math.max(0, STORY_CAP_MS - sinceBoot))

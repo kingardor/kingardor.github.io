@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { DATA } from '../../components/prototype/dataAdapter.js'
 import { PROJECTS } from '../../content/index.js'
 import navigate from '../../shared/utils/navigate.js'
+import { EDITIONS, currentEdition, lastEdition, openEdition } from '../../editions/editions.js'
 
 const SEED_KEY = 'chat:seed'
 
@@ -14,13 +15,21 @@ export function askVeronica(q) {
   }
 }
 
+// Home's sections in story order; both editions have one section per act in
+// the same order, so a section jump maps onto them by index.
+const ACT_OF = { top: 0, career: 1, skills: 2, spotlight: 3, projects: 3, videos: 4, writing: 5, honours: 6, contact: 7 }
+
 function jumpTo(id) {
-  if (location.hash.startsWith('#/chat')) {
-    navigate('/')
-    setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 350)
-  } else {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  const here = document.getElementById(id)
+  if (here && !location.hash.startsWith('#/chat')) { here.scrollIntoView({ behavior: 'smooth' }); return }
+  const act = ACT_OF[id] ?? 0
+  const ed = currentEdition()
+  if (ed) {
+    document.getElementById(EDITIONS[ed].acts[act]?.id)?.scrollIntoView({ behavior: 'smooth' })
+    return
   }
+  // Picker, chat or lab: open the visitor's edition at that section.
+  openEdition(lastEdition() ?? 'mint', act)
 }
 
 const SECTION_ENTRIES = [
@@ -31,7 +40,7 @@ const SECTION_ENTRIES = [
   { id: 'projects', label: 'Work', keywords: 'projects mission files repos' },
   { id: 'videos', label: 'Talks', keywords: 'videos youtube workshop' },
   { id: 'writing', label: 'Writing', keywords: 'writing articles medium blog' },
-  { id: 'honours', label: 'Honours', keywords: 'awards patent nvidia speaking' },
+  { id: 'honours', label: 'Honours', keywords: 'awards nasa nvidia speaking' },
   { id: 'contact', label: 'Contact', keywords: 'email transmission reach out hire' },
 ].map(s => ({
   type: 'GOTO',

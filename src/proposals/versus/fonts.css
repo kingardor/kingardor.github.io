@@ -1,0 +1,16 @@
+/* VERSUS type: Big Shoulders Display (OFL) for slams and names,
+   Permanent Marker (Apache 2.0) for taunts. Latin subsets, self-hosted. */
+@font-face {
+  font-family: 'Big Shoulders Display';
+  src: url('/fonts/versus/BigShouldersDisplay-Variable-latin.woff2') format('woff2');
+  font-weight: 500 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Permanent Marker';
+  src: url('/fonts/versus/PermanentMarker-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

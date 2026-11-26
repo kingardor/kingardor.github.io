@@ -10,7 +10,7 @@ export default function ProjectGrid({ data }) {
         className="hud-text"
         style={{ fontSize: '0.55rem', color: 'var(--nm-text-muted)', letterSpacing: '0.12em', marginBottom: '0.5rem' }}
       >
-        OPEN SOURCE PROJECTS
+        PROJECTS
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.6rem' }}>
         {projects.map(p => (

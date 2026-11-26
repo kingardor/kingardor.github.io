@@ -93,13 +93,18 @@ try {
     timeout: 30_000,
   })
 
-  // Snapshot exactly when React has populated #root — before any async API calls
-  // finish and well before the 1700 ms loader minimum elapses.
-  // At this moment: #root has full React content AND #loader is still in the DOM.
+  // Snapshot once React has rendered the real page — before async API calls
+  // finish and while #loader is still in the DOM. `/` is the edition picker,
+  // which is lazy-loaded, so wait for its content (or the classic hero), not
+  // just the first child of #root (that would be the Suspense placeholder).
   await page.waitForFunction(
     () => document.getElementById('root')?.children.length > 0,
     { timeout: 10_000 }
   )
+  await page.waitForFunction(
+    () => document.querySelector('#ed-pick, .ob-hero, .lab-root'),
+    { timeout: 10_000 }
+  ).catch(() => console.warn('  ⚠️  page content not found in 10 s; snapshotting what rendered'))
 
   const html = await page.content()
   writeFileSync(join(DIST, 'index.html'), html, 'utf8')
