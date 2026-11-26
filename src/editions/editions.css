@@ -185,3 +185,23 @@ body:has(.portrait-stage[data-set='tall']) .ed-pitch { font-size: 13px; }
   .ed-switch-k { padding: 0 8px 0 10px; }
   .ed-switch-b { padding: 8px 11px; }
 }
+
+/* Hidden on the title screen, in once the visitor scrolls. */
+.ed-switch {
+  opacity: 0; visibility: hidden;
+  transform: translate(-50%, 18px);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.35s;
+}
+.ed-switch.is-on {
+  opacity: 1; visibility: visible;
+  transform: translate(-50%, 0);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) { .ed-switch, .ed-switch.is-on { transition: none; } }
+
+/* Narrow screens: while the switch shows, the always-on corner badges sit above it. */
+@media (max-width: 900px) {
+  .ed-has-switch .vs-credits, .ed-has-switch .vs-toasts { transition: bottom 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .ed-switch-on .vs-credits { bottom: 66px; }
+  .ed-switch-on .vs-toasts { bottom: 104px; }
+}
