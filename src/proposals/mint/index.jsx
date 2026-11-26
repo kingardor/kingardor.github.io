@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import SequenceCanvas from '../../components/story/SequenceCanvas.jsx'
+import FilmStage from '../../components/portrait/FilmStage.jsx'
 import useLoaderRelease from '../shared/useLoaderRelease.js'
 import { subscribe } from '../../shared/scroll/scrollStore.js'
 import { PROJECTS } from '../../content/index.js'
@@ -56,7 +56,7 @@ export default function Proposal() {
   useLoaderRelease('italic 900 1rem "MB Mona"')
   return (
     <>
-      <SequenceCanvas acts={ACTS} layerClass="lab-film" scrim={false} compactActs={8} pane={null} />
+      <FilmStage acts={ACTS} layerClass="lab-film" scrim={false} compactActs={8} pane={null} />
       <main className="lab-root mb-root">
         <div className="mb-garage-dim" aria-hidden="true" />
         <TopTag />

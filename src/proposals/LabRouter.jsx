@@ -9,6 +9,7 @@ const PROPOSALS = {
   mint: React.lazy(() => import('./mint/index.jsx')),
   versus: React.lazy(() => import('./versus/index.jsx')),
   bench: React.lazy(() => import('../anatomy/BenchPage.jsx')),
+  portrait: React.lazy(() => import('./portrait/index.jsx')),
 }
 
 export default function LabRouter({ path }) {

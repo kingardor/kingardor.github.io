@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import SequenceCanvas from '../../components/story/SequenceCanvas.jsx'
+import FilmStage from '../../components/portrait/FilmStage.jsx'
 import useLoaderRelease from '../shared/useLoaderRelease.js'
 import { ACTS } from './data.js'
 import TitleScreen from './TitleScreen.jsx'
@@ -29,7 +29,7 @@ export default function Versus() {
   const [live, setLive] = useState(false)
   return (
     <>
-      <SequenceCanvas acts={ACTS} layerClass="lab-film" scrim={false} compactActs={8} pane={null} />
+      <FilmStage acts={ACTS} layerClass="lab-film" scrim={false} compactActs={8} pane={null} />
       <div className="vs-print" aria-hidden="true" />
       <main className={`lab-root vs-root${live ? ' is-live' : ''}`}>
         <a className="vs-skip" href="#vs-story">Skip to story mode</a>

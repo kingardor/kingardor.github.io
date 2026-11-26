@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import HeroParticles from '../../components/prototype/HeroParticles.jsx'
+import { portraitBg } from '../../components/portrait/portraitFlag.js'
 
 /**
  * The pixel-assembly intro, packaged for any layout: the Golden Gate selfie
@@ -9,11 +10,12 @@ import HeroParticles from '../../components/prototype/HeroParticles.jsx'
  * Place it inside a full-viewport, position: relative container that sits
  * exactly over the film (the hero's sticky pin). It unmounts itself when done.
  * `onAssembled` fires as the crossfade starts (≈1.5 s after the loader lifts).
+ * Skipped under ?bg=portrait: that stage has its own reveal and a different photo.
  */
 export default function PixelAssembly({ onAssembled, className = '' }) {
   const [phase, setPhase] = useState(() =>
     typeof window !== 'undefined' &&
-      (window.__PRERENDER || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      (window.__PRERENDER || portraitBg() || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
       ? 'done'
       : 'assembling')
 
