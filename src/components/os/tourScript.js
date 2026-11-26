@@ -46,7 +46,7 @@ export const TOUR_STOPS = [
   },
   {
     id: 'honours', frac: 0,
-    caption: 'A patent. An NVIDIA ambassadorship. Twenty-odd conference stages.',
+    caption: 'Two NASA wins. An NVIDIA ambassadorship. Twenty-odd conference stages.',
     dwellMs: 2400,
   },
   {

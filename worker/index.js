@@ -18,7 +18,10 @@
  * optionally OWNER_TOKEN (enables `/admin <token>` Owner Mode).
  */
 
-import { PROFILE, LINKS, EMAIL, CAREER, PROJECTS, SKILLS, WRITING, HONOURS } from '../src/content/index.js'
+import {
+  PROFILE, LINKS, EMAIL, CAREER, PROJECTS, SKILLS, WRITING, HONOURS,
+  BLUE_STACK, TALKS, ARCHIVE, EDUCATION,
+} from '../src/content/index.js'
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const DEFAULT_MODEL = 'nvidia/nemotron-3-nano-30b-a3b'
@@ -54,11 +57,13 @@ Hard limits — non-negotiable: no slurs targeting protected classes (race, gend
 TOOLS — you MUST call the relevant tool before answering any factual question about Akash. Do not answer from memory.
 - get_bio: general background, contact, affiliations
 - get_career_timeline: roles, companies, dates
-- get_projects: open-source projects
+- get_projects: projects (robots, assistants, edge AI, the store) and older open-source work
+- get_blue_work: his day job at BLUE (Hyper Memory, BLUE Agent, Helyx, Copilot, Mini Edge)
+- get_talks: stages, booths, workshops, panels
 - get_skills: skill proficiency + tech stack
 - get_youtube_videos: latest YouTube content
 - get_publications: Medium articles
-- get_honours: awards and patents
+- get_honours: awards, recognition, education
 
 FORMAT
 For detail questions: markdown with tables and structure. For quick questions: be brief. Ask one follow-up only if it materially improves accuracy; otherwise proceed.
@@ -81,6 +86,9 @@ const currentRole = CAREER.find(c => c.current) || CAREER[0]
 const BIO = {
   name: PROFILE.name,
   tagline: PROFILE.bioTagline,
+  headline: PROFILE.headline,
+  bio: PROFILE.bio,
+  location: PROFILE.location,
   current_role: `${currentRole.role} at ${currentRole.org} (${currentRole.period})`,
   current_focus: PROFILE.currentFocus,
   highlights: PROFILE.highlights,
@@ -92,6 +100,7 @@ const BIO = {
     twitter: LINKS.twitter,
     medium: LINKS.medium,
     linkedin: LINKS.linkedin,
+    youtube: LINKS.youtube,
   },
 }
 
@@ -103,28 +112,42 @@ const careerTimeline = () => ({
     start_year: c.startYear,
     end_year: c.endYear ?? new Date().getUTCFullYear(),
     blurb: c.blurb,
+    wins: c.wins,
     tags: c.tags,
   })),
 })
 
+const projectUrl = (p) => {
+  if (p.repo) return p.repo
+  if (/^https?:\/\//.test(p.href || '')) return p.href
+  return `${SITE_ORIGIN}/${p.href || ''}`
+}
+
 const projectList = () => ({
   projects: PROJECTS.map(p => ({
     name: p.name,
-    url: p.repo || `${SITE_ORIGIN}/${p.href || ''}`,
+    url: projectUrl(p),
     desc: p.desc,
+    pitch: p.pitch,
+    status: p.status,
+    facts: (p.facts || []).map(f => `${f.k}: ${f.v}`),
+    source_private: !!p.private,
     tags: p.tags,
   })),
+  older_work: ARCHIVE.map(a => ({ name: a.name, year: a.year, stars: a.stars, url: a.repo, desc: a.desc })),
 })
 
 const noArgs = { type: 'object', properties: {}, required: [] }
 const TOOL_DEFINITIONS = [
   ['get_bio', "Returns Akash James's general background, current role, affiliations, highlights, and contact links."],
   ['get_career_timeline', "Returns Akash's full career history: companies, roles, periods, and what he built at each."],
-  ['get_projects', "Returns Akash's projects with descriptions, links, and tech tags."],
+  ['get_projects', "Returns Akash's projects with descriptions, measured facts, links and tech tags, plus older open-source work. Projects marked source_private have no public repo: never invent one."],
+  ['get_blue_work', "Returns what Akash builds as founding Director of AI at BLUE: Hyper Memory, BLUE Agent, Helyx, BLUE Copilot, BLUE Mini Edge and the inference stack."],
+  ['get_talks', "Returns Akash's talks, stage appearances, booth demos, workshops and panels."],
   ['get_skills', "Returns Akash's skill proficiency scores by domain (for radar chart) and years of experience per technology (for bar chart)."],
   ['get_youtube_videos', "Fetches Akash's latest YouTube videos from his channel feed."],
   ['get_publications', "Returns Akash's published articles and blog posts."],
-  ['get_honours', "Returns Akash's awards, patents, and recognition."],
+  ['get_honours', "Returns Akash's awards, recognition and education."],
 ].map(([name, description]) => ({ type: 'function', function: { name, description, parameters: noArgs } }))
 
 async function executeTool(name, env, ctx) {
@@ -135,7 +158,9 @@ async function executeTool(name, env, ctx) {
     case 'get_skills': return { radar: SKILLS.radar, tech_bars: SKILLS.techBars }
     case 'get_youtube_videos': return fetchYoutubeFeed(env, ctx)
     case 'get_publications': return { publications: WRITING }
-    case 'get_honours': return { honours: HONOURS.map(({ title, url }) => ({ title, url })) }
+    case 'get_honours': return { honours: HONOURS.map(({ title, url }) => ({ title, url })), education: EDUCATION }
+    case 'get_blue_work': return { company: 'BLUE', url: LINKS.blue, products: BLUE_STACK }
+    case 'get_talks': return { talks: TALKS }
     default: return { error: `Unknown tool: ${name}` }
   }
 }

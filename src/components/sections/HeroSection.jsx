@@ -186,7 +186,7 @@ export default function HeroSection() {
           </h1>
           <p className="ob-hero-tag mono-ob">
             <DecryptedText
-              text="AI ARCHITECT — GPU TO PROD. AGENTS THAT CLOSE LOOPS."
+              text="DIRECTOR OF AI @ BLUE — I TEACH CAMERAS TO REMEMBER."
               animateOn="view"
               sequential
               speed={16}

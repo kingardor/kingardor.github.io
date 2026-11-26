@@ -24,6 +24,8 @@ const TOOL_STATUS_LABELS = {
   get_bio:             'PULLING BIO...',
   get_publications:    'FINDING ARTICLES...',
   get_honours:         'CHECKING HONOURS...',
+  get_blue_work:       'OPENING THE BLUE FILES...',
+  get_talks:           'PULLING STAGE TIME...',
 }
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */

@@ -5,6 +5,7 @@ import Home from './components/portfolio/Home'
 import CommandPalette from './components/os/CommandPalette.jsx'
 
 const ChatPage = React.lazy(() => import('./sections/Chat/ChatPage'))
+const LabRouter = React.lazy(() => import('./proposals/LabRouter.jsx'))
 
 function ChatLoader() {
   return (
@@ -85,6 +86,17 @@ export default function App() {
         <CommandPalette />
         <Suspense fallback={<ChatLoader />}>
           <ChatPage />
+        </Suspense>
+      </>
+    )
+  }
+
+  if (path.startsWith('/lab')) {
+    return (
+      <>
+        <CommandPalette />
+        <Suspense fallback={<div style={{ minHeight: '100svh', background: '#050505' }} />}>
+          <LabRouter path={path} />
         </Suspense>
       </>
     )

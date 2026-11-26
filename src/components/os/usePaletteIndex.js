@@ -31,7 +31,7 @@ const SECTION_ENTRIES = [
   { id: 'projects', label: 'Work', keywords: 'projects mission files repos' },
   { id: 'videos', label: 'Talks', keywords: 'videos youtube workshop' },
   { id: 'writing', label: 'Writing', keywords: 'writing articles medium blog' },
-  { id: 'honours', label: 'Honours', keywords: 'awards patent nvidia speaking' },
+  { id: 'honours', label: 'Honours', keywords: 'awards nasa nvidia speaking' },
   { id: 'contact', label: 'Contact', keywords: 'email transmission reach out hire' },
 ].map(s => ({
   type: 'GOTO',

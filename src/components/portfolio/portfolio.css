@@ -569,3 +569,30 @@ html:has(.portfolio) {
     margin-left: -6%;
   }
 }
+
+/* Selected work: eight projects — the picker scrolls sideways instead of wrapping */
+:where(.portfolio) .gallery header > div[role='group'] {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+:where(.portfolio) .gallery header > div[role='group']::-webkit-scrollbar { display: none; }
+:where(.portfolio) .gallery header > div[role='group'] button { white-space: nowrap; flex: none; }
+:where(.portfolio) .gallery-caption .gallery-pitch {
+  color: #231d2f;
+  font-family: 'Clash Display', Arial, sans-serif;
+  font-weight: 560;
+  font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+:where(.portfolio) .gallery-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+  margin: 4px 0 0;
+  width: 100%;
+}
+:where(.portfolio) .gallery-facts div { border-top: 1px solid rgba(35, 29, 47, 0.25); padding-top: 8px; }
+:where(.portfolio) .gallery-facts dt { font-size: 13px; color: #4a4258; line-height: 1.35; }
+:where(.portfolio) .gallery-facts dd { margin: 2px 0 0; font-family: 'Clash Display', Arial, sans-serif; font-weight: 600; font-size: 22px; color: #231d2f; }

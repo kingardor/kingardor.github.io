@@ -1,0 +1,13 @@
+/* The story film for /lab layouts. Same canvas as Home, without Home's
+   reading-pane choreography (portfolio.css targets .story-layer). */
+.lab-film {
+  position: fixed; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: #050505;
+}
+.lab-film.story-poster {
+  background: #050505 url('/hero.webp') center 22% / cover no-repeat;
+}
+/* Content rides above the film */
+.lab-root { position: relative; z-index: 1; }
