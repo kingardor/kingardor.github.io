@@ -11,12 +11,20 @@ import { mockStream, mockEnabled } from './mockStream.js'
  * the conversation.
  *
  *   const v = useVeronica()
- *   v.messages      [{ role: 'user'|'model', content, thinking, blocks, notice }]
- *   v.live          the turn in flight: { content, thinking, blocks, tool, tools }
- *                   content streams in as it is written (batched per frame);
- *                   tool = { name, label } while a tool runs; tools = names fired
+ *   v.messages      [{ role: 'user'|'model', content, thinking, blocks, notice, meta }]
+ *                   meta (model turns): { startedAt, firstThinkAt, firstTextAt,
+ *                   doneAt, tools: [names in order], words } — real timings, ms
+ *   v.live          the turn in flight: { content, thinking, blocks, tool, tools,
+ *                   startedAt, firstThinkAt, firstTextAt }. content streams as it
+ *                   is written (batched per frame).
+ *                   Drive tool moments from NEW ENTRIES in live.tools, not from
+ *                   live.tool: the Worker sends `tool` and its `block` back to
+ *                   back, so live.tool is usually cleared within the same frame.
+ *                   Real order: thinking → tool → block → thinking → text → done.
  *   v.loading, v.phase ('idle' | 'loading' | 'error')
- *   v.input, v.setInput, v.send(text), v.stop(), v.suggestions
+ *   v.input, v.setInput, v.send(text), v.stop(), v.retry(), v.suggestions
+ *   v.retry()       re-asks the last question after an error/stop, without
+ *                   duplicating it in the conversation
  */
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
@@ -37,7 +45,8 @@ export const TOOL_LABELS = {
   get_talks: 'Pulling stage time',
 }
 
-const EMPTY_LIVE = { content: '', thinking: '', blocks: [], tool: null, tools: [] }
+const EMPTY_LIVE = { content: '', thinking: '', blocks: [], tool: null, tools: [], startedAt: 0, firstThinkAt: 0, firstTextAt: 0 }
+const wordCount = (t) => (t.match(/\S+/g) || []).length
 
 // What the model sees of a turn: its prose, or a stand-in when the turn was
 // only data blocks / an interruption, so roles keep alternating.
@@ -92,7 +101,7 @@ export default function useVeronica() {
     frameRef.current = requestAnimationFrame(() => {
       frameRef.current = 0
       const p = pendingRef.current
-      setLive({ content: p.content, thinking: p.thinking, blocks: p.blocks.slice(), tool: p.tool, tools: p.tools.slice() })
+      setLive({ content: p.content, thinking: p.thinking, blocks: p.blocks.slice(), tool: p.tool, tools: p.tools.slice(), startedAt: p.startedAt, firstThinkAt: p.firstThinkAt, firstTextAt: p.firstTextAt })
     })
   }, [])
 
@@ -106,11 +115,12 @@ export default function useVeronica() {
     clearTimeout(phaseTimerRef.current)
     setPhase(next)
     if (next === 'error') phaseTimerRef.current = setTimeout(() => setPhase('idle'), 2500)
-    const { content, thinking, blocks, error } = pendingRef.current
+    const { content, thinking, blocks, error, tools, startedAt, firstThinkAt, firstTextAt } = pendingRef.current
     pendingRef.current = { ...EMPTY_LIVE, error: '' }
     const note = error || notice || ''
     if (content || blocks.length || thinking || note) {
-      setMessages(m => [...m, { role: 'model', content, thinking, blocks, notice: note }])
+      const meta = { startedAt, firstThinkAt, firstTextAt, doneAt: Date.now(), tools, words: wordCount(content) }
+      setMessages(m => [...m, { role: 'model', content, thinking, blocks, notice: note, meta }])
     }
   }, [])
 
@@ -120,19 +130,16 @@ export default function useVeronica() {
     finishTurn('INTERRUPTED')
   }, [finishTurn])
 
-  const send = React.useCallback((text) => {
-    const q = (text || '').trim()
-    if (!q || loading) return
+  // Streams an answer to q, given the conversation that precedes it.
+  const stream = React.useCallback((q, before) => {
     try { streamRef.current?.close?.() } catch { /* already closed */ }
     streamRef.current = null
-    setMessages(m => [...m, { role: 'user', content: q, thinking: '', blocks: [] }])
-    setInput('')
     setLoading(true)
     clearTimeout(phaseTimerRef.current)
     setPhase('loading')
-    pendingRef.current = { ...EMPTY_LIVE, error: '' }
-    setLive(EMPTY_LIVE)
-    const turnsHistory = prepareHistory(messages.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
+    pendingRef.current = { ...EMPTY_LIVE, error: '', startedAt: Date.now() }
+    setLive({ ...EMPTY_LIVE, startedAt: pendingRef.current.startedAt })
+    const turnsHistory = prepareHistory(before.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
     const run = mockEnabled() ? mockStream : streamChat
     streamRef.current = run({
       base: API_BASE,
@@ -140,9 +147,13 @@ export default function useVeronica() {
       history: turnsHistory,
       onEvent: (event) => {
         const p = pendingRef.current
-        if (event.t === 'text') p.content += event.v
-        else if (event.t === 'thinking') p.thinking += event.v
-        else if (event.t === 'tool') {
+        if (event.t === 'text') {
+          if (!p.firstTextAt) p.firstTextAt = Date.now()
+          p.content += event.v
+        } else if (event.t === 'thinking') {
+          if (!p.firstThinkAt) p.firstThinkAt = Date.now()
+          p.thinking += event.v
+        } else if (event.t === 'tool') {
           p.tool = { name: event.name, label: TOOL_LABELS[event.name] || 'Working' }
           if (!p.tools.includes(event.name)) p.tools.push(event.name)
         } else if (event.t === 'block') {
@@ -154,7 +165,27 @@ export default function useVeronica() {
       onDone: () => finishTurn('', pendingRef.current.error ? 'error' : 'idle'),
       onError: (err) => finishTurn(err?.message || 'Veronica is unavailable right now.', 'error'),
     })
-  }, [loading, messages, finishTurn, publish])
+  }, [finishTurn, publish])
+
+  const send = React.useCallback((text) => {
+    const q = (text || '').trim()
+    if (!q || loading) return
+    setMessages(m => [...m, { role: 'user', content: q, thinking: '', blocks: [] }])
+    setInput('')
+    stream(q, messages)
+  }, [loading, messages, stream])
+
+  // Re-asks the last question after an error or a stop: the failed reply is
+  // dropped and the question is not duplicated.
+  const retry = React.useCallback(() => {
+    if (loading) return
+    let i = messages.length - 1
+    if (i >= 0 && messages[i].role === 'model' && messages[i].notice) i -= 1
+    if (i < 0 || messages[i].role !== 'user') return
+    const before = messages.slice(0, i)
+    setMessages(messages.slice(0, i + 1))
+    stream(messages[i].content, before)
+  }, [loading, messages, stream])
 
   // The hero prompt bar and ⌘K stash their question in sessionStorage before
   // navigating, so a stashed seed is the visitor's own words: send it. A bare
@@ -194,5 +225,5 @@ export default function useVeronica() {
     cancelAnimationFrame(frameRef.current)
   }, [])
 
-  return { messages, input, setInput, loading, phase, live, send, stop, suggestions: CHAT_SUGGESTIONS }
+  return { messages, input, setInput, loading, phase, live, send, stop, retry, suggestions: CHAT_SUGGESTIONS }
 }
