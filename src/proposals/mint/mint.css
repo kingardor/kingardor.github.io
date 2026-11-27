@@ -262,7 +262,7 @@
 .mb-hero-right { grid-column: 3; grid-row: 2; align-self: center; display: grid; gap: 1.2rem; justify-items: end; min-width: 0; }
 .mb-callouts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; justify-items: end; }
 .mb-callout {
-  display: flex; align-items: center; gap: 0.6rem; max-width: 330px;
+  display: flex; align-items: center; gap: 0.6rem; max-width: min(330px, 100%);
   background: #121014; color: #fff; padding: 0.45rem 0.8rem 0.45rem 0.45rem;
   clip-path: polygon(6% 0, 100% 0, 100% 100%, 0 100%);
   padding-left: 1.4rem;
@@ -283,15 +283,15 @@
 .mb-callout--d b { color: #FF2E88; }
 .mb-callout--d small { color: #444; }
 .mb-hero-badges { display: flex; align-items: center; gap: 0.8rem; }
-.mb-hero-badges .mb-age { font-size: 1.15rem; color: #140402; }
-.mb-hero-bat { font-family: var(--mb-sign); font-size: 0.62rem; line-height: 1.05; border: 1.5px solid; padding: 0.35em 0.5em; }
+.mb-hero-badges .mb-age { font-size: 1.15rem; color: #140402; background: #FF3D00; }
+.mb-hero-bat { font-family: var(--mb-sign); font-size: 0.62rem; line-height: 1.05; border: 1.5px solid; padding: 0.35em 0.5em; color: #140402; background: #FF3D00; }
 .mb-hero-barcode { width: 96px; height: auto; padding: 3px; }
 .mb-hero-foot {
   grid-column: 1 / -1; grid-row: 3; display: grid; grid-template-columns: auto 1fr auto; gap: 1.4rem; align-items: center;
   border-top: 1px dashed rgba(20, 4, 2, 0.55);
 }
 .mb-hero-marks { width: 130px; height: 14px; }
-.mb-hero-foot .mb-fine { max-width: 92ch; }
+.mb-hero-foot .mb-fine { max-width: 92ch; justify-self: start; background: rgba(255, 61, 0, 0.94); padding: 5px 8px; box-shadow: 0 0 0 1px rgba(20, 4, 2, 0.25); }
 .mb-hero-scrollhint { font-family: var(--mb-sign); font-size: 0.78rem; background: #121014; color: #FFD400; padding: 0.5em 0.8em 0.4em; animation: mb-nudge 2.4s ease-in-out infinite; }
 @keyframes mb-nudge { 0%, 70%, 100% { transform: none; } 80% { transform: translateY(3px); } 90% { transform: translateY(-2px); } }
 
@@ -362,8 +362,11 @@
     grid-template-rows: 6svh 46svh 46vw auto minmax(0, 1fr) auto;
     column-gap: 10px; padding: 0 14px;
   }
-  .mb-hero-head { font-size: 0.55rem; letter-spacing: 0.1em; }
-  .mb-hero-head > span:first-child { max-width: 30%; }
+  /* One line each side of the hanger hole (centred, ~60px wide). */
+  .mb-hero-head { font-size: 0.56rem; letter-spacing: 0.04em; white-space: nowrap; }
+  .mb-hero-head > span:first-child { max-width: calc(50% - 40px); overflow: hidden; text-overflow: ellipsis; }
+  .mb-hero-head-r { max-width: calc(50% - 40px); overflow: hidden; text-overflow: ellipsis; padding: 0.35em 0.45em; }
+  .mb-hide-sm { display: none; }
   .mb-hero-win { grid-column: 1 / -1; grid-row: 2; margin: 6px 0 0; }
   .mb-hero-left { grid-column: 1 / -1; grid-row: 3; gap: 0.5rem; margin-top: 12px; align-self: start; }
   .mb-hero-left .mb-pill, .mb-hero-says, .mb-hero-role { display: none; }
@@ -381,7 +384,8 @@
   .mb-callout--c { transform: none; }
   .mb-hero-badges { display: none; }
   .mb-hero-foot { grid-row: 6; grid-template-columns: 1fr; gap: 6px; padding: 8px 0 10px; }
-  .mb-hero-foot .mb-fine { font-size: 0.5rem; }
+  /* The diagonal stripes run under the fine print; give it a printed panel. */
+  .mb-hero-foot .mb-fine { font-size: 0.56rem; line-height: 1.4; padding: 4px 6px; }
   .mb-hero-marks { display: none; }
   .mb-hero-scrollhint { justify-self: start; font-size: 0.65rem; }
   .mb-hero-burst { width: 96px; font-size: 1.15rem; left: auto; right: 6px; top: calc(6svh + 46svh - 64px); }
@@ -390,6 +394,9 @@
   .mb-top-count { font-size: 0.66rem; padding: 0.45rem 0.55rem; }
   .mb-top-count i { display: none; }
   .mb-top-ask { font-size: 0.66rem; padding: 0.5rem 0.6rem; }
+}
+@media (max-width: 380px) {
+  .mb-hero-head { font-size: 0.52rem; letter-spacing: 0; }
 }
 @media (max-width: 760px) and (max-height: 700px) {
   .mb-hero-grid { grid-template-rows: 6svh 40svh 46vw auto minmax(0, 1fr) auto; }
@@ -400,3 +407,45 @@
   .mb-root *, .mb-root *::before, .mb-root *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
 .mb-hero.is-static .mb-hero-scrollhint { display: none; }
+
+/* Phones on their side (wide but very short), at any width: the desktop
+   three columns, pared down to what fits in ~360-430px of height. Overrides
+   the stacked portrait-phone layout above. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mb-hero-grid {
+    grid-template-columns: minmax(0, 1fr) min(34vw, 380px) minmax(0, 1fr);
+    grid-template-rows: 12svh minmax(0, 1fr) 13svh;
+    column-gap: 14px; padding: 0 14px;
+  }
+  .mb-hero-head { font-size: 0.55rem; letter-spacing: 0.08em; }
+  .mb-hero-head > span:first-child, .mb-hero-head-r { max-width: none; }
+  .mb-hide-sm { display: inline; }
+  .mb-hero-win { grid-column: 2; grid-row: 2; margin: 0; }
+  .mb-hero-left { grid-column: 1; grid-row: 2; align-self: center; margin-top: 0; gap: 0.6rem; }
+  .mb-hero-left .mb-pill, .mb-hero-says, .mb-hero-badges, .mb-hero-marks, .mb-hero-foot .mb-fine { display: none; }
+  .mb-hero-role { display: block; font-size: 0.58rem; }
+  .mb-hero-logo { font-size: clamp(2rem, 14svh, 4rem); }
+  .mb-hero-logo-b { margin-left: 0.18em; margin-top: 0; }
+  .mb-hero-tape { font-size: 0.72rem; }
+  .mb-hero-right { grid-column: 3; grid-row: 2; align-self: center; justify-items: end; margin-top: 0; gap: 0.5rem; }
+  .mb-callouts { grid-template-columns: minmax(0, 1fr); justify-items: end; gap: 0.35rem; }
+  .mb-callout { padding: 0.25rem 0.5rem 0.25rem 1rem; gap: 0.4rem; max-width: 100%; }
+  .mb-callout b { font-size: 1.15rem; }
+  .mb-callout span { font-size: 0.62rem; }
+  .mb-callout small { display: none; }
+  .mb-callout--c, .mb-callout--e { transform: none; }
+  .mb-hero-foot { grid-row: 3; grid-template-columns: 1fr; padding: 0; }
+  .mb-hero-scrollhint { justify-self: start; font-size: 0.66rem; }
+  .mb-hero-burst { width: 84px; font-size: 1rem; left: calc(50% + min(17vw, 190px) - 56px); right: auto; top: 12svh; }
+}
+
+/* In-between widths (narrow desktop windows, tablets): the right column is
+   only ~230-300px, so the callouts scale down with it. */
+@media (min-width: 761px) and (max-width: 1240px) {
+  .mb-callout { padding: 0.35rem 0.6rem 0.35rem 1.1rem; gap: 0.45rem; }
+  .mb-callout b { font-size: clamp(1.25rem, 2.1vw, 1.9rem); }
+  .mb-callout span { font-size: clamp(0.64rem, 0.95vw, 0.86rem); }
+  .mb-callout small { font-size: 0.56rem; }
+  .mb-callout--c { transform: translateX(-8px); }
+  .mb-hero-badges { gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; }
+}

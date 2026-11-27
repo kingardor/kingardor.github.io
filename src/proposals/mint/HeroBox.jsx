@@ -112,7 +112,7 @@ export default function HeroBox() {
               <div className="mb-hero-grid">
                 <div className="mb-hero-head">
                   <span>AKASH JAMES COLLECTIBLES</span>
-                  <span className="mb-hero-head-r">SERIES 2026 · No. 001/001</span>
+                  <span className="mb-hero-head-r"><span className="mb-hide-sm">SERIES 2026 · </span>No. 001/001</span>
                 </div>
 
                 <div ref={winRef} className="mb-hero-win" aria-hidden="true" />

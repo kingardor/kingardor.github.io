@@ -6,6 +6,9 @@ import { SUPERS } from './data.js'
 import { reduced, isVsOpen } from './fx.js'
 import { Streaks } from './Art.jsx'
 
+// How long a cut-in stays up; matches --vs-cut in versus.css.
+const CUT_MS = 2400
+
 // Where his eyes sit in each act's footage (v, 0..1), for the eye-line crop.
 // (Film only: under the portrait stage the crop comes from the photo itself.)
 const EYES = [0.33, 0.33, 0.36, 0.35, 0.37, 0.37, 0.45, 0.36]
@@ -50,7 +53,7 @@ export default function CutIn() {
     prev.current = act
     if (reduced() || isVsOpen()) return
     setShot({ act, forward, key: Date.now() })
-    const t = setTimeout(() => setShot(null), 760)
+    const t = setTimeout(() => setShot(null), CUT_MS)
     return () => clearTimeout(t)
   }, [act])
 

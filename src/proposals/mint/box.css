@@ -391,3 +391,37 @@
   .mb-chase-cols { grid-template-columns: 1fr; }
   .mb-chase-back { padding: 20px 16px; }
 }
+
+/* ── Phones: one figure per row, zig-zagging down the board, so every box
+   renders at a readable size (two columns put its print at 5–7px). ── */
+@media (max-width: 560px) {
+  .mb-board { padding: 40px 0 60px; }
+  .mb-board-grid { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+  .mb-hang { transform: translate(0, 0); }
+  .mb-swing { width: 76%; margin: 0; }
+  .mb-board-grid > .mb-hang:nth-child(odd) .mb-swing { margin-left: 5%; }
+  .mb-board-grid > .mb-hang:nth-child(even) .mb-swing { margin-left: 19%; }
+  .mb-hang--chase .mb-swing { margin-left: 12% !important; }
+}
+
+/* The box in your hands sits above the page's top bar, and on phones its
+   tray, buttons and hint stack and scroll instead of overlapping. */
+html:has(.mb-modal) .mb-top { opacity: 0; visibility: hidden; pointer-events: none; }
+@media (max-width: 760px) {
+  /* The viewer scrolls on phones: pin its backdrop to the screen. */
+  .mb-modal-bg { position: fixed; }
+  .mb-modal { padding: 14px 12px 28px; }
+  .mb-modal-stage { min-height: auto; }
+  .mb-modal-ctrl .mb-btn { min-height: 42px; }
+}
+/* Phones on their side: two columns of figures, not three. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mb-board-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px 24px; max-width: 760px; }
+}
+/* Phones: the burst's small caption is a 6px whisper on a wall box (it
+   stays in the box viewer, where the box is big); the chase card's peek
+   link gets a thumb-sized hit area. */
+@media (max-width: 760px) {
+  .mb-board-grid .mb-pbox-burst small { display: none; }
+  .mb-chase-peek { padding: 10px 0; }
+}

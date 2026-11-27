@@ -72,7 +72,7 @@ export default function ShipLabel() {
 
       <footer className="mb-colophon">
         <span>AKASH JAMES · AI ARCHITECT ACTION FIGURE · 1:1 SCALE · SERIES 2026 · No. 001/001</span>
-        <span>© 2026 Akash James. Batteries not included. <a href="#/">Back to the regular site</a></span>
+        <span>© 2026 Akash James. Batteries not included. <a href="#/">All editions</a></span>
       </footer>
     </section>
   )

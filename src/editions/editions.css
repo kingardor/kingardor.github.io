@@ -199,9 +199,25 @@ body:has(.portrait-stage[data-set='tall']) .ed-pitch { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) { .ed-switch, .ed-switch.is-on { transition: none; } }
 
-/* Narrow screens: while the switch shows, the always-on corner badges sit above it. */
+/* Narrow screens: past the title, Versus' CREDITS badge only covered text,
+   so it retires; trophy toasts sit above the switch while it shows. */
 @media (max-width: 900px) {
-  .ed-has-switch .vs-credits, .ed-has-switch .vs-toasts { transition: bottom 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
-  .ed-switch-on .vs-credits { bottom: 66px; }
+  .ed-has-switch .vs-toasts { transition: bottom 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .ed-past-title .vs-credits { opacity: 0; transition: opacity 0.3s ease; }
   .ed-switch-on .vs-toasts { bottom: 104px; }
+}
+
+/* Never on top of an open viewer (Mint's box in your hands, Versus' VS
+   screen and stage, image lightboxes). */
+html:has([aria-modal='true']) .ed-switch { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* Comfortable thumb targets on phones. */
+@media (max-width: 520px) {
+  .ed-switch { padding: 3px; }
+  .ed-switch-k { align-self: stretch; display: grid; place-items: center; min-height: 40px; }
+  .ed-switch-b { min-height: 40px; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .ed-switch-k { align-self: stretch; display: grid; place-items: center; min-height: 40px; }
+  .ed-switch-b { min-height: 40px; }
 }
