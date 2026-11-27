@@ -238,30 +238,9 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   display: grid; row-gap: 20px; padding: 26px 28px 22px;
   background: rgba(10, 10, 10, 0.92); border: 2px solid var(--vs-paper);
   box-shadow: 12px 12px 0 var(--vs-pink);
-  justify-self: end; width: min(34rem, 100%);
+  justify-self: end; width: min(36rem, 100%);
 }
 .vs-cont-kicker { font-size: 0.7rem; letter-spacing: 0.24em; font-weight: 500; color: var(--vs-yellow); }
-.vs-initials { border: 0; display: grid; row-gap: 10px; min-width: 0; }
-.vs-initials legend { font-family: var(--vs-display); font-weight: 900; font-size: 1.6rem; letter-spacing: 0.06em; padding: 0; margin-bottom: 10px; }
-.vs-initials-slots { display: flex; gap: 14px; }
-.vs-slot { display: grid; justify-items: center; row-gap: 4px; }
-.vs-slot-arrow { width: 54px; height: 26px; display: grid; place-items: center; background: rgba(244, 241, 234, 0.1); }
-.vs-slot-arrow svg { width: 20px; height: 12px; fill: none; stroke: var(--vs-yellow); stroke-width: 3; }
-.vs-slot-arrow:hover { background: var(--vs-pink); }
-.vs-slot-arrow:hover svg { stroke: var(--vs-ink); }
-.vs-slot-input {
-  width: 54px; height: 70px; text-align: center; caret-color: var(--vs-pink);
-  font-family: var(--vs-display); font-weight: 900; font-size: 3.6rem; line-height: 1; text-transform: uppercase;
-  color: var(--vs-yellow); background: rgba(244, 241, 234, 0.08);
-  border: 0; border-bottom: 5px solid var(--vs-yellow); border-radius: 0;
-  padding: 0;
-}
-.vs-slot-input::placeholder { color: rgba(244, 241, 234, 0.35); }
-.vs-slot-input:focus { outline: 3px solid var(--vs-pink); outline-offset: 2px; }
-@media (prefers-reduced-motion: no-preference) {
-  .vs-slot-input:focus:placeholder-shown { animation: vs-blink 0.8s steps(1) infinite; }
-}
-.vs-cont-btns { display: grid; row-gap: 16px; padding-left: 8px; }
 .vs-btn-big { font-size: clamp(1.7rem, 2.6vw, 2.4rem); padding: 0.55em 1em 0.5em; }
 .vs-cont-socials { display: flex; flex-wrap: wrap; gap: 10px; }
 .vs-cont-socials a {
@@ -311,7 +290,6 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   .vs-trophy-icon { width: 44px; height: 56px; }
   .vs-completion { font-size: 1.3rem; gap: 10px; justify-self: stretch; justify-content: space-between; }
   .vs-cont-panel { padding: 20px 16px; box-shadow: 8px 8px 0 var(--vs-pink); }
-  .vs-initials-slots { gap: 10px; }
 }
 
 @media (max-width: 720px) {
@@ -353,10 +331,46 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
      P1 stat box landed; the stats are on the record bar anyway. */
   .vs-vs-stats { display: none; }
 
-  /* Continue screen: thumb-sized letter arrows. */
-  .vs-slot-arrow { height: 40px; }
 }
-/* Phones on their side: same thumb-sized letter arrows. */
-@media (max-height: 500px) and (orientation: landscape) {
-  .vs-slot-arrow { height: 40px; }
+
+/* ═══ Contact: challenge him (or just talk) ═══ */
+.vs-ch { display: grid; row-gap: 16px; min-width: 0; }
+.vs-ch-h { margin: 0; font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.4rem, 4vw, 3.4rem); line-height: 0.9; letter-spacing: 0.01em; color: var(--vs-yellow); --vs-mx: 4px; --vs-my: 3px; }
+.vs-ch-sub { margin: -6px 0 2px; font-family: var(--vs-marker); font-size: 1.05rem; line-height: 1.25; color: var(--vs-paper); }
+.vs-ch-modes { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.vs-ch-modes legend, .vs-ch-field > span {
+  padding: 0; margin-bottom: 8px; font-size: 0.66rem; letter-spacing: 0.22em; font-weight: 500; color: var(--vs-yellow);
+}
+.vs-ch-mode { position: relative; cursor: pointer; }
+.vs-ch-mode input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.vs-ch-mode span {
+  display: inline-grid; place-items: center; min-height: 40px; padding: 0 14px;
+  font-family: var(--vs-display); font-weight: 900; font-size: 1.05rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--vs-paper); border: 2px solid rgba(244, 241, 234, 0.55); transform: skewX(-12deg);
+  transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+.vs-ch-mode:hover span { border-color: var(--vs-paper); }
+.vs-ch-mode.is-on span { background: var(--vs-pink); border-color: var(--vs-pink); color: var(--vs-ink); box-shadow: 4px 4px 0 var(--vs-yellow); }
+.vs-ch-mode input:focus-visible + span { outline: 3px solid var(--vs-yellow); outline-offset: 3px; }
+.vs-ch-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.vs-ch-field { display: grid; min-width: 0; }
+.vs-ch-field input, .vs-ch-field textarea {
+  width: 100%; font-family: var(--vs-mono); font-size: 0.95rem; line-height: 1.4; color: var(--vs-paper);
+  background: rgba(244, 241, 234, 0.07); border: 0; border-bottom: 3px solid var(--vs-yellow); border-radius: 0;
+  padding: 10px 12px; caret-color: var(--vs-pink); resize: vertical;
+}
+.vs-ch-field textarea { min-height: 6.5em; }
+.vs-ch-field input::placeholder, .vs-ch-field textarea::placeholder { color: rgba(244, 241, 234, 0.4); }
+.vs-ch-field input:focus, .vs-ch-field textarea:focus { outline: none; background: rgba(244, 241, 234, 0.12); border-bottom-color: var(--vs-pink); box-shadow: 0 3px 0 var(--vs-pink); }
+.vs-ch-send { justify-self: stretch; margin-top: 4px; border: 0; cursor: pointer; text-align: left; }
+.vs-ch-send small { font-family: var(--vs-mono); font-weight: 500; font-size: 0.6rem; letter-spacing: 0.16em; margin-top: 6px; }
+.vs-ch-after { margin: -4px 0 0; font-size: 0.72rem; line-height: 1.5; color: rgba(244, 241, 234, 0.7); }
+.vs-ch-after a, .vs-ch-after span { color: var(--vs-yellow); }
+.vs-ch-copy { margin-left: 6px; padding: 4px 8px; font: inherit; font-size: 0.62rem; letter-spacing: 0.16em; color: var(--vs-ink); background: var(--vs-yellow); border: 0; cursor: pointer; }
+.vs-ch-talk { justify-self: start; }
+.vs-ch-talk small { font-family: var(--vs-mono); font-weight: 500; font-size: 0.58rem; letter-spacing: 0.14em; margin-top: 5px; }
+@media (max-width: 600px) {
+  .vs-ch-row { grid-template-columns: minmax(0, 1fr); }
+  .vs-ch-field input, .vs-ch-field textarea { font-size: 1rem; } /* 16px: no iOS zoom on focus */
+  .vs-ch-talk { justify-self: stretch; }
 }

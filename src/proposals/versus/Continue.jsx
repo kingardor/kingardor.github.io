@@ -3,67 +3,87 @@ import { EMAIL, LINKS, PROFILE } from '../../content/index.js'
 import { useInView, reduced, flash, shake } from './fx.js'
 import { Burst, Mis } from './Art.jsx'
 
-const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+// What the visitor is bringing; sets the mail's subject line.
+const MODES = [
+  { key: 'project', label: 'A project', subject: 'A project' },
+  { key: 'stage', label: 'A stage', subject: 'A talk or a stage' },
+  { key: 'role', label: 'A role', subject: 'A role' },
+  { key: 'talk', label: 'Just talk', subject: 'Just talking' },
+]
 
-function Initials({ value, onChange }) {
-  const refs = useRef([])
-  const set = (i, ch) => {
-    const next = [...value]
-    next[i] = ch
-    onChange(next)
+/** Contact: a plain form, sent as a pre-filled mail (no backend, no tracking). */
+function ChallengeForm() {
+  const [mode, setMode] = useState('project')
+  const [name, setName] = useState('')
+  const [reach, setReach] = useState('')
+  const [msg, setMsg] = useState('')
+  const [sent, setSent] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const send = (e) => {
+    e.preventDefault()
+    const m = MODES.find(x => x.key === mode)
+    const who = name.trim() || 'Someone'
+    const subject = `${m.subject}, from ${who} (via akashjames.com)`
+    const lines = [msg.trim(), '', `— ${who}`]
+    if (reach.trim()) lines.push(`Reach me: ${reach.trim()}`)
+    const body = lines.join('\n')
+    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    setSent(true)
+    if (!reduced()) flash(0.5, '#F3FF4A')
   }
-  const cycle = (i, d) => {
-    const cur = value[i] ? ABC.indexOf(value[i]) : (d > 0 ? -1 : 0)
-    set(i, ABC[(cur + d + 26) % 26])
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(EMAIL); setCopied(true) } catch { /* the address is on screen anyway */ }
   }
+
   return (
-    <fieldset className="vs-initials">
-      <legend>PLAYER 2: ENTER YOUR NAME</legend>
-      <div className="vs-initials-slots">
-        {[0, 1, 2].map(i => (
-          <div className="vs-slot" key={i}>
-            <button type="button" className="vs-slot-arrow" onClick={() => cycle(i, -1)} aria-label={`Letter ${i + 1}: previous`}>
-              <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M2 10 L10 2 L18 10" /></svg>
-            </button>
-            <input
-              ref={el => { refs.current[i] = el }}
-              className="vs-slot-input"
-              value={value[i] ?? ''}
-              placeholder="–"
-              maxLength={1}
-              inputMode="text"
-              autoCapitalize="characters"
-              autoComplete="off"
-              spellCheck="false"
-              aria-label={`Initial ${i + 1} of 3`}
-              onChange={(e) => {
-                const ch = e.target.value.slice(-1).toUpperCase()
-                if (ch && !ABC.includes(ch)) return
-                set(i, ch)
-                if (ch && i < 2) refs.current[i + 1]?.focus()
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'ArrowUp') { e.preventDefault(); cycle(i, -1) }
-                if (e.key === 'ArrowDown') { e.preventDefault(); cycle(i, 1) }
-                if (e.key === 'Backspace' && !value[i] && i > 0) refs.current[i - 1]?.focus()
-                if (e.key === 'ArrowRight' && i < 2) refs.current[i + 1]?.focus()
-                if (e.key === 'ArrowLeft' && i > 0) refs.current[i - 1]?.focus()
-              }}
-            />
-            <button type="button" className="vs-slot-arrow is-down" onClick={() => cycle(i, 1)} aria-label={`Letter ${i + 1}: next`}>
-              <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M2 2 L10 10 L18 2" /></svg>
-            </button>
-          </div>
+    <form className="vs-ch" onSubmit={send}>
+      <h3 className="vs-ch-h"><Mis>CHALLENGE HIM</Mis></h3>
+      <p className="vs-ch-sub">…or just talk. Tell him who you are and what you’ve got.</p>
+
+      <fieldset className="vs-ch-modes">
+        <legend>WHAT’S IT ABOUT?</legend>
+        {MODES.map(m => (
+          <label key={m.key} className={`vs-ch-mode${mode === m.key ? ' is-on' : ''}`}>
+            <input type="radio" name="vs-ch-mode" value={m.key} checked={mode === m.key} onChange={() => setMode(m.key)} />
+            <span>{m.label}</span>
+          </label>
         ))}
+      </fieldset>
+
+      <div className="vs-ch-row">
+        <label className="vs-ch-field">
+          <span>YOUR NAME</span>
+          <input value={name} onChange={e => setName(e.target.value)} autoComplete="name" placeholder="Ada Lovelace" />
+        </label>
+        <label className="vs-ch-field">
+          <span>HOW TO REACH YOU</span>
+          <input value={reach} onChange={e => setReach(e.target.value)} autoComplete="email" inputMode="email" placeholder="Email, phone or LinkedIn" />
+        </label>
       </div>
-    </fieldset>
+      <label className="vs-ch-field">
+        <span>THE DETAILS</span>
+        <textarea value={msg} onChange={e => setMsg(e.target.value)} rows={4} required
+          placeholder={mode === 'talk' ? 'Say hi. Ask anything. He reads all of it.' : 'What you’re building, when, and where he fits in.'} />
+      </label>
+
+      <button type="submit" className="vs-btn vs-btn-big vs-btn-yellow vs-ch-send">
+        <span>SEND CHALLENGE ▸</span>
+        <small>OPENS YOUR MAIL APP, ADDRESSED TO HIM</small>
+      </button>
+      <p className="vs-ch-after" aria-live="polite">
+        {sent ? (
+          <>Mail app didn’t open? Write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>{' '}
+            <button type="button" className="vs-ch-copy" onClick={copy}>{copied ? 'COPIED' : 'COPY'}</button></>
+        ) : <>Straight to <span>{EMAIL}</span>. Nothing is stored here.</>}
+      </p>
+    </form>
   )
 }
 
 export default function Continue() {
   const [ref, inView] = useInView('-15% 0px -15% 0px')
   const [count, setCount] = useState(() => (reduced() ? 0 : 9))
-  const [initials, setInitials] = useState(['', '', ''])
   const overRef = useRef(null)
   const over = count === 0
 
@@ -79,10 +99,6 @@ export default function Continue() {
     flash(0.8, '#FF48B0')
     shake(overRef.current, 10, 380, 120)
   }, [over])
-
-  const name = initials.join('').trim()
-  const subject = name.length ? `Challenger ${name} has entered: let’s talk` : 'A challenger has entered: let’s talk'
-  const mailto = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}`
 
   return (
     <section id="vs-continue" className="vs-section vs-continue" aria-labelledby="vs-continue-h" ref={ref}>
@@ -103,18 +119,12 @@ export default function Continue() {
       </div>
 
       <div className="vs-cont-panel">
-        <p className="vs-cont-kicker">CONTACT · INSERT COIN TO CONTINUE</p>
-        <Initials value={initials} onChange={setInitials} />
-        <div className="vs-cont-btns">
-          <a className="vs-btn vs-btn-big vs-btn-yellow" href={mailto}>
-            <span>CHALLENGE HIM</span>
-            <small>{name ? `AS ${name} · ` : ''}{EMAIL}</small>
-          </a>
-          <a className="vs-btn vs-btn-big vs-btn-pink" href="#/chat">
-            <span>TALK TO THE BOSS</span>
-            <small>VERONICA, HIS AI, ANSWERS FOR HIM</small>
-          </a>
-        </div>
+        <p className="vs-cont-kicker">CONTACT</p>
+        <ChallengeForm />
+        <a className="vs-btn vs-btn-pink vs-ch-talk" href="#/chat">
+          <span>OR TALK TO VERONICA ▸</span>
+          <small>HIS AI ANSWERS RIGHT NOW</small>
+        </a>
         <ul className="vs-cont-socials">
           <li><a href={LINKS.linkedin} target="_blank" rel="noreferrer">LINKEDIN <small>{PROFILE.followers.linkedin} FOLLOWERS</small></a></li>
           <li><a href={LINKS.github} target="_blank" rel="noreferrer">GITHUB <small>@KINGARDOR</small></a></li>
