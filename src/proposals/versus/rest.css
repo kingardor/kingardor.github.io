@@ -10,14 +10,14 @@
 .vs-theatre-screen {
   position: relative; aspect-ratio: 16 / 9; background: var(--vs-ink);
   border: 3px solid var(--vs-paper); outline: 3px solid var(--vs-ink); outline-offset: 3px;
-  box-shadow: 12px 12px 0 var(--vs-ember);
+  box-shadow: 12px 12px 0 var(--vs-p1);
   overflow: hidden;
 }
 .vs-theatre-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .vs-theatre-play { position: absolute; inset: 0; display: block; width: 100%; }
 .vs-theatre-play img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.35) brightness(0.9); }
 .vs-theatre-play::after {
-  content: ''; position: absolute; inset: 0; mix-blend-mode: multiply; background: var(--vs-ember); opacity: 0.85;
+  content: ''; position: absolute; inset: 0; mix-blend-mode: multiply; background: var(--vs-p1); opacity: 0.85;
 }
 .vs-theatre-play:hover img, .vs-theatre-play:focus-visible img { filter: none; }
 .vs-theatre-play:hover::after, .vs-theatre-play:focus-visible::after { opacity: 0.25; }
@@ -25,7 +25,7 @@
   position: absolute; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%) skewX(-12deg);
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(1.4rem, 2.4vw, 2.2rem); letter-spacing: 0.08em;
-  background: var(--vs-yellow); color: var(--vs-ink); padding: 10px 22px 8px;
+  background: var(--vs-hi); color: var(--vs-ink); padding: 10px 22px 8px;
   box-shadow: 6px 6px 0 var(--vs-ink);
 }
 .vs-theatre-btn svg { width: 26px; height: 26px; fill: var(--vs-ink); }
@@ -34,7 +34,7 @@
   display: inline-flex; align-items: center; gap: 6px;
   font-weight: 500; font-size: 0.76rem; letter-spacing: 0.2em; background: var(--vs-ink); padding: 4px 9px;
 }
-.vs-rec i { width: 10px; height: 10px; border-radius: 50%; background: var(--vs-ember); }
+.vs-rec i { width: 10px; height: 10px; border-radius: 50%; background: var(--vs-p1); }
 @media (prefers-reduced-motion: no-preference) { .vs-rec i { animation: vs-blink 1s steps(1) infinite; } }
 .vs-theatre-tc {
   position: absolute; z-index: 3; right: 14px; top: 12px; max-width: 60%;
@@ -44,42 +44,42 @@
 .vs-theatre-label { font-size: 0.7rem; letter-spacing: 0.24em; font-weight: 500; color: var(--vs-ink); background: var(--vs-paper); padding: 4px 10px; justify-self: start; }
 .vs-tape {
   display: grid; row-gap: 4px; text-align: left; padding: 12px 14px;
-  background: rgba(10, 10, 10, 0.9); border: 2px solid rgba(244, 241, 234, 0.35);
+  background: rgba(var(--vs-ink-rgb), 0.9); border: 2px solid rgba(244, 241, 234, 0.35);
   transition: border-color 0.12s, transform 0.12s;
 }
 .vs-tape:hover { transform: translateX(-4px); }
-.vs-tape.is-on { border-color: var(--vs-yellow); box-shadow: 6px 6px 0 var(--vs-pink); }
-.vs-tape-n { font-family: var(--vs-display); font-weight: 900; font-size: 1.1rem; letter-spacing: 0.12em; color: var(--vs-yellow); }
+.vs-tape.is-on { border-color: var(--vs-hi); box-shadow: 6px 6px 0 var(--vs-spot); }
+.vs-tape-n { font-family: var(--vs-display); font-weight: 900; font-size: 1.1rem; letter-spacing: 0.12em; color: var(--vs-hi); }
 .vs-tape-title { font-size: 0.86rem; font-weight: 500; line-height: 1.35; }
 .vs-tape-where { font-size: 0.7rem; color: rgba(244, 241, 234, 0.8); letter-spacing: 0.06em; }
-.vs-theatre-note { font-size: 0.68rem; color: rgba(244, 241, 234, 0.85); background: rgba(10, 10, 10, 0.8); padding: 6px 10px; }
+.vs-theatre-note { font-size: 0.68rem; color: rgba(244, 241, 234, 0.85); background: rgba(var(--vs-ink-rgb), 0.8); padding: 6px 10px; }
 
 .vs-history { width: min(62rem, 100%); }
 .vs-history-h {
   display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(2rem, 3.6vw, 3.2rem); line-height: 0.9;
-  border-bottom: 4px solid var(--vs-ember); padding-bottom: 8px; margin-bottom: 8px;
-  text-shadow: 0 0 20px rgba(10, 10, 10, 0.8);
+  border-bottom: 4px solid var(--vs-p1); padding-bottom: 8px; margin-bottom: 8px;
+  text-shadow: 0 0 20px rgba(var(--vs-ink-rgb), 0.8);
 }
 .vs-history-h span + span { font-family: var(--vs-mono); font-weight: 500; font-size: 0.7rem; letter-spacing: 0.22em; }
 .vs-history-list { display: grid; row-gap: 6px; }
 .vs-match {
   position: relative; display: grid; grid-template-columns: 4.2rem minmax(0, 1fr) auto; gap: 16px; align-items: center;
-  padding: 12px 16px; background: rgba(10, 10, 10, 0.88);
+  padding: 12px 16px; background: rgba(var(--vs-ink-rgb), 0.88);
   border-left: 4px solid transparent;
   transition: border-color 0.12s, background 0.12s;
 }
-.vs-match:hover { border-left-color: var(--vs-ember); background: rgba(10, 10, 10, 0.96); }
+.vs-match:hover { border-left-color: var(--vs-p1); background: rgba(var(--vs-ink-rgb), 0.96); }
 .vs-match-n { font-family: var(--vs-display); font-weight: 900; font-size: 2.6rem; line-height: 0.8; color: transparent; -webkit-text-stroke: 1.5px var(--vs-paper); }
 .vs-match-vs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-family: var(--vs-display); font-weight: 800; font-size: 1.3rem; line-height: 1.05; text-transform: uppercase; }
-.vs-match-vs b { color: var(--vs-ember); font-weight: 900; }
-.vs-match-vs i { font-family: var(--vs-marker); font-style: normal; font-weight: 400; color: var(--vs-yellow); text-transform: none; font-size: 1.1rem; }
+.vs-match-vs b { color: var(--vs-p1); font-weight: 900; }
+.vs-match-vs i { font-family: var(--vs-marker); font-style: normal; font-weight: 400; color: var(--vs-hi); text-transform: none; font-size: 1.1rem; }
 .vs-match-title { font-size: 0.84rem; color: rgba(244, 241, 234, 0.9); margin-top: 3px; }
 .vs-match-meta { display: grid; justify-items: end; row-gap: 4px; font-size: 0.66rem; letter-spacing: 0.16em; text-align: right; }
-.vs-match-kind { color: var(--vs-pink); font-weight: 500; }
-.vs-best { font-family: var(--vs-marker); font-size: 0.86rem; letter-spacing: 0.02em; color: var(--vs-ink); background: var(--vs-yellow); padding: 2px 8px 0; transform: rotate(-4deg); }
+.vs-match-kind { color: var(--vs-spot); font-weight: 500; }
+.vs-best { font-family: var(--vs-marker); font-size: 0.86rem; letter-spacing: 0.02em; color: var(--vs-ink); background: var(--vs-hi); padding: 2px 8px 0; transform: rotate(-4deg); }
 .vs-match-tape { color: var(--vs-ink); background: var(--vs-paper); padding: 1px 6px; font-weight: 500; }
-.vs-match.is-best { border-left-color: var(--vs-yellow); }
+.vs-match.is-best { border-left-color: var(--vs-hi); }
 @media (prefers-reduced-motion: no-preference) {
   .vs-match { opacity: 0; transform: translateX(-6vw); }
   .vs-match.is-in { animation: vs-matchin 0.35s cubic-bezier(.2,.9,.2,1) both; }
@@ -97,12 +97,12 @@
   clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
   transition: transform 0.14s cubic-bezier(.2,.9,.3,1.4), background 0.14s;
 }
-a.vs-lore-link:hover, a.vs-lore-link:focus-visible { transform: translateX(10px); background: var(--vs-yellow); }
-.vs-lore-no { font-family: var(--vs-display); font-weight: 900; font-size: 3.2rem; line-height: 0.8; color: var(--vs-pink); -webkit-text-stroke: 1.5px var(--vs-ink); }
+a.vs-lore-link:hover, a.vs-lore-link:focus-visible { transform: translateX(10px); background: var(--vs-hi); }
+.vs-lore-no { font-family: var(--vs-display); font-weight: 900; font-size: 3.2rem; line-height: 0.8; color: var(--vs-spot); -webkit-text-stroke: 1.5px var(--vs-ink); }
 .vs-lore-body { display: grid; row-gap: 4px; }
 .vs-lore-meta { font-size: 0.64rem; letter-spacing: 0.16em; font-weight: 500; }
 .vs-lore-title { font-family: var(--vs-display); font-weight: 800; font-size: clamp(1.25rem, 1.9vw, 1.7rem); line-height: 1; text-transform: uppercase; }
-.vs-lore-cta { font-size: 0.66rem; letter-spacing: 0.18em; color: var(--vs-violet); font-weight: 500; }
+.vs-lore-cta { font-size: 0.66rem; letter-spacing: 0.18em; color: var(--vs-boss); font-weight: 500; }
 @media (prefers-reduced-motion: no-preference) {
   .vs-lore-entry { opacity: 0; }
   .vs-lore-entry.is-in { animation: vs-lorein 0.4s cubic-bezier(.2,.9,.2,1) both; }
@@ -118,27 +118,27 @@ a.vs-lore-link:hover, a.vs-lore-link:focus-visible { transform: translateX(10px)
 .vs-completion {
   justify-self: end; display: flex; align-items: center; gap: 14px;
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(1.6rem, 2.8vw, 2.6rem); line-height: 1;
-  background: var(--vs-ink); padding: 10px 18px 8px; border: 2px solid var(--vs-yellow);
+  background: var(--vs-ink); padding: 10px 18px 8px; border: 2px solid var(--vs-hi);
 }
 .vs-completion-bar { width: clamp(90px, 16vw, 240px); height: 14px; border: 2px solid var(--vs-paper); transform: skewX(-24deg); overflow: hidden; }
-.vs-completion-bar i { display: block; height: 100%; background: var(--vs-yellow); transform-origin: 0 50%; transition: transform 0.4s cubic-bezier(.2,.9,.3,1.3); }
+.vs-completion-bar i { display: block; height: 100%; background: var(--vs-hi); transform-origin: 0 50%; transition: transform 0.4s cubic-bezier(.2,.9,.3,1.3); }
 .vs-shelf { position: relative; display: grid; row-gap: 10px; }
 .vs-shelf-name { justify-self: end; font-size: 0.7rem; letter-spacing: 0.3em; font-weight: 500; color: var(--vs-ink); background: var(--vs-paper); padding: 3px 10px; }
 .vs-shelf-row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; padding-bottom: 22px; position: relative; }
 .vs-shelf-row::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 14px;
   background:
-    repeating-linear-gradient(-60deg, var(--vs-ink) 0 6px, rgba(243, 255, 74, 0.9) 6px 9px);
-  border-top: 4px solid var(--vs-yellow);
+    repeating-linear-gradient(-60deg, var(--vs-ink) 0 6px, rgba(var(--vs-hi-rgb), 0.9) 6px 9px);
+  border-top: 4px solid var(--vs-hi);
   transform: skewX(-20deg);
 }
 .vs-trophy { width: min(16rem, 44vw); }
 .vs-trophy-in {
   position: relative; display: grid; justify-items: start; row-gap: 5px; height: 100%;
   padding: 16px 18px 18px; text-decoration: none;
-  background: rgba(10, 10, 10, 0.9); border: 2px solid rgba(244, 241, 234, 0.3);
+  background: rgba(var(--vs-ink-rgb), 0.9); border: 2px solid rgba(244, 241, 234, 0.3);
 }
-a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yellow); }
+a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-hi); }
 .vs-trophy-icon { width: 64px; height: 80px; }
 .vs-trophy-svg { width: 100%; height: 100%; overflow: visible; }
 .vs-t-body { fill: var(--vs-tc); stroke: var(--vs-ink); stroke-width: 2; }
@@ -147,11 +147,11 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
 .vs-t-shine { fill: var(--vs-paper); opacity: 0.85; }
 .vs-t-shine-line { fill: none; stroke: var(--vs-paper); stroke-width: 3; stroke-linecap: round; opacity: 0.8; }
 .vs-tier-platinum { --vs-tc: #E8E4FF; }
-.vs-tier-gold { --vs-tc: var(--vs-yellow); }
+.vs-tier-gold { --vs-tc: var(--vs-hi); }
 .vs-tier-silver { --vs-tc: var(--vs-silver); }
 .vs-tier-bronze { --vs-tc: var(--vs-bronze); }
-.vs-tier-platinum .vs-trophy-in { border-color: #B9A8FF; box-shadow: 8px 8px 0 var(--vs-violet); }
-.vs-tier-gold .vs-trophy-in { box-shadow: 8px 8px 0 var(--vs-pink); }
+.vs-tier-platinum .vs-trophy-in { border-color: #B9A8FF; box-shadow: 8px 8px 0 var(--vs-boss); }
+.vs-tier-gold .vs-trophy-in { box-shadow: 8px 8px 0 var(--vs-spot); }
 .vs-trophy-tier { font-size: 0.6rem; letter-spacing: 0.2em; font-weight: 500; color: var(--vs-ink); background: var(--vs-tc); padding: 2px 7px; }
 .vs-trophy-name { font-family: var(--vs-display); font-weight: 900; font-size: 1.65rem; line-height: 0.9; text-transform: uppercase; }
 .vs-trophy-title { font-size: 0.8rem; line-height: 1.4; }
@@ -200,10 +200,10 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
 .vs-cont-num-wrap { height: clamp(10rem, 24vw, 22rem); display: grid; align-items: end; }
 .vs-cont-num {
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(11rem, 28vw, 26rem); line-height: 0.75;
-  color: var(--vs-yellow); --vs-mx: 10px; --vs-my: 6px;
-  text-shadow: 0 0 40px rgba(10, 10, 10, 0.6);
+  color: var(--vs-hi); --vs-mx: 10px; --vs-my: 6px;
+  text-shadow: 0 0 40px rgba(var(--vs-ink-rgb), 0.6);
 }
-.vs-cont-num::after { color: var(--vs-ember); }
+.vs-cont-num::after { color: var(--vs-p1); }
 @media (prefers-reduced-motion: no-preference) {
   .vs-cont-num { animation: vs-tick 1s cubic-bezier(.2,.9,.2,1) both; }
 }
@@ -219,10 +219,10 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   width: min(34rem, 44vw); height: clamp(10rem, 24vw, 22rem);
 }
 .vs-cont-burst { position: absolute; left: -8%; top: -16%; width: 116%; height: 132%; z-index: 0; }
-.vs-cont-over-a { position: relative; font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.6rem, 5.2vw, 5.2rem); line-height: 0.9; color: var(--vs-ink); background: var(--vs-yellow); padding: 0.06em 0.18em 0; box-shadow: 6px 6px 0 var(--vs-ink); transform: rotate(-6deg); }
+.vs-cont-over-a { position: relative; font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.6rem, 5.2vw, 5.2rem); line-height: 0.9; color: var(--vs-ink); background: var(--vs-hi); padding: 0.06em 0.18em 0; box-shadow: 6px 6px 0 var(--vs-ink); transform: rotate(-6deg); }
 .vs-cont-over-b {
   position: relative; font-family: var(--vs-marker); font-size: clamp(3.4rem, 8vw, 8rem); line-height: 1;
-  color: var(--vs-pink); transform: rotate(-10deg) translate(0.3em, 0);
+  color: var(--vs-spot); transform: rotate(-10deg) translate(0.3em, 0);
   text-shadow: 4px 4px 0 var(--vs-ink), -2px -2px 0 var(--vs-ink);
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -236,11 +236,11 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
 
 .vs-cont-panel {
   display: grid; row-gap: 20px; padding: 26px 28px 22px;
-  background: rgba(10, 10, 10, 0.92); border: 2px solid var(--vs-paper);
-  box-shadow: 12px 12px 0 var(--vs-pink);
+  background: rgba(var(--vs-ink-rgb), 0.92); border: 2px solid var(--vs-paper);
+  box-shadow: 12px 12px 0 var(--vs-spot);
   justify-self: end; width: min(36rem, 100%);
 }
-.vs-cont-kicker { font-size: 0.7rem; letter-spacing: 0.24em; font-weight: 500; color: var(--vs-yellow); }
+.vs-cont-kicker { font-size: 0.7rem; letter-spacing: 0.24em; font-weight: 500; color: var(--vs-hi); }
 .vs-btn-big { font-size: clamp(1.7rem, 2.6vw, 2.4rem); padding: 0.55em 1em 0.5em; }
 .vs-cont-socials { display: flex; flex-wrap: wrap; gap: 10px; }
 .vs-cont-socials a {
@@ -272,7 +272,7 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   .vs-cont-panel { justify-self: stretch; }
 }
 @media (max-width: 720px) {
-  .vs-moves-pad { padding: 18px 14px 26px; box-shadow: 8px 8px 0 var(--vs-violet); }
+  .vs-moves-pad { padding: 18px 14px 26px; box-shadow: 8px 8px 0 var(--vs-boss); }
   .vs-legend-note { margin-left: 0; }
   .vs-normal { grid-template-columns: minmax(0, 1fr); }
   .vs-train td:nth-child(2) { gap: 8px; }
@@ -289,7 +289,7 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   .vs-trophy-name { font-size: 1.25rem; }
   .vs-trophy-icon { width: 44px; height: 56px; }
   .vs-completion { font-size: 1.3rem; gap: 10px; justify-self: stretch; justify-content: space-between; }
-  .vs-cont-panel { padding: 20px 16px; box-shadow: 8px 8px 0 var(--vs-pink); }
+  .vs-cont-panel { padding: 20px 16px; box-shadow: 8px 8px 0 var(--vs-spot); }
 }
 
 @media (max-width: 720px) {
@@ -317,7 +317,7 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   /* Combo meter: small, top-left under the HUD bars (it only shows while
      you scroll, and bottom-left sat on every card's text). */
   .vs-combo { top: 66px; bottom: auto; left: 10px; }
-  .vs-combo-num { font-size: 2.3rem; text-shadow: -2px 2px 0 var(--vs-pink), 2px -1px 0 var(--vs-ember), 0 0 12px rgba(10, 10, 10, 0.85); }
+  .vs-combo-num { font-size: 2.3rem; text-shadow: -2px 2px 0 var(--vs-spot), 2px -1px 0 var(--vs-p1), 0 0 12px rgba(var(--vs-ink-rgb), 0.85); }
   .vs-combo-hits { font-size: 0.7rem; padding: 1px 6px 0; margin-top: 2px; }
   .vs-combo-rate { font-size: 0.95rem; margin-top: 3px; }
 
@@ -335,11 +335,11 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
 
 /* ═══ Contact: challenge him (or just talk) ═══ */
 .vs-ch { display: grid; row-gap: 16px; min-width: 0; }
-.vs-ch-h { margin: 0; font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.4rem, 4vw, 3.4rem); line-height: 0.9; letter-spacing: 0.01em; color: var(--vs-yellow); --vs-mx: 4px; --vs-my: 3px; }
+.vs-ch-h { margin: 0; font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.4rem, 4vw, 3.4rem); line-height: 0.9; letter-spacing: 0.01em; color: var(--vs-hi); --vs-mx: 4px; --vs-my: 3px; }
 .vs-ch-sub { margin: -6px 0 2px; font-family: var(--vs-marker); font-size: 1.05rem; line-height: 1.25; color: var(--vs-paper); }
 .vs-ch-modes { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
 .vs-ch-modes legend, .vs-ch-field > span {
-  padding: 0; margin-bottom: 8px; font-size: 0.66rem; letter-spacing: 0.22em; font-weight: 500; color: var(--vs-yellow);
+  padding: 0; margin-bottom: 8px; font-size: 0.66rem; letter-spacing: 0.22em; font-weight: 500; color: var(--vs-hi);
 }
 .vs-ch-mode { position: relative; cursor: pointer; }
 .vs-ch-mode input { position: absolute; opacity: 0; width: 1px; height: 1px; }
@@ -350,23 +350,23 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   transition: background 0.12s, color 0.12s, border-color 0.12s, box-shadow 0.12s;
 }
 .vs-ch-mode:hover span { border-color: var(--vs-paper); }
-.vs-ch-mode.is-on span { background: var(--vs-pink); border-color: var(--vs-pink); color: var(--vs-ink); box-shadow: 4px 4px 0 var(--vs-yellow); }
-.vs-ch-mode input:focus-visible + span { outline: 3px solid var(--vs-yellow); outline-offset: 3px; }
+.vs-ch-mode.is-on span { background: var(--vs-spot); border-color: var(--vs-spot); color: var(--vs-ink); box-shadow: 4px 4px 0 var(--vs-hi); }
+.vs-ch-mode input:focus-visible + span { outline: 3px solid var(--vs-hi); outline-offset: 3px; }
 .vs-ch-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
 .vs-ch-field { display: grid; min-width: 0; }
 .vs-ch-field input, .vs-ch-field textarea {
   width: 100%; font-family: var(--vs-mono); font-size: 0.95rem; line-height: 1.4; color: var(--vs-paper);
-  background: rgba(244, 241, 234, 0.07); border: 0; border-bottom: 3px solid var(--vs-yellow); border-radius: 0;
-  padding: 10px 12px; caret-color: var(--vs-pink); resize: vertical;
+  background: rgba(244, 241, 234, 0.07); border: 0; border-bottom: 3px solid var(--vs-hi); border-radius: 0;
+  padding: 10px 12px; caret-color: var(--vs-spot); resize: vertical;
 }
 .vs-ch-field textarea { min-height: 6.5em; }
 .vs-ch-field input::placeholder, .vs-ch-field textarea::placeholder { color: rgba(244, 241, 234, 0.4); }
-.vs-ch-field input:focus, .vs-ch-field textarea:focus { outline: none; background: rgba(244, 241, 234, 0.12); border-bottom-color: var(--vs-pink); box-shadow: 0 3px 0 var(--vs-pink); }
+.vs-ch-field input:focus, .vs-ch-field textarea:focus { outline: none; background: rgba(244, 241, 234, 0.12); border-bottom-color: var(--vs-spot); box-shadow: 0 3px 0 var(--vs-spot); }
 .vs-ch-send { justify-self: stretch; margin-top: 4px; border: 0; cursor: pointer; text-align: left; }
 .vs-ch-send small { font-family: var(--vs-mono); font-weight: 500; font-size: 0.6rem; letter-spacing: 0.16em; margin-top: 6px; }
 .vs-ch-after { margin: -4px 0 0; font-size: 0.72rem; line-height: 1.5; color: rgba(244, 241, 234, 0.7); }
-.vs-ch-after a, .vs-ch-after span { color: var(--vs-yellow); }
-.vs-ch-copy { margin-left: 6px; padding: 4px 8px; font: inherit; font-size: 0.62rem; letter-spacing: 0.16em; color: var(--vs-ink); background: var(--vs-yellow); border: 0; cursor: pointer; }
+.vs-ch-after a, .vs-ch-after span { color: var(--vs-hi); }
+.vs-ch-copy { margin-left: 6px; padding: 4px 8px; font: inherit; font-size: 0.62rem; letter-spacing: 0.16em; color: var(--vs-ink); background: var(--vs-hi); border: 0; cursor: pointer; }
 .vs-ch-talk { justify-self: start; }
 .vs-ch-talk small { font-family: var(--vs-mono); font-weight: 500; font-size: 0.58rem; letter-spacing: 0.14em; margin-top: 5px; }
 @media (max-width: 600px) {

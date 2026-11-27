@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { subscribe } from '../../shared/scroll/scrollStore.js'
 import { useFilmAct } from '../shared/useFilm.js'
 import { MODES, SUPERS, ACTS } from './data.js'
-import { onAnnounce, reduced, shake, flash, isVsOpen } from './fx.js'
+import { onAnnounce, reduced, shake, flash, isVsOpen, HI } from './fx.js'
 import { Burst, SpeedLines } from './Art.jsx'
 
 /** Health bar + round timer + super meter, across the top. */
@@ -139,7 +139,7 @@ export function Credits() {
       n = Math.min(99, n + 1)
       if (!ref.current) return
       ref.current.textContent = String(n).padStart(2, '0')
-      if (!reduced()) ref.current.animate([{ transform: 'translateY(-6px)', color: '#F3FF4A' }, { transform: 'none' }], { duration: 220 })
+      if (!reduced()) ref.current.animate([{ transform: 'translateY(-6px)', color: HI }, { transform: 'none' }], { duration: 220 })
     }
     document.addEventListener('pointerdown', on)
     return () => document.removeEventListener('pointerdown', on)
@@ -165,7 +165,7 @@ export function Announcer() {
   }, [])
   useEffect(() => {
     if (!call) return
-    flash(call.kind === 'finisher' ? 0.9 : 0.5, call.kind === 'finisher' ? '#F3FF4A' : '#fff')
+    flash(call.kind === 'finisher' ? 0.9 : 0.5, call.kind === 'finisher' ? HI : '#fff')
     shake(boxRef.current, call.kind === 'finisher' ? 10 : 6, 320, 190)
   }, [call])
   if (!call) return null

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import PixelAssembly from '../shared/PixelAssembly.jsx'
 import { useLenis } from '../../shared/components/lenisContext.js'
 import { subscribe } from '../../shared/scroll/scrollStore.js'
-import { slam, shake, flash, reduced } from './fx.js'
+import { slam, shake, flash, reduced, HI } from './fx.js'
 import { Burst, Splat } from './Art.jsx'
 
 const IGNORE = new Set(['Tab', 'Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Escape', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'F5', 'F12'])
@@ -51,7 +51,7 @@ export default function TitleScreen({ live, onLive }) {
       if (startedRef.current) return
       startedRef.current = true
       startRef.current?.classList.add('is-pressed')
-      flash(0.6, '#F3FF4A')
+      flash(0.6, HI)
       const target = document.getElementById('vs-story')
       if (!target) return
       const l = lenis?.current
@@ -91,8 +91,8 @@ export default function TitleScreen({ live, onLive }) {
           <span className="vs-title-loadbar"><i /></span>
         </div>
         <div className={`vs-title-ui${live ? ' is-live' : ''}`} ref={uiRef}>
-          <Splat className="vs-title-splat" seed={21} ink="pink" />
-          <Burst className="vs-title-burst" seed={4} spikes={16} inks={['yellow', 'ember']} />
+          <Splat className="vs-title-splat" seed={21} ink="spot" />
+          <Burst className="vs-title-burst" seed={4} spikes={16} inks={['hi', 'p1']} />
           <h1 className="vs-title-name" ref={nameRef}>
             <span className="vs-title-line vs-mis" data-text="AKASH" ref={leftRef}>AKASH</span>
             <span className="vs-title-line vs-title-line-b vs-mis" data-text="JAMES" ref={rightRef}>JAMES</span>

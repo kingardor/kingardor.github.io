@@ -52,7 +52,7 @@ export default function MoveList() {
         sub="COMMAND LIST · FRAME DATA FROM THE RECEIPTS · HOVER A MOVE TO INPUT IT"
         taunt="Learn the inputs. You still won’t land them."
         side="right"
-        ink="yellow"
+        ink="hi"
       />
       <div className="vs-moves-pad" ref={ref}>
         <div className="vs-moves-legend" aria-label="Button legend">

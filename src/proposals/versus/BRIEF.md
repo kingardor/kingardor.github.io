@@ -17,11 +17,14 @@ input notation, continue countdown). Copy no franchise's logos, characters, font
 layouts, sound or catchphrases.
 
 ## Art direction: a riso fight poster, in motion
-- Ink black `#0A0A0A`, paper white `#F4F1EA`. Two fluorescent riso inks, fluoro pink
-  `#FF48B0` and fluoro yellow `#F3FF4A`, plus ember `#FF3D00` for Player 1 and deep violet
-  `#3B1E8C` as shadow ink. Misregistered overprints: headline duplicates offset 3–6 px in pink
-  and yellow with blend modes. Halftone dot fields as shading and as transitions. Layout tilts
-  on −12° diagonals; only data tables sit square.
+- Palette "Manga Ink" (chosen Nov 2026, replacing the original fluoro pink `#FF48B0` /
+  yellow `#F3FF4A` riso pair): ink black `#0A0A0A`, paper white `#F4F1EA`, highlight white
+  `#FFFFFF` (`--vs-hi`), one spot red `#FF2A2A` (`--vs-spot`); Player 1 is white, the boss
+  ground `#161616`. The portrait behind the page is graded to match: he and the wall go
+  black and white, the right-hand light burns spot red (`.vs-film` gels). Misregistered
+  overprints: headline duplicates offset 3–6 px in white and spot red with blend modes.
+  Halftone dot fields as shading and as transitions. Layout tilts on −12° diagonals; only
+  data tables sit square.
 - Type: **Big Shoulders Display** (variable; 900, ultra-condensed caps) for slams and names;
   a hand-painted face (e.g. **Permanent Marker**) for taunts, sparingly; JetBrains Mono for
   frame data, stats and timers.

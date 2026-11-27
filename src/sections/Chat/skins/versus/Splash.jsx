@@ -29,7 +29,7 @@ export default function Splash({ suggestions, onPick, disabled }) {
           <span className="vq-vs-sub">CHALLENGER · ASKS THE QUESTIONS</span>
         </div>
         <div className="vq-vs-crash" aria-hidden="true">
-          <Burst className="vq-vs-burst" seed={31} spikes={16} inks={['yellow', 'pink']} />
+          <Burst className="vq-vs-burst" seed={31} spikes={16} inks={['hi', 'spot']} />
           <span className="vq-vs-word">VS</span>
         </div>
         <div className="vq-vs-p2">

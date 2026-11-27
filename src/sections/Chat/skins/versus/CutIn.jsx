@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Streaks } from '../../../../proposals/versus/Art.jsx'
-import { reduced, flash } from '../../../../proposals/versus/fx.js'
+import { reduced, flash, HI } from '../../../../proposals/versus/fx.js'
 import { moveOf } from './moves.js'
 
 const DWELL = 1500 // ms per super; a queue plays several back to back
@@ -35,7 +35,7 @@ export default function CutIn({ live, loading, onActive }) {
   // Each super holds for DWELL, then the next one in the queue plays.
   useEffect(() => {
     if (!cur) return
-    flash(0.32, '#F3FF4A')
+    flash(0.32, HI)
     const t = setTimeout(() => { setOut(false); setQueue(q => q.slice(1)) }, DWELL)
     return () => clearTimeout(t)
   }, [cur])

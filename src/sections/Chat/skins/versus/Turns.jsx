@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import rehypeBreaks from '../../rehypeBreaks.js'
 import remarkGfm from 'remark-gfm'
 import ChatBlocks from '../../blocks/ChatBlocks'
-import { reduced, shake, flash } from '../../../../proposals/versus/fx.js'
+import { reduced, shake, flash, SPOT } from '../../../../proposals/versus/fx.js'
 import Notation from './Notation.jsx'
 import { Face } from './Splash.jsx'
 import { moveOf, RENDERABLE, blockCount, wordCount, describe } from './moves.js'
@@ -216,7 +216,7 @@ function KO({ notice, last, onRetry }) {
   const ref = useRef(null)
   useEffect(() => {
     if (!last || reduced()) return
-    flash(0.55, '#FF48B0')
+    flash(0.55, SPOT)
     shake(ref.current, 9, 360, 60)
   }, [last])
   return (

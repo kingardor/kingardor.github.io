@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { ROSTER, BOSS } from './data.js'
 import { ModeHeader } from './StoryMode.jsx'
-import { reduced, shake, flash } from './fx.js'
+import { reduced, shake, flash, SPOT } from './fx.js'
 import { Burst } from './Art.jsx'
 import VsScreen from './VsScreen.jsx'
 
@@ -43,7 +43,7 @@ export default function CharacterSelect() {
     setUnlocked(true)
     if (select) setActive('boss')
     if (!reduced()) {
-      flash(0.8, '#FF48B0')
+      flash(0.8, SPOT)
       shake(bossRef.current?.closest('.vs-select-grid'), 9, 360, 80)
     }
   }
@@ -74,7 +74,7 @@ export default function CharacterSelect() {
         title="CHARACTER SELECT"
         sub="PROJECTS · 8 FIGHTERS · 1 LOCKED SLOT · HOVER TO SCOUT, ENTER TO FIGHT"
         taunt="Pick a fighter. They’re all his."
-        ink="yellow"
+        ink="hi"
         compact
       />
       <div className="vs-select-stage">
@@ -100,7 +100,7 @@ export default function CharacterSelect() {
             </div>
           ) : (
             <div className="vs-pv vs-pv-boss" key="boss">
-              <Burst className="vs-pv-boss-burst" seed={77} spikes={22} inks={['pink', 'yellow']} />
+              <Burst className="vs-pv-boss-burst" seed={77} spikes={22} inks={['spot', 'hi']} />
               <span className="vs-pv-boss-name" aria-hidden="true">BLUE</span>
               <div className="vs-pv-info">
                 <p className="vs-pv-alias">{BOSS.alias} · 2025</p>

@@ -7,7 +7,7 @@ import { reduced, isVsOpen } from './fx.js'
 import { Streaks } from './Art.jsx'
 
 // How long a cut-in stays up; matches --vs-cut in versus.css.
-const CUT_MS = 2400
+const CUT_MS = 1400
 
 // Where his eyes sit in each act's footage (v, 0..1), for the eye-line crop.
 // (Film only: under the portrait stage the crop comes from the photo itself.)

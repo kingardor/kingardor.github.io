@@ -30,7 +30,7 @@ export default function Versus() {
   const [live, setLive] = useState(false)
   return (
     <>
-      <FilmStage acts={ACTS} layerClass="lab-film" scrim={false} compactActs={8} pane={null} />
+      <FilmStage acts={ACTS} layerClass="lab-film vs-film" scrim={false} compactActs={8} pane={null} />
       <div className="vs-print" aria-hidden="true" />
       <main className={`lab-root vs-root${live ? ' is-live' : ''}`}>
         <a className="vs-skip" href="#vs-story">Skip to story mode</a>

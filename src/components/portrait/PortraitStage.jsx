@@ -270,6 +270,9 @@ export default function PortraitStage({
     <div ref={rootRef} data-set={set} className={`${layerClass} portrait-stage${ready ? ' is-ready' : ''}${still ? ' is-still' : ''}`} aria-hidden="true">
       <div ref={backRef} className="ps-frame ps-back" style={frameStyle}>
         <img className="ps-plate" src={`${dir}plate.webp`} alt="" draggable="false" />
+        <div className="ps-gel ps-gel-wall" />
+        <div className="ps-gel ps-gel-slash-warm" />
+        <div className="ps-gel ps-gel-slash-cool" />
         <div className="ps-slash ps-slash-warm"><i /></div>
         <div className="ps-slash ps-slash-cool"><i /></div>
       </div>
@@ -279,8 +282,11 @@ export default function PortraitStage({
       <div ref={frontRef} className="ps-frame ps-front" style={frameStyle}>
         <img className="ps-subject" src={`${dir}subject.webp`} alt="" draggable="false" />
         <div className="ps-key"><i ref={keyRef} /></div>
+        <div className="ps-gel ps-gel-subject" />
         <img ref={rimWarmRef} className="ps-rim ps-rim-warm" src={`${dir}rim-warm.webp`} alt="" draggable="false" />
         <img ref={rimCoolRef} className="ps-rim ps-rim-cool" src={`${dir}rim-cool.webp`} alt="" draggable="false" />
+        <div className="ps-gel ps-gel-rim-warm" />
+        <div className="ps-gel ps-gel-rim-cool" />
         <div className="ps-lens">
           {lensSrc && (
             <img key={lensSrc} className="ps-lens-img" src={lensSrc} alt="" draggable="false" style={{
