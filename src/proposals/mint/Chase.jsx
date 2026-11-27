@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ARCHIVE, PROJECTS } from '../../content/index.js'
-import { useLenis } from '../../shared/components/SmoothScroll'
+import { useLenis } from '../../shared/components/lenisContext.js'
 import { useCollection, peekChase } from './collection.js'
 import { Chrome, Barcode, PrintMarks, Burst } from './parts.jsx'
 

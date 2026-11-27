@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react'
-import { useLenis } from '../shared/components/SmoothScroll'
+import { useLenis } from '../shared/components/lenisContext.js'
 import { EDITIONS, rememberEdition, peekPlace, clearPlace } from './editions.js'
 import EditionSwitch from './EditionSwitch.jsx'
 

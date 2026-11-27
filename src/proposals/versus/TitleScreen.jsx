@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import PixelAssembly from '../shared/PixelAssembly.jsx'
-import { useLenis } from '../../shared/components/SmoothScroll'
+import { useLenis } from '../../shared/components/lenisContext.js'
 import { subscribe } from '../../shared/scroll/scrollStore.js'
 import { slam, shake, flash, reduced } from './fx.js'
 import { Burst, Splat } from './Art.jsx'

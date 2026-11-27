@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useLenis } from '../../shared/components/SmoothScroll'
+import { useLenis } from '../../shared/components/lenisContext.js'
 import { BoxFront, BoxBack } from './ProjectBox.jsx'
 import { useCollection } from './collection.js'
 import { isReduced, packVars } from './data.js'

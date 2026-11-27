@@ -1,9 +1,6 @@
-import { createContext, useContext, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
-
-// Default value is a ref-like object so BgFX works even without the provider
-const ScrollProgressContext = createContext({ current: 0 })
-const LenisContext = createContext({ current: null })
+import { LenisContext, ScrollProgressContext } from './lenisContext.js'
 
 export function LenisProvider({ children }) {
   const lenisRef = useRef(null)
@@ -68,15 +65,4 @@ export function LenisProvider({ children }) {
       </ScrollProgressContext.Provider>
     </LenisContext.Provider>
   )
-}
-
-/** Returns a mutable ref whose .current holds the Lenis instance (or null) */
-export function useLenis() {
-  return useContext(LenisContext)
-}
-
-/** Returns a mutable ref whose .current holds scroll progress 0–1.
- *  Read inside requestAnimationFrame or R3F useFrame — NOT in render. */
-export function useScrollProgress() {
-  return useContext(ScrollProgressContext)
 }

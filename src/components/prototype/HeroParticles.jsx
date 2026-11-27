@@ -91,7 +91,7 @@ export default function HeroParticles({ onAssembled }) {
     const trigger = () => {
       if (fired) return;
       fired = true;
-      cleanup(); // eslint-disable-line no-use-before-define
+      cleanup();
       loaderGone = true;
       tryStart();
     };

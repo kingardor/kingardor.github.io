@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { TOUR_STOPS } from './tourScript.js'
-import { useLenis } from '../../shared/components/SmoothScroll.jsx'
+import { useLenis } from '../../shared/components/lenisContext.js'
 import { isMobile, prefersReduced } from '../../shared/utils/capabilities.js'
 
 const SCROLL_MS = 2400
@@ -103,7 +103,6 @@ export default function GuidedTour() {
       window.removeEventListener('touchstart', pause)
       window.removeEventListener('keydown', onKey)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])
 
   if (disabled || state === 'idle') return null

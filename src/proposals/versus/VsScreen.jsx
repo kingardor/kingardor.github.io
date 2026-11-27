@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useLenis } from '../../shared/components/SmoothScroll'
+import { useLenis } from '../../shared/components/lenisContext.js'
 import { BLUE_STACK, P1_RECORD } from './data.js'
 import { reduced, shake, flash, setVsOpen } from './fx.js'
 import { Burst, SpeedLines, Mis } from './Art.jsx'

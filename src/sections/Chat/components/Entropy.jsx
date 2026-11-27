@@ -45,7 +45,7 @@ export function Entropy({ phase = 'idle' }) {
     let compTimer  = 0;      // time spent in completing/fading
     let energy     = 0;      // 0=idle speed → 1=loading speed (particle movement)
     let errLvl     = 0;
-    let prevPhase  = phase;
+    let prevPhase  = phaseRef.current;
     let lastT      = performance.now();
     let raf;
 

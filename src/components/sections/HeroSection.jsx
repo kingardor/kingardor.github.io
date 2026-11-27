@@ -22,12 +22,13 @@ function calcScrollProgress(el) {
   return Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)))
 }
 
+const suggestions = CHAT_SUGGESTIONS?.length ? CHAT_SUGGESTIONS : ['Ask me anything...']
+
 function HeroChatPill() {
   const [text, setText] = useState('')
   const [ghost, setGhost] = useState('')
   const [phase, setPhase] = useState('typing')
   const [idx, setIdx] = useState(0)
-  const suggestions = CHAT_SUGGESTIONS || ['Ask me anything...']
 
   useEffect(() => {
     const s = suggestions[idx] || ''
@@ -42,7 +43,7 @@ function HeroChatPill() {
       else { setIdx(i => (i + 1) % suggestions.length); setPhase('typing') }
     }
     return () => clearTimeout(t)
-  }, [ghost, phase, idx, suggestions])
+  }, [ghost, phase, idx])
 
   const submit = (e) => {
     e.preventDefault()

@@ -15,7 +15,7 @@ npm run preview    # Preview production build locally
 
 ## Architecture
 
-**Personal portfolio SPA** for Akash James (AI Architect). React 19 + Vite + Tailwind CSS 4. Design system: **Obsidian Monolith** — void black `#050505`, bone white `#ece9e2`, single ember accent `#ff3d00`. Tokens are `--ob-*` in `src/index.css`; legacy `--nm-*`/`--bg`/`--accent` names are aliases onto them (chat surfaces consume `--nm-*`). Fonts are self-hosted in `public/fonts/` (Clash Display, General Sans, JetBrains Mono) with `@font-face` in `index.html`.
+**Personal portfolio SPA** for Akash James (Director AI - BLUE). React 19 + Vite + Tailwind CSS 4. Design system: **Obsidian Monolith** — void black `#050505`, bone white `#ece9e2`, single ember accent `#ff3d00`. Tokens are `--ob-*` in `src/index.css`; legacy `--nm-*`/`--bg`/`--accent` names are aliases onto them (chat surfaces consume `--nm-*`). Fonts are self-hosted in `public/fonts/` (Clash Display, General Sans, JetBrains Mono) with `@font-face` in `index.html`.
 
 ### Routing
 
@@ -25,9 +25,9 @@ Hash-based via the custom `useHashPath` hook — no React Router. `App.jsx` bran
 
 Akash can't choose between Mint in Box and Versus, so visitors pick. `EditionPicker` (at `/`) puts his portrait behind two edition cards; `?edition=mint|versus` deep-links. `EditionRoute` mounts an edition plus `EditionSwitch`, a floating bottom-centre toggle; switching keeps the story beat (the current act index → the same act in the other edition). The last edition is remembered in `localStorage['edition']` (the chat's back link uses it). Mint/Versus act lists live in `src/proposals/{mint,versus}/acts.js` so the switcher doesn't load either design.
 
-### The Story Layer (scroll-scrubbed footage centerpiece)
+### The Story Layer (the original cyborg film; now opt-in)
 
-A fixed full-viewport canvas (`src/components/story/SequenceCanvas.jsx`) behind all home content. Eight AI-generated segments tell one continuous transformation — Akash's real selfie at the Golden Gate progressively becoming a half-chrome cyborg (ember palette), themed per section: circuits wake (hero/manifesto), armor assembles (career), PCB head reveal (skills), schematics (projects), red eye + REC (signals), glyph rain (notes), mirror polish (honours), final-form push-in (contact).
+No longer the default background (the portrait stage replaced it, see below): it runs under `?bg=film` and behind Subject 001. A fixed full-viewport canvas (`src/components/story/SequenceCanvas.jsx`). Eight AI-generated segments tell one continuous transformation — Akash's real selfie at the Golden Gate progressively becoming a half-chrome cyborg (ember palette), themed per section: circuits wake (hero/manifesto), armor assembles (career), PCB head reveal (skills), schematics (projects), red eye + REC (signals), glyph rain (notes), mirror polish (honours), final-form push-in (contact).
 
 - **Footage is an image sequence, never a `<video>`.** Seeking video per scroll frame was the old bottleneck (≈9 visible updates/s, Safari worse in reverse). `scripts/build-sequences.mjs` (run by `npm run dev`/`build`, cached by source hash) turns `media-src/story/<name>.mp4` (+ `-m` mobile) into 15fps AVIF q45 frames under `public/seq/<name>-<hash>/{d,m}/` (gitignored, immutable-cached via `_headers`) plus `src/components/story/sequences.generated.json`. Per-sequence byte budgets fail the build. CI caches the output and installs ffmpeg only on a miss.
 - **Frame = f(scroll).** `ACTS` maps section ids → sequences; act *k* owns `[start_k, start_k+1)` (start ≈ section top − 0.85vh) and P = k + progress. A light exponential follow smooths wheel steps; jumps > 1.5 acts cut instead of scrubbing; adjacent frames crossfade by the fractional position. Missing sections are simply skipped (acts are explicit, never index-shifted). Consecutive segments share boundary keyframes, so act handoffs are invisible. `SequenceCanvas` takes `acts`, `compactActs`, `pane`, `layerClass`, `scrim` and `still` props (Home uses the defaults) and publishes `{ act, t, frame, rect }` through `filmPosition.js` (`onFilm`) so overlays can sync to the footage; `rect` maps 0..1 footage coordinates to the viewport.
@@ -42,7 +42,7 @@ The cyborg film "doesn't fit" (Akash, Nov 2026). `src/components/portrait/Portra
 
 ### Sections
 
-The homepage is composed in `src/components/portfolio/Home.jsx`. It retains `HeroSection` and the eight-act story canvas. After the hero, `PortfolioSections.jsx` presents the work gallery (the `featured` PROJECTS, data-driven), experience, toolkit, projects, talks, writing, recognition and contact. `portfolio.css` reserves a film column on desktop and full-width reading space after the hero on phones. Search opens the command palette. The live video feed falls back to the curated talks in `src/content/index.js`.
+The pre-redesign homepage, now at `/#/classic`, is composed in `src/components/portfolio/Home.jsx`. It retains `HeroSection` and the eight-act story canvas. After the hero, `PortfolioSections.jsx` presents the work gallery (the `featured` PROJECTS, data-driven), experience, toolkit, projects, talks, writing, recognition and contact. `portfolio.css` reserves a film column on desktop and full-width reading space after the hero on phones. Search opens the command palette. The live video feed falls back to the curated talks in `src/content/index.js`.
 
 ### Veronica OS layer (`src/components/os/`)
 
@@ -51,7 +51,7 @@ The homepage is composed in `src/components/portfolio/Home.jsx`. It retains `Her
 
 ### Redesign lab (`/#/lab`)
 
-Three complete alternative homepages over the same content and film, for the owner to choose from: `/#/lab/subject` (Subject 001), `/#/lab/mint` (Mint in Box), `/#/lab/versus` (Versus); hub at `/#/lab` (`src/proposals/LabIndex.jsx`). Each lives in `src/proposals/<slug>/` with its `BRIEF.md`; shared rules in `src/proposals/RULES.md`; shared helpers (`PixelAssembly`, `useFilm`, `useLoaderRelease`, `film.css`) in `src/proposals/shared/`. The anatomy figure "The Bench" is `src/anatomy/Bench.jsx`, reviewed at `/#/lab/bench`.
+Where the redesign was built: three complete alternative homepages over the same content. Mint in Box and Versus won and are live as editions at `/#/mint` and `/#/versus` (the lab copies render the same components); `/#/lab/subject` (Subject 001), `/#/lab/mint` (Mint in Box), `/#/lab/versus` (Versus); hub at `/#/lab` (`src/proposals/LabIndex.jsx`). Each lives in `src/proposals/<slug>/` with its `BRIEF.md`; shared rules in `src/proposals/RULES.md`; shared helpers (`PixelAssembly`, `useFilm`, `useLoaderRelease`, `film.css`) in `src/proposals/shared/`. The anatomy figure "The Bench" is `src/anatomy/Bench.jsx`, reviewed at `/#/lab/bench`.
 
 ### Content / Data
 
@@ -66,7 +66,7 @@ All content lives in `src/content/index.js` — the single source imported by bo
 
 ### Loading Screen
 
-Pure CSS splash in `index.html` (`#loader`). Dismissed by `main.jsx` after the opening act’s coarse frames load (every 8th frame + the last, ~12 files; the rest streams afterwards; hard cap 5s from boot), the ~1.7s minimum, and `window.__resolveHeroReady` (called by `HeroSection` once Clash Display is loaded; 4s safety timeout). `window.__PRERENDER` skips dismissal during the prerender snapshot.
+Pure CSS splash in `index.html` (`#loader`). Dismissed by `main.jsx` once the background reports ready through `window.__storyProgress` (the portrait stage after its seven layers; the film after the opening act’s coarse frames, ~12 files; hard cap 5s from boot), the ~1.7s minimum, and `window.__resolveHeroReady` (called by `HeroSection` once Clash Display is loaded; 4s safety timeout). `window.__PRERENDER` skips dismissal during the prerender snapshot.
 
 ### Deployment (Cloudflare Workers)
 
