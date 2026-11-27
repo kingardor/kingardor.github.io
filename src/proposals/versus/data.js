@@ -134,7 +134,7 @@ export const ROSTER = PROJECTS.map((p, i) => ({
   stats: FIGHTER_STATS[p.slug],
   taunt: p.quote?.line ?? p.pitch,
   tauntBy: p.quote ? p.quote.by : null,
-  ink: i % 2 ? 'yellow' : 'pink',
+  ink: i % 2 ? 'hi' : 'spot',
   link: p.private
     ? (p.slug === 'veronica' ? { href: '#/chat', label: 'TALK TO HER WEB TWIN' } : { href: p.href, label: 'VISIT COPCARS.IN' })
     : { href: p.repo, label: 'SOURCE ON GITHUB' },

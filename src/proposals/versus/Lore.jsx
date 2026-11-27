@@ -32,7 +32,7 @@ export default function Lore() {
         title="LORE CODEX"
         sub={`WRITING · ${LORE.length} ENTRIES · 2018 → 2024 · MEDIUM, TDS, BETTER PROGRAMMING, BECOMING HUMAN`}
         taunt="Every fighter has a backstory. His has citations."
-        ink="yellow"
+        ink="hi"
       />
       <ol className="vs-lore-list">
         {LORE.map((w, i) => <Entry key={w.title} w={w} i={i} />)}

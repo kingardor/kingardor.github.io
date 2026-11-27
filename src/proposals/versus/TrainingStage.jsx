@@ -12,7 +12,7 @@ export default function TrainingStage() {
         title="TRAINING STAGE"
         sub="THE BENCH · 9 OBJECTS · HOVER TO INSPECT · OR LET IT TOUR"
         taunt="Where the roster trains between fights."
-        ink="yellow"
+        ink="hi"
         side="right"
       />
       <div className="vs-training-frame">

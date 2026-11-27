@@ -14,12 +14,16 @@
   --ps-m-lens: url('/portrait/wide/lens.webp');
   --ps-m-slash-warm: url('/portrait/wide/slash-warm.webp');
   --ps-m-slash-cool: url('/portrait/wide/slash-cool.webp');
+  --ps-m-rim-warm: url('/portrait/wide/rim-warm.webp');
+  --ps-m-rim-cool: url('/portrait/wide/rim-cool.webp');
 }
 .portrait-stage[data-set='tall'] {
   --ps-m-subject: url('/portrait/tall/subject.webp');
   --ps-m-lens: url('/portrait/tall/lens.webp');
   --ps-m-slash-warm: url('/portrait/tall/slash-warm.webp');
   --ps-m-slash-cool: url('/portrait/tall/slash-cool.webp');
+  --ps-m-rim-warm: url('/portrait/tall/rim-warm.webp');
+  --ps-m-rim-cool: url('/portrait/tall/rim-cool.webp');
 }
 .ps-frame {
   position: absolute; left: 0; top: 0;
@@ -44,25 +48,68 @@
 }
 .ps-slash::before {
   content: ''; position: absolute; inset: 0;
-  background: rgba(255, 112, 40, 0.16);
+  background: var(--ps-glow-warm, rgba(255, 112, 40, 0.16));
 }
 .ps-slash-cool {
   -webkit-mask-image: var(--ps-m-slash-cool);
   mask-image: var(--ps-m-slash-cool);
   opacity: calc(0.3 + 0.7 * var(--ps-cool));
 }
-.ps-slash-cool::before { background: rgba(60, 140, 255, 0.14); }
+.ps-slash-cool::before { background: var(--ps-glow-cool, rgba(60, 140, 255, 0.14)); }
 .ps-slash i {
   position: absolute; top: -20%; left: -45%;
   width: 45%; height: 140%;
-  background: linear-gradient(100deg, transparent 20%, rgba(255, 196, 130, 0.9) 50%, transparent 80%);
+  background: linear-gradient(100deg, transparent 20%, var(--ps-sweep-warm, rgba(255, 196, 130, 0.9)) 50%, transparent 80%);
   transform: translateX(0) skewX(-24deg);
   animation: ps-sweep 9s cubic-bezier(0.65, 0, 0.35, 1) 0.4s 3 both; /* then the page goes idle */
 }
 .ps-slash-cool i {
-  background: linear-gradient(100deg, transparent 20%, rgba(150, 205, 255, 0.85) 50%, transparent 80%);
+  background: linear-gradient(100deg, transparent 20%, var(--ps-sweep-cool, rgba(150, 205, 255, 0.85)) 50%, transparent 80%);
   animation-delay: 4.9s;
   animation-direction: reverse;
+}
+
+/* ── Gels: optional colour re-lighting, off unless a page switches them on ──
+   Each gel re-hues what sits under it (mix-blend-mode: color keeps the
+   photo's light and shade and swaps its colour): the wall, the light through
+   each slash, each rim light, and, for a black-and-white grade, the subject.
+   A page shows the gels it wants and sets --ps-gel-wall (+ --ps-gel-wall-o),
+   --ps-gel-warm, --ps-gel-cool and --ps-gel-subject; the slash glows above
+   take --ps-glow-* / --ps-sweep-*. Versus uses them for its black-and-white
+   grade (.vs-film in src/proposals/versus/versus.css). */
+.ps-gel { display: none; mix-blend-mode: color; }
+.ps-gel-wall { background: var(--ps-gel-wall, transparent); opacity: var(--ps-gel-wall-o, 1); }
+.ps-gel-slash-warm {
+  background: var(--ps-gel-warm, transparent);
+  -webkit-mask: var(--ps-m-slash-warm) 0 0 / 100% 100% no-repeat;
+  mask: var(--ps-m-slash-warm) 0 0 / 100% 100% no-repeat;
+}
+.ps-gel-slash-cool {
+  background: var(--ps-gel-cool, transparent);
+  -webkit-mask: var(--ps-m-slash-cool) 0 0 / 100% 100% no-repeat;
+  mask: var(--ps-m-slash-cool) 0 0 / 100% 100% no-repeat;
+}
+.ps-gel-subject {
+  background: var(--ps-gel-subject, transparent);
+  -webkit-mask: var(--ps-m-subject) 0 0 / 100% 100% no-repeat;
+  mask: var(--ps-m-subject) 0 0 / 100% 100% no-repeat;
+}
+/* Rim gels stay on him: the rim's shape intersected with his silhouette. */
+.ps-gel-rim-warm,
+.ps-gel-rim-cool {
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+}
+.ps-gel-rim-warm {
+  background: var(--ps-gel-warm, transparent);
+  -webkit-mask-image: var(--ps-m-rim-warm), var(--ps-m-subject);
+  mask-image: var(--ps-m-rim-warm), var(--ps-m-subject);
+}
+.ps-gel-rim-cool {
+  background: var(--ps-gel-cool, transparent);
+  -webkit-mask-image: var(--ps-m-rim-cool), var(--ps-m-subject);
+  mask-image: var(--ps-m-rim-cool), var(--ps-m-subject);
 }
 @keyframes ps-sweep {
   0% { transform: translateX(0) skewX(-24deg); }

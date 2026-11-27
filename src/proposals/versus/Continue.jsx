@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { EMAIL, LINKS, PROFILE } from '../../content/index.js'
-import { useInView, reduced, flash, shake } from './fx.js'
+import { useInView, reduced, flash, shake, SPOT, HI } from './fx.js'
 import { Burst, Mis } from './Art.jsx'
 
 // What the visitor is bringing; sets the mail's subject line.
@@ -30,7 +30,7 @@ function ChallengeForm() {
     const body = lines.join('\n')
     window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     setSent(true)
-    if (!reduced()) flash(0.5, '#F3FF4A')
+    if (!reduced()) flash(0.5, HI)
   }
   const copy = async () => {
     try { await navigator.clipboard.writeText(EMAIL); setCopied(true) } catch { /* the address is on screen anyway */ }
@@ -67,7 +67,7 @@ function ChallengeForm() {
           placeholder={mode === 'talk' ? 'Say hi. Ask anything. He reads all of it.' : 'What you’re building, when, and where he fits in.'} />
       </label>
 
-      <button type="submit" className="vs-btn vs-btn-big vs-btn-yellow vs-ch-send">
+      <button type="submit" className="vs-btn vs-btn-big vs-btn-hi vs-ch-send">
         <span>SEND CHALLENGE ▸</span>
         <small>OPENS YOUR MAIL APP, ADDRESSED TO HIM</small>
       </button>
@@ -96,7 +96,7 @@ export default function Continue() {
 
   useEffect(() => {
     if (!over || reduced()) return
-    flash(0.8, '#FF48B0')
+    flash(0.8, SPOT)
     shake(overRef.current, 10, 380, 120)
   }, [over])
 
@@ -110,7 +110,7 @@ export default function Continue() {
           </div>
         ) : (
           <div className="vs-cont-over" ref={overRef}>
-            <Burst className="vs-cont-burst" seed={13} spikes={18} inks={['pink', 'yellow']} />
+            <Burst className="vs-cont-burst" seed={13} spikes={18} inks={['spot', 'hi']} />
             <p className="vs-cont-over-a">GAME OVER?</p>
             <p className="vs-cont-over-b">NEVER.</p>
           </div>
@@ -121,7 +121,7 @@ export default function Continue() {
       <div className="vs-cont-panel">
         <p className="vs-cont-kicker">CONTACT</p>
         <ChallengeForm />
-        <a className="vs-btn vs-btn-pink vs-ch-talk" href="#/chat">
+        <a className="vs-btn vs-btn-spot vs-ch-talk" href="#/chat">
           <span>OR TALK TO VERONICA ▸</span>
           <small>HIS AI ANSWERS RIGHT NOW</small>
         </a>

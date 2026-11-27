@@ -122,3 +122,8 @@ export function useInView(margin = '0px') {
   }, [margin])
   return [ref, inView]
 }
+
+// The two inks for JS (flashes, keyframes); keep in step with --vs-spot and
+// --vs-hi in versus.css.
+export const SPOT = '#FF2A2A'
+export const HI = '#FFFFFF'

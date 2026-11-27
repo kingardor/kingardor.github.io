@@ -3,7 +3,7 @@ import { ROUNDS, FINAL, BONUS, BLUE_STACK, P1_RECORD } from './data.js'
 import { announceIf, useEnter, reduced, shake } from './fx.js'
 import { Burst, Mis, SpeedLines } from './Art.jsx'
 
-export function ModeHeader({ id, no, title, sub, taunt, side = 'left', ink = 'pink', compact = false }) {
+export function ModeHeader({ id, no, title, sub, taunt, side = 'left', ink = 'spot', compact = false }) {
   const ref = useEnter((el) => el.classList.add('is-in'), { line: 0.85 })
   return (
     <header className={`vs-mode vs-mode-${side} vs-ink-${ink}${compact ? ' vs-mode-compact' : ''}`} ref={ref}>
@@ -65,7 +65,7 @@ function RoundCard({ r, n, side }) {
       </div>
       {r.finisher && (
         <div className="vs-finisher" ref={stampRef}>
-          <Burst className="vs-finisher-burst" seed={9} spikes={20} inks={['yellow', 'pink']} />
+          <Burst className="vs-finisher-burst" seed={9} spikes={20} inks={['hi', 'spot']} />
           <span className="vs-finisher-big">ACQUIRED!</span>
           <span className="vs-finisher-small">{r.finisher.small}</span>
         </div>
@@ -143,7 +143,7 @@ export function FinalRound() {
         <ol className="vs-ults-list">
           {BLUE_STACK.map((b, i) => <Ultimate key={b.name} b={b} i={i} />)}
         </ol>
-        <a className="vs-btn vs-btn-yellow vs-ults-cta" href={FINAL.orgUrl} target="_blank" rel="noreferrer">
+        <a className="vs-btn vs-btn-hi vs-ults-cta" href={FINAL.orgUrl} target="_blank" rel="noreferrer">
           ENTER THE BOSS STAGE · MYBLUE.AI
         </a>
       </div>
@@ -154,7 +154,7 @@ export function FinalRound() {
         <p className="vs-bonus-role">{BONUS.role} · {BONUS.period}</p>
         <p className="vs-bonus-blurb">{BONUS.blurb}</p>
         <p className="vs-bonus-wins">{BONUS.wins[0]}</p>
-        <a className="vs-btn vs-btn-pink" href={BONUS.orgUrl} target="_blank" rel="noreferrer">SHOP THE LOOT · COPCARS.IN</a>
+        <a className="vs-btn vs-btn-spot" href={BONUS.orgUrl} target="_blank" rel="noreferrer">SHOP THE LOOT · COPCARS.IN</a>
       </aside>
     </section>
   )

@@ -5,9 +5,9 @@
   max-width: 1320px;
   margin: clamp(20px, 3vw, 36px) auto 0;
   padding: clamp(8px, 1.2vw, 14px);
-  background: #0A0A0A;
+  background: var(--vs-ink);
   border: 3px solid #F4F1EA;
-  box-shadow: 8px 8px 0 #FF48B0, -5px -5px 0 #F3FF4A;
+  box-shadow: 8px 8px 0 var(--vs-spot), -5px -5px 0 var(--vs-hi);
   transform: rotate(-0.6deg);
 }
 .vs-training-tag {
@@ -15,10 +15,10 @@
   left: clamp(10px, 2vw, 24px); top: -16px;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.7rem; letter-spacing: 0.18em; font-weight: 600;
-  color: #0A0A0A; background: #F3FF4A;
+  color: var(--vs-ink); background: var(--vs-hi);
   padding: 0.4em 0.7em;
   transform: skewX(-12deg);
 }
 @media (max-width: 700px) {
-  .vs-training-frame { transform: none; box-shadow: 5px 5px 0 #FF48B0, -3px -3px 0 #F3FF4A; }
+  .vs-training-frame { transform: none; box-shadow: 5px 5px 0 var(--vs-spot), -3px -3px 0 var(--vs-hi); }
 }

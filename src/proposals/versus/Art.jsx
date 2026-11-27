@@ -18,7 +18,7 @@ function burstPath(seed, spikes, inner, outer) {
 }
 
 /** Jagged impact star. `layers` stacks offset copies in riso inks. */
-export function Burst({ seed = 7, spikes = 14, className = '', inks = ['yellow', 'pink'], inner = 26, outer = 50 }) {
+export function Burst({ seed = 7, spikes = 14, className = '', inks = ['hi', 'spot'], inner = 26, outer = 50 }) {
   const d = burstPath(seed, spikes, inner, outer)
   const d2 = burstPath(seed + 3, spikes, inner * 0.8, outer * 0.78)
   return (
@@ -30,7 +30,7 @@ export function Burst({ seed = 7, spikes = 14, className = '', inks = ['yellow',
 }
 
 /** Ink splatter: a blob plus satellite drops. */
-export function Splat({ seed = 3, className = '', ink = 'pink' }) {
+export function Splat({ seed = 3, className = '', ink = 'spot' }) {
   const r = rng(seed)
   const n = 18
   const pts = []

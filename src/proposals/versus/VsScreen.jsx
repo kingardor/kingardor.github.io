@@ -103,7 +103,7 @@ export default function VsScreen({ fighter, onClose }) {
           </div>
           <div className="vs-vs-crash" aria-hidden="true">
             <SpeedLines className="vs-vs-speed" seed={fighter.name.length} count={60} />
-            <Burst className="vs-vs-burst" seed={fighter.name.length * 3} spikes={20} inks={['yellow', 'pink']} />
+            <Burst className="vs-vs-burst" seed={fighter.name.length * 3} spikes={20} inks={['hi', 'spot']} />
             <span className="vs-vs-word vs-mis" data-text="VS">VS</span>
           </div>
           <p className="vs-vs-skip">CLICK TO SKIP</p>
@@ -114,7 +114,7 @@ export default function VsScreen({ fighter, onClose }) {
         <div className="vs-stage" tabIndex={-1}>
           <div className="vs-stage-bg" aria-hidden="true">
             {isBoss
-              ? <Burst className="vs-stage-bg-burst" seed={5} spikes={24} inks={['pink', 'yellow']} />
+              ? <Burst className="vs-stage-bg-burst" seed={5} spikes={24} inks={['spot', 'hi']} />
               : <img key={bg} src={images[bg].src} width={images[bg].w} height={images[bg].h} alt="" />}
           </div>
           <div className="vs-stage-inner">
@@ -182,7 +182,7 @@ export default function VsScreen({ fighter, onClose }) {
             {!isBoss && images.length === 1 && <p className="vs-stage-caption">{images[0].alt}</p>}
 
             <div className="vs-stage-links">
-              <a className="vs-btn vs-btn-yellow" href={fighter.link.href}
+              <a className="vs-btn vs-btn-hi" href={fighter.link.href}
                 {...(fighter.link.href.startsWith('#') ? {} : { target: '_blank', rel: 'noreferrer' })}
                 onClick={fighter.link.href.startsWith('#') ? onClose : undefined}
               >

@@ -1,23 +1,33 @@
 /* ════════════════════════════════════════════════════════════════════
-   VERSUS: a riso fight poster in motion.
+   VERSUS: a manga fight page in motion. Palette "Manga Ink": black, white
+   and one spot red. The portrait behind it is graded to match (black and
+   white, one red light).
    Base tokens, print layer, HUD, combo, credits, announcer, cut-ins,
    shared shapes. Every selector is .vs- prefixed.
    ════════════════════════════════════════════════════════════════════ */
 
-.vs-root {
+/* Ink roles (fx.js holds SPOT/HI for JS; keep them in step):
+     --vs-hi    the main highlight: HUD bars, headlines, buttons (ink text on it)
+     --vs-spot  the one spot colour: offset shadows, misregistration, Player 2
+     --vs-p1    Player 1 (him)      --vs-boss  the boss / stage ground
+   .vs-print sits beside .vs-root (not inside), so it gets the tokens too. */
+.vs-root, .vs-print {
   --vs-ink: #0A0A0A;
+  --vs-ink-rgb: 10, 10, 10;
   --vs-paper: #F4F1EA;
-  --vs-pink: #FF48B0;
-  --vs-yellow: #F3FF4A;
-  --vs-ember: #FF3D00;
-  --vs-violet: #3B1E8C;
+  --vs-spot: #FF2A2A;
+  --vs-spot-rgb: 255, 42, 42;
+  --vs-hi: #FFFFFF;
+  --vs-hi-rgb: 255, 255, 255;
+  --vs-p1: #FFFFFF;
+  --vs-boss: #161616;
   --vs-silver: #C9CCD3;
   --vs-bronze: #D9822B;
   --vs-display: 'Big Shoulders Display', 'Impact', 'Arial Narrow', sans-serif;
   --vs-marker: 'Permanent Marker', 'Comic Sans MS', cursive;
   --vs-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
   --vs-pad: clamp(18px, 4vw, 64px);
-  --vs-dots: radial-gradient(circle, rgba(10, 10, 10, 0.55) 0.9px, transparent 1.35px);
+  --vs-dots: radial-gradient(circle, rgba(var(--vs-ink-rgb), 0.55) 0.9px, transparent 1.35px);
   color: var(--vs-paper);
   font-family: var(--vs-mono);
   font-size: 15px;
@@ -30,8 +40,8 @@
 .vs-root :where(ol, ul) { list-style: none; }
 .vs-root :where(a) { color: inherit; }
 .vs-root :where(button) { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
-.vs-root :focus-visible { outline: 3px solid var(--vs-yellow); outline-offset: 3px; }
-.vs-root ::selection { background: var(--vs-pink); color: var(--vs-ink); }
+.vs-root :focus-visible { outline: 3px solid var(--vs-hi); outline-offset: 3px; }
+.vs-root ::selection { background: var(--vs-spot); color: var(--vs-ink); }
 
 .vs-sr {
   position: absolute !important; width: 1px; height: 1px; overflow: hidden;
@@ -39,24 +49,40 @@
 }
 .vs-skip {
   position: fixed; left: 12px; top: 12px; z-index: 100;
-  padding: 10px 14px; background: var(--vs-yellow); color: var(--vs-ink);
+  padding: 10px 14px; background: var(--vs-hi); color: var(--vs-ink);
   font-weight: 700; text-decoration: none;
   transform: translateY(-200%);
 }
 .vs-skip:focus { transform: none; }
 
+/* ── The portrait, graded: he and the wall go black and white, the
+   right-hand light burns spot red. Uses the stage's gel layers
+   (src/components/portrait/portrait.css); .vs-film is Versus's stage only. ── */
+.vs-film {
+  background: #0A0A0A;
+  --ps-gel-wall: #808080;
+  --ps-gel-subject: #808080;
+  --ps-gel-warm: #808080;
+  --ps-gel-cool: #FF2A2A;
+  --ps-glow-warm: rgba(128, 128, 128, 0.22);
+  --ps-glow-cool: rgba(255, 42, 42, 0.22);
+  --ps-sweep-warm: #A0A0A0;
+  --ps-sweep-cool: #FF5F5F;
+}
+.vs-film .ps-gel { display: block; }
+
 /* ── Print layer: halftone screen + grain over the film ── */
 .vs-print {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(circle, rgba(10, 10, 10, 0.5) 0.85px, transparent 1.3px) 0 0 / 4px 4px,
-    radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(10, 10, 10, 0.55) 100%);
+    radial-gradient(circle, rgba(var(--vs-ink-rgb), 0.5) 0.85px, transparent 1.3px) 0 0 / 4px 4px,
+    radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(var(--vs-ink-rgb), 0.55) 100%);
   mix-blend-mode: multiply;
   opacity: 0.62;
 }
 .vs-print::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(115deg, rgba(255, 72, 176, 0.16), transparent 30%, transparent 72%, rgba(243, 255, 74, 0.08));
+  background: linear-gradient(115deg, rgba(var(--vs-spot-rgb), 0.16), transparent 30%, transparent 72%, rgba(var(--vs-hi-rgb), 0.08));
   mix-blend-mode: screen;
 }
 
@@ -69,14 +95,14 @@
   z-index: -1; pointer-events: none;
   white-space: inherit;
 }
-.vs-mis::before { color: var(--vs-pink); transform: translate(calc(var(--vs-mx, 5px) * -1), var(--vs-my, 3px)); }
-.vs-mis::after { color: var(--vs-yellow); transform: translate(var(--vs-mx, 5px), calc(var(--vs-my, 3px) * -1)); opacity: 0.92; }
+.vs-mis::before { color: var(--vs-spot); transform: translate(calc(var(--vs-mx, 5px) * -1), var(--vs-my, 3px)); }
+.vs-mis::after { color: var(--vs-hi); transform: translate(var(--vs-mx, 5px), calc(var(--vs-my, 3px) * -1)); opacity: 0.92; }
 
 /* ── Ink fills for drawn shapes ── */
-.vs-fill-pink { fill: var(--vs-pink); }
-.vs-fill-yellow { fill: var(--vs-yellow); }
-.vs-fill-ember { fill: var(--vs-ember); }
-.vs-fill-violet { fill: var(--vs-violet); }
+.vs-fill-spot { fill: var(--vs-spot); }
+.vs-fill-hi { fill: var(--vs-hi); }
+.vs-fill-p1 { fill: var(--vs-p1); }
+.vs-fill-boss { fill: var(--vs-boss); }
 .vs-fill-ink { fill: var(--vs-ink); }
 .vs-fill-paper { fill: var(--vs-paper); }
 .vs-burst, .vs-splat, .vs-speed, .vs-streaks { display: block; pointer-events: none; }
@@ -96,8 +122,8 @@
 }
 .vs-btn:hover { transform: skewX(-12deg) translate(-3px, -3px); box-shadow: 9px 9px 0 var(--vs-ink); }
 .vs-btn:active { transform: skewX(-12deg) translate(3px, 3px); box-shadow: 2px 2px 0 var(--vs-ink); }
-.vs-btn-yellow { background: var(--vs-yellow); }
-.vs-btn-pink { background: var(--vs-pink); }
+.vs-btn-hi { background: var(--vs-hi); }
+.vs-btn-spot { background: var(--vs-spot); }
 .vs-btn-ghost { background: var(--vs-paper); }
 .vs-btn small { font-family: var(--vs-mono); font-weight: 500; font-size: 0.6rem; letter-spacing: 0.06em; margin-top: 0.45em; text-transform: none; }
 
@@ -114,29 +140,29 @@
 .vs-hud.is-live { opacity: 1; transform: none; transition-delay: 0.5s; }
 .vs-hud::before {
   content: ''; position: absolute; left: 0; right: 0; top: 0; height: 112px; z-index: -1;
-  background: linear-gradient(180deg, rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.6) 55%, transparent);
+  background: linear-gradient(180deg, rgba(var(--vs-ink-rgb), 0.92), rgba(var(--vs-ink-rgb), 0.6) 55%, transparent);
 }
 .vs-hud-p1 { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; row-gap: 5px; align-items: center; }
 .vs-hud-tag {
   grid-row: span 2;
   font-family: var(--vs-display); font-weight: 900; font-size: 1.7rem; line-height: 1;
-  color: var(--vs-ink); background: var(--vs-ember);
+  color: var(--vs-ink); background: var(--vs-p1);
   padding: 6px 10px 4px; transform: skewX(-12deg);
-  box-shadow: 3px 3px 0 var(--vs-yellow);
+  box-shadow: 3px 3px 0 var(--vs-hi);
 }
 .vs-hud-name {
   font-family: var(--vs-display); font-weight: 800; font-size: 1.05rem; letter-spacing: 0.16em;
-  color: var(--vs-paper); text-shadow: 0 1px 0 var(--vs-ink), 0 0 8px rgba(10, 10, 10, 0.9);
+  color: var(--vs-paper); text-shadow: 0 1px 0 var(--vs-ink), 0 0 8px rgba(var(--vs-ink-rgb), 0.9);
 }
 .vs-hud-health {
   position: relative; height: 16px; max-width: 34vw;
-  border: 2px solid var(--vs-paper); background: rgba(10, 10, 10, 0.75);
+  border: 2px solid var(--vs-paper); background: rgba(var(--vs-ink-rgb), 0.75);
   transform: skewX(-24deg); overflow: hidden;
-  box-shadow: 3px 3px 0 rgba(10, 10, 10, 0.6);
+  box-shadow: 3px 3px 0 rgba(var(--vs-ink-rgb), 0.6);
 }
 .vs-hud-health-fill {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, #FAFFA8 0 30%, var(--vs-yellow) 30% 70%, #C8D400 70%);
+  background: linear-gradient(180deg, #FFFFFF 0 30%, var(--vs-hi) 30% 70%, #BDBDBD 70%);
 }
 .vs-hud-health-ticks, .vs-hud-meter-segs {
   position: absolute; inset: 0;
@@ -148,28 +174,28 @@
   padding: 0 14px 5px; min-width: 104px;
   clip-path: polygon(0 0, 100% 0, 100% 72%, 82% 100%, 18% 100%, 0 72%);
 }
-.vs-hud-inf { font-family: var(--vs-display); font-weight: 900; font-size: 2.6rem; line-height: 1; color: var(--vs-yellow); }
+.vs-hud-inf { font-family: var(--vs-display); font-weight: 900; font-size: 2.6rem; line-height: 1; color: var(--vs-hi); }
 .vs-hud-mode { font-size: 0.58rem; letter-spacing: 0.14em; white-space: nowrap; color: var(--vs-paper); }
 .vs-hud-super { display: grid; justify-items: end; row-gap: 5px; }
 .vs-hud-super-top { display: flex; gap: 10px; align-items: baseline; }
 .vs-hud-super-name {
   font-family: var(--vs-display); font-weight: 800; font-size: 1.05rem; letter-spacing: 0.16em;
-  text-shadow: 0 1px 0 var(--vs-ink), 0 0 8px rgba(10, 10, 10, 0.9);
+  text-shadow: 0 1px 0 var(--vs-ink), 0 0 8px rgba(var(--vs-ink-rgb), 0.9);
 }
 .vs-hud-super-lv {
   font-family: var(--vs-display); font-weight: 900; font-size: 1rem; letter-spacing: 0.08em;
-  color: var(--vs-ink); background: var(--vs-pink); padding: 2px 8px 0; transform: skewX(12deg);
+  color: var(--vs-ink); background: var(--vs-spot); padding: 2px 8px 0; transform: skewX(12deg);
 }
 .vs-hud-meter {
   position: relative; height: 12px; width: min(34vw, 420px);
-  border: 2px solid var(--vs-paper); background: rgba(10, 10, 10, 0.75);
+  border: 2px solid var(--vs-paper); background: rgba(var(--vs-ink-rgb), 0.75);
   transform: skewX(24deg); overflow: hidden;
 }
 .vs-hud-meter-fill {
   position: absolute; inset: 0; transform-origin: 100% 50%; transform: scaleX(0);
-  background: linear-gradient(90deg, var(--vs-violet), var(--vs-pink) 60%, var(--vs-yellow));
+  background: linear-gradient(90deg, var(--vs-boss), var(--vs-spot) 60%, var(--vs-hi));
 }
-.vs-hud-super.is-max .vs-hud-super-lv { background: var(--vs-yellow); }
+.vs-hud-super.is-max .vs-hud-super-lv { background: var(--vs-hi); }
 @media (prefers-reduced-motion: no-preference) {
   .vs-hud-super.is-max .vs-hud-meter-fill { animation: vs-max 0.5s steps(2) infinite; }
   .vs-hud-super.is-max .vs-hud-super-lv { animation: vs-bob 1.2s ease-in-out infinite; }
@@ -188,8 +214,8 @@
 .vs-combo.is-drop { opacity: 0; transform: translateY(30px) rotate(-6deg); transition: opacity 0.45s, transform 0.45s ease-in; }
 .vs-combo-num {
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(4rem, 8vw, 7.5rem); line-height: 0.8;
-  color: var(--vs-yellow);
-  text-shadow: -4px 3px 0 var(--vs-pink), 4px -2px 0 var(--vs-ember), 0 0 18px rgba(10, 10, 10, 0.8);
+  color: var(--vs-hi);
+  text-shadow: -4px 3px 0 var(--vs-spot), 4px -2px 0 var(--vs-p1), 0 0 18px rgba(var(--vs-ink-rgb), 0.8);
   transform-origin: 0 100%;
 }
 .vs-combo-hits {
@@ -197,9 +223,9 @@
   color: var(--vs-ink); background: var(--vs-paper); padding: 2px 10px 0; margin-top: 4px; transform: skewX(-12deg);
 }
 .vs-combo-rate {
-  font-family: var(--vs-marker); font-size: clamp(1.2rem, 2.2vw, 2rem); color: var(--vs-pink);
+  font-family: var(--vs-marker); font-size: clamp(1.2rem, 2.2vw, 2rem); color: var(--vs-spot);
   transform: rotate(-8deg); margin-top: 6px; white-space: nowrap;
-  text-shadow: 2px 2px 0 var(--vs-ink), 0 0 12px rgba(10, 10, 10, 0.9);
+  text-shadow: 2px 2px 0 var(--vs-ink), 0 0 12px rgba(var(--vs-ink-rgb), 0.9);
 }
 
 /* ═══ Credits ═══ */
@@ -209,7 +235,7 @@
   background: var(--vs-ink); color: var(--vs-paper); padding: 5px 10px;
   border: 1px solid rgba(244, 241, 234, 0.4);
 }
-.vs-credits span { display: inline-block; color: var(--vs-yellow); font-weight: 500; }
+.vs-credits span { display: inline-block; color: var(--vs-hi); font-weight: 500; }
 
 /* ═══ Flash ═══ */
 .vs-flash { position: fixed; inset: 0; z-index: 95; pointer-events: none; opacity: 0; background: #fff; }
@@ -226,8 +252,8 @@
   padding: 1.5vh 0 2.4vh;
   background:
     var(--vs-dots) 0 0 / 5px 5px,
-    rgba(10, 10, 10, 0.86);
-  border-top: 5px solid var(--vs-pink); border-bottom: 5px solid var(--vs-yellow);
+    rgba(var(--vs-ink-rgb), 0.86);
+  border-top: 5px solid var(--vs-spot); border-bottom: 5px solid var(--vs-hi);
   animation: vs-band 1.35s cubic-bezier(.2,.9,.2,1) both;
 }
 .vs-call-big {
@@ -238,17 +264,17 @@
   animation: vs-callslam 1.35s cubic-bezier(.2,.9,.2,1) both;
 }
 .vs-call-small {
-  font-family: var(--vs-marker); font-size: clamp(1.4rem, 3.2vw, 2.8rem); color: var(--vs-yellow);
+  font-family: var(--vs-marker); font-size: clamp(1.4rem, 3.2vw, 2.8rem); color: var(--vs-hi);
   transform: rotate(3deg); margin-top: 0.45em;
   animation: vs-callsmall 1.35s ease-out both;
 }
 .vs-call-burst { position: absolute; width: min(90vw, 900px); opacity: 0.95; animation: vs-burstpop 1.35s ease-out both; }
 .vs-call-speed { position: absolute; inset: -20%; width: 140%; height: 140%; opacity: 0.6; animation: vs-fade 1.6s ease-out both; }
-.vs-call-finisher .vs-call-plate { background: var(--vs-yellow); border-color: var(--vs-ink); animation-duration: 1.7s; }
+.vs-call-finisher .vs-call-plate { background: var(--vs-hi); border-color: var(--vs-ink); animation-duration: 1.7s; }
 .vs-call-finisher .vs-call-big { color: var(--vs-ink); --vs-mx: 8px; animation-duration: 1.7s; }
-.vs-call-finisher .vs-call-big::after { color: var(--vs-ember); }
+.vs-call-finisher .vs-call-big::after { color: var(--vs-p1); }
 .vs-call-finisher .vs-call-small { font-family: var(--vs-mono); font-weight: 500; font-size: clamp(0.8rem, 1.4vw, 1.1rem); letter-spacing: 0.1em; color: var(--vs-ink); text-transform: uppercase; animation-duration: 1.7s; }
-.vs-call-final .vs-call-plate { background: var(--vs-dots) 0 0 / 5px 5px, rgba(59, 30, 140, 0.92); }
+.vs-call-final .vs-call-plate { background: var(--vs-dots) 0 0 / 5px 5px, color-mix(in srgb, var(--vs-boss) 92%, transparent); }
 @keyframes vs-band {
   0% { clip-path: inset(0 100% 0 0); }
   10% { clip-path: inset(0 0 0 0); }
@@ -290,9 +316,9 @@
   margin-top: 26vh;
   transform: rotate(-12deg);
   background:
-    radial-gradient(circle, rgba(255, 72, 176, 0.55) 1px, transparent 1.6px) 0 0 / 6px 6px,
-    rgba(10, 10, 10, 0.8);
-  border-top: 4px solid var(--vs-yellow); border-bottom: 4px solid var(--vs-pink);
+    radial-gradient(circle, rgba(var(--vs-spot-rgb), 0.55) 1px, transparent 1.6px) 0 0 / 6px 6px,
+    rgba(var(--vs-ink-rgb), 0.8);
+  border-top: 4px solid var(--vs-hi); border-bottom: 4px solid var(--vs-spot);
   overflow: hidden;
   animation: vs-cut var(--vs-cut) linear both;
 }
@@ -309,7 +335,7 @@
   position: absolute; left: 22vw; top: 50%; transform: translateY(-50%);
   display: grid; animation: vs-cuttext var(--vs-cut) linear both;
 }
-.vs-cutin-kicker { font-size: 0.7rem; letter-spacing: 0.3em; color: var(--vs-ink); background: var(--vs-yellow); padding: 2px 8px; justify-self: start; margin-bottom: 6px; }
+.vs-cutin-kicker { font-size: 0.7rem; letter-spacing: 0.3em; color: var(--vs-ink); background: var(--vs-hi); padding: 2px 8px; justify-self: start; margin-bottom: 6px; }
 .vs-cutin-name {
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.8rem, 7.5vw, 7rem); line-height: 0.85;
   color: var(--vs-paper); white-space: nowrap; --vs-mx: 5px;
@@ -351,21 +377,21 @@
   font-size: clamp(3.6rem, 11.5vw, 12rem); line-height: 0.8; letter-spacing: 0.005em;
   color: var(--vs-paper);
   transform: rotate(-4deg); transform-origin: 0 100%;
-  text-shadow: 0 0 30px rgba(10, 10, 10, 0.55);
+  text-shadow: 0 0 30px rgba(var(--vs-ink-rgb), 0.55);
   --vs-mx: 6px; --vs-my: 4px;
 }
 .vs-mode-right .vs-mode-title { transform-origin: 100% 100%; }
-.vs-mode-title .vs-mis { padding: 0.04em 0.12em 0; background: var(--vs-ink); box-shadow: 10px 10px 0 var(--vs-violet); }
+.vs-mode-title .vs-mis { padding: 0.04em 0.12em 0; background: var(--vs-ink); box-shadow: 10px 10px 0 var(--vs-boss); }
 .vs-mode-sub {
   max-width: 46rem; font-size: 0.74rem; font-weight: 500; letter-spacing: 0.16em;
-  color: var(--vs-ink); background: var(--vs-yellow); padding: 6px 12px;
+  color: var(--vs-ink); background: var(--vs-hi); padding: 6px 12px;
   transform: rotate(-4deg); margin-top: 3.2vw;
 }
-.vs-ink-pink .vs-mode-sub { background: var(--vs-pink); }
+.vs-ink-spot .vs-mode-sub { background: var(--vs-spot); }
 .vs-mode-taunt {
   font-family: var(--vs-marker); font-size: clamp(1.2rem, 2.2vw, 1.9rem); line-height: 1.1;
   color: var(--vs-ink); background: var(--vs-paper); padding: 6px 14px 4px;
-  transform: rotate(3deg); box-shadow: 5px 5px 0 var(--vs-pink);
+  transform: rotate(3deg); box-shadow: 5px 5px 0 var(--vs-spot);
 }
 @media (prefers-reduced-motion: no-preference) {
   .vs-mode .vs-mode-title { opacity: 0; transform: rotate(-4deg) translateX(-12vw) skewX(-20deg); }

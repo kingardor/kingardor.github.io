@@ -47,7 +47,7 @@ export default function Trophies() {
         sub="HONOURS · ONE GTC TALK · TWO NASA WINS · ONE BEST PAPER"
         taunt="Platinum for a GTC talk. Show-off."
         side="right"
-        ink="yellow"
+        ink="hi"
       />
       <div className="vs-trophy-room" ref={listRef}>
         <p className="vs-completion" aria-live="polite">
