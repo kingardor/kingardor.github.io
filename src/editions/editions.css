@@ -217,3 +217,7 @@ html:has([aria-modal='true']) .ed-switch { opacity: 0; visibility: hidden; point
   .ed-switch-k { align-self: stretch; display: grid; place-items: center; min-height: 40px; }
   .ed-switch-b { min-height: 40px; }
 }
+@media (max-height: 500px) and (orientation: landscape) {
+  .ed-switch-k { align-self: stretch; display: grid; place-items: center; min-height: 40px; }
+  .ed-switch-b { min-height: 40px; }
+}

@@ -418,3 +418,10 @@ html:has(.mb-modal) .mb-top { opacity: 0; visibility: hidden; pointer-events: no
 @media (max-height: 500px) and (orientation: landscape) {
   .mb-board-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px 24px; max-width: 760px; }
 }
+/* Phones: the burst's small caption is a 6px whisper on a wall box (it
+   stays in the box viewer, where the box is big); the chase card's peek
+   link gets a thumb-sized hit area. */
+@media (max-width: 760px) {
+  .mb-board-grid .mb-pbox-burst small { display: none; }
+  .mb-chase-peek { padding: 10px 0; }
+}

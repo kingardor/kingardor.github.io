@@ -356,3 +356,7 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-yell
   /* Continue screen: thumb-sized letter arrows. */
   .vs-slot-arrow { height: 40px; }
 }
+/* Phones on their side: same thumb-sized letter arrows. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .vs-slot-arrow { height: 40px; }
+}
