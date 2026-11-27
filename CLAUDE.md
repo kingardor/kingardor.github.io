@@ -59,6 +59,15 @@ All content lives in `src/content/index.js` — the single source imported by bo
 
 ### Chat ("Veronica" AI)
 
+- **Skins.** `/#/chat` is `ChatRoute.jsx`. It holds the engine (`useVeronica.js`: conversation, stream, seeding, history caps, `retry()`, per-turn `meta` timings) above a skin and picks the skin from `?skin=mint|versus|classic`, else the visitor's edition, else Mint. The edition switch on the chat swaps the skin in place, and the conversation survives.
+  - `skins/mint/` is "Veronica, talking figure: box No.03, opened flat".
+  - `skins/versus/` is "Training Room vs THE QUEEN".
+  - `ChatPage.jsx` is the classic Obsidian skin.
+  - Concepts, rules and killed ideas are in `skins/DESIGN.md`.
+- **Answers stream** as they're written. Thinking is the longest state, about 6–8 s in two bursts around tool calls. Skins drive tool moments from new entries in `v.live.tools`, because a tool and its block arrive in the same tick.
+- **Markdown** answers include tables and headings. `rehypeBreaks.js` turns the model's stray `<br>` into real line breaks and no other HTML.
+- **Dev-only mock:** `#/chat?mock=1` (or `mock=slow`) replays the real event order with real-shaped blocks, at no API cost.
+
 - `POST /api/chat` `{ text, history }` via `src/shared/utils/streamChat.js` (fetch + ReadableStream, inactivity timeout); typed SSE events (text/thinking/tool/block/error) render rich blocks in `src/sections/Chat/blocks/`. A stop, timeout or dropped stream keeps whatever already streamed.
 - The Worker streams every round (tool calls are stitched from deltas) — one generation per answer. `/api/chat` guards: foreign browser `Origin` → 403 (`ALLOWED_ORIGINS` + same-origin), per-IP `CHAT_LIMITER` rate limit → 429, 64KB body cap → 413, history sanitised to user/assistant string messages. Owner Mode is server-checked against the optional `OWNER_TOKEN` secret; the token never reaches the model.
 - Seeding: hero prompt bar / palette set `sessionStorage 'chat:seed'` + `#/chat?q=…`; only a stashed seed auto-sends — a bare `?q=` (e.g. a third-party link) just pre-fills the input

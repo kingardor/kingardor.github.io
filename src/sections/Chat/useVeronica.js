@@ -29,7 +29,7 @@ import { mockStream, mockEnabled } from './mockStream.js'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
 const SEED_KEY = 'chat:seed'
-const MAX_TURNS = 10
+export const MAX_TURNS = 10
 const MAX_MSG_CHARS = 4000   // mirrors the Worker's per-message cap
 const HISTORY_BUDGET = 48000 // JSON chars, leaves headroom under the 64KB body cap
 
@@ -45,7 +45,9 @@ export const TOOL_LABELS = {
   get_talks: 'Pulling stage time',
 }
 
-const EMPTY_LIVE = { content: '', thinking: '', blocks: [], tool: null, tools: [], startedAt: 0, firstThinkAt: 0, firstTextAt: 0 }
+// A fresh turn each time: blocks/tools are pushed to, so they must never be shared.
+const freshTurn = (extra) => ({ content: '', thinking: '', blocks: [], tool: null, tools: [], startedAt: 0, firstThinkAt: 0, firstTextAt: 0, error: '', ...extra })
+const EMPTY_LIVE = Object.freeze(freshTurn())
 const wordCount = (t) => (t.match(/\S+/g) || []).length
 
 // What the model sees of a turn: its prose, or a stand-in when the turn was
@@ -90,7 +92,7 @@ export default function useVeronica() {
   const [live, setLive] = React.useState(EMPTY_LIVE)
   const phaseTimerRef = React.useRef(null)
   const streamRef = React.useRef(null)
-  const pendingRef = React.useRef({ ...EMPTY_LIVE, error: '' })
+  const pendingRef = React.useRef(freshTurn())
   const frameRef = React.useRef(0)
   const lastSeedRef = React.useRef('')
   const seededOnceRef = React.useRef(false)
@@ -116,7 +118,7 @@ export default function useVeronica() {
     setPhase(next)
     if (next === 'error') phaseTimerRef.current = setTimeout(() => setPhase('idle'), 2500)
     const { content, thinking, blocks, error, tools, startedAt, firstThinkAt, firstTextAt } = pendingRef.current
-    pendingRef.current = { ...EMPTY_LIVE, error: '' }
+    pendingRef.current = freshTurn()
     const note = error || notice || ''
     if (content || blocks.length || thinking || note) {
       const meta = { startedAt, firstThinkAt, firstTextAt, doneAt: Date.now(), tools, words: wordCount(content) }
@@ -137,8 +139,8 @@ export default function useVeronica() {
     setLoading(true)
     clearTimeout(phaseTimerRef.current)
     setPhase('loading')
-    pendingRef.current = { ...EMPTY_LIVE, error: '', startedAt: Date.now() }
-    setLive({ ...EMPTY_LIVE, startedAt: pendingRef.current.startedAt })
+    pendingRef.current = freshTurn({ startedAt: Date.now() })
+    setLive(freshTurn({ startedAt: pendingRef.current.startedAt }))
     const turnsHistory = prepareHistory(before.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
     const run = mockEnabled() ? mockStream : streamChat
     streamRef.current = run({

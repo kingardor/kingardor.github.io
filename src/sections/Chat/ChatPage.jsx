@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import rehypeBreaks from './rehypeBreaks.js'
 import remarkGfm from 'remark-gfm'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowUp, Square, User } from 'lucide-react'
@@ -264,7 +265,7 @@ function AIMessage({ content, thinking, blocks, notice }) {
         }}
       >
         <ThinkingBlock text={thinking} />
-        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeBreaks]} components={mdComponents}>
           {content}
         </ReactMarkdown>
         <ChatBlocks blocks={blocks} />

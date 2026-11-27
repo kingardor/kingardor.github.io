@@ -41,6 +41,18 @@ const RESULTS = {
   get_talks: () => ({ talks: TALKS }),
 }
 
+const PLANNING = [
+  'Check whether this needs a tool or can be answered from the profile alone.',
+  'The content module is the source of truth, so every number must come from it.',
+  'Private projects have no public repo: never link or invent one.',
+  'Keep the answer under about 120 words and lead with the most concrete fact.',
+  'Use bold for names and numbers, not for whole sentences.',
+  'If a data block is coming, point at it instead of repeating it.',
+  'His title is Director AI - BLUE, exactly that, nothing longer.',
+  'End with one useful next step rather than a question list.',
+  'Double-check the figures: 98.0% for Vector, about 180 ms for Q-Pocket, 25+ customers for IRIS.',
+]
+
 const SCRIPTS = [
   {
     match: /robot|project|build/i, tools: ['get_projects'],
@@ -52,7 +64,8 @@ const SCRIPTS = [
     match: /career|timeline|experience/i, tools: ['get_career_timeline', 'get_bio'],
     thinking: 'Career question. Timeline plus the bio for the current role, then a three-beat summary: IRIS, VAIA, BLUE.',
     thinking2: 'Got both. Lead with the arc, not the list.',
-    text: "Short version: **three video AI platforms in eight years.**\n\n1. **IRIS** at Integration Wizards, built on NVIDIA DeepStream. It reached 25+ enterprise customers, and the company was acquired.\n2. **VAIA** at Avathon, the SDK that cross-compiles between dGPU servers and Jetson.\n3. **BLUE**, where he is Director AI - BLUE: a semantic video data lake for the cameras you already own.\n\nThe full timeline is below.",
+    // Real answers often use headings and tables (seen in production): keep one here.
+    text: "## Akash James – Career Overview\n\nShort version: **three video AI platforms in eight years.**\n\n| Period | Company | Role | What he built |\n|---|---|---|---|\n| 2018 – 2022 | Integration Wizards | AI Architect | **IRIS** on NVIDIA DeepStream with custom TensorRT kernels: 25+ enterprise customers, then an acquisition |\n| 2022 – 2024 | Avathon (formerly SparkCognition) | Lead AI Architect | **VAIA**, the SDK that cross-compiles between dGPU servers and Jetson |\n| 2023 – 2024 | UC Berkeley | Research Scholar | Wildfire detection across ~1,000 Caltrans cameras |\n| 2025 – now | BLUE | Director AI | A semantic video data lake.<br>• **Hyper Memory**: reads footage once<br>• **BLUE Agent**: one agent per camera |\n\n### Why it matters\n- Every platform shipped to paying customers.\n- Each one moved closer to the edge.\n\nThe full timeline is below.",
   },
   {
     match: /talk|video|gtc|youtube|stage/i, tools: ['get_youtube_videos', 'get_talks'],
@@ -93,7 +106,10 @@ export function mockStream({ text, onEvent, onDone }) {
   let closed = false
   let t = 0
   const at = (ms, fn) => { t += ms * slow; timers.push(setTimeout(() => { if (!closed) fn() }, t)) }
-  const think = (txt) => { for (const chunk of (txt.match(/.{1,6}/g) || [])) at(30, () => onEvent({ t: 'thinking', v: chunk })) }
+  // Real turns think ~1,000 characters per burst (two bursts, ~6-8s): pad the
+  // script's lead with plausible planning so skins are tested at that volume.
+  const pad = (txt) => txt && `${txt} ${PLANNING.slice(0, 9).join(' ')}`
+  const think = (txt) => { for (const chunk of (pad(txt).match(/.{1,6}/g) || [])) at(24, () => onEvent({ t: 'thinking', v: chunk })) }
   think(s.thinking)
   for (const name of s.tools) {
     at(120, () => onEvent({ t: 'tool', name, status: 'running' }))
