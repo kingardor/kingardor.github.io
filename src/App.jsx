@@ -4,7 +4,7 @@ import { useLenis } from './shared/components/lenisContext.js'
 import Home from './components/portfolio/Home'
 import CommandPalette from './components/os/CommandPalette.jsx'
 
-const ChatPage = React.lazy(() => import('./sections/Chat/ChatPage'))
+const ChatPage = React.lazy(() => import('./sections/Chat/ChatRoute'))
 const LabRouter = React.lazy(() => import('./proposals/LabRouter.jsx'))
 // Peer-review build: the front door picks between the two candidate designs.
 const EditionPicker = React.lazy(() => import('./editions/EditionPicker.jsx'))

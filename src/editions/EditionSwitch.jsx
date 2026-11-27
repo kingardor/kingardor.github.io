@@ -13,9 +13,15 @@ const NARROW = '(max-width: 900px), (max-width: 1000px) and (max-height: 500px)'
  * back when you scroll up or reach the end. Open viewers (box, VS screen)
  * hide it via CSS.
  */
-export default function EditionSwitch({ current }) {
-  const [on, setOn] = useState(false)
+/**
+ * onPick: handle the choice in place (the chat swaps Veronica's skin) instead
+ * of navigating. always: skip the scroll-driven show/hide (pages that don't
+ * scroll the window).
+ */
+export default function EditionSwitch({ current, onPick, always = false }) {
+  const [on, setOn] = useState(always)
   useEffect(() => {
+    if (always) return
     const root = document.documentElement
     root.classList.add('ed-has-switch')
     const narrow = window.matchMedia(NARROW)
@@ -41,7 +47,7 @@ export default function EditionSwitch({ current }) {
       return false
     })
     return () => { off(); root.classList.remove('ed-has-switch', 'ed-switch-on', 'ed-past-title') }
-  }, [])
+  }, [always])
   return (
     <nav className={`ed-switch${on ? ' is-on' : ''}`} aria-label="Site edition">
       <a className="ed-switch-k" href="#/" aria-label="All editions">Edition</a>
@@ -51,7 +57,7 @@ export default function EditionSwitch({ current }) {
           type="button"
           className={`ed-switch-b ed-${k}${k === current ? ' is-on' : ''}`}
           aria-pressed={k === current}
-          onClick={() => { if (k !== current) switchEdition(k) }}
+          onClick={() => { if (k !== current) (onPick ? onPick(k) : switchEdition(k)) }}
         >
           {EDITIONS[k].name}
         </button>

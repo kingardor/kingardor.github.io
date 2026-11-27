@@ -1,21 +1,14 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
+import rehypeBreaks from './rehypeBreaks.js'
 import remarkGfm from 'remark-gfm'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowUp, Square, User } from 'lucide-react'
 import { ASSISTANT, CHAT_SUGGESTIONS } from '../../content/index.js'
-import parseSearch from '../../shared/utils/parseSearch'
-import { streamChat } from '../../shared/utils/streamChat'
 import ThinkingBlock from './components/ThinkingBlock'
 import ChatBlocks    from './blocks/ChatBlocks'
 import { Entropy }   from './components/Entropy'
 import { lastEdition } from '../../editions/editions.js'
-
-const API_BASE = import.meta.env.VITE_API_BASE ?? ''
-const SEED_KEY = 'chat:seed'
-const MAX_TURNS = 10
-const MAX_MSG_CHARS = 4000   // mirrors the Worker's per-message cap
-const HISTORY_BUDGET = 48000 // JSON chars, leaves headroom under the 64KB body cap
 
 const TOOL_STATUS_LABELS = {
   get_youtube_videos:  'SCANNING VIDEOS...',
@@ -27,37 +20,6 @@ const TOOL_STATUS_LABELS = {
   get_honours:         'CHECKING HONOURS...',
   get_blue_work:       'OPENING THE BLUE FILES...',
   get_talks:           'PULLING STAGE TIME...',
-}
-
-/* ─── Helpers ────────────────────────────────────────────────────────────── */
-// What the model sees of a turn: its prose, or a stand-in when the turn was
-// only data blocks / an interruption, so roles keep alternating.
-function turnText(m) {
-  if (m.content) return m.content
-  if (m.role !== 'user' && m.blocks?.length) return `[showed: ${m.blocks.map(b => b.type).join(', ')}]`
-  if (m.role !== 'user' && m.notice) return `[${m.notice.toLowerCase()}]`
-  return ''
-}
-
-// Last MAX_TURNS turns, each capped like the Worker caps them, oldest dropped
-// until the JSON fits under the Worker's 64KB body limit. An Owner Mode
-// command is pinned so it doesn't silently expire.
-function prepareHistory(history) {
-  const arr = Array.isArray(history) ? history : []
-  const clean = arr
-    .map(m => ({ role: m.role, content: turnText(m).slice(0, MAX_MSG_CHARS) }))
-    .filter(m => m.content)
-  const base = (clean.length && clean[clean.length - 1]?.role === 'user') ? clean.slice(0, -1) : clean.slice()
-  const userIdxs = []
-  for (let i = 0; i < base.length; i++) if (base[i]?.role === 'user') userIdxs.push(i)
-  let out = userIdxs.length <= MAX_TURNS ? base : base.slice(userIdxs[userIdxs.length - MAX_TURNS])
-  while (out.length > 1 && JSON.stringify(out).length > HISTORY_BUDGET) out = out.slice(1)
-  const admin = [...base].reverse().find(m => m.role === 'user' && /^\/admin\b/i.test(m.content.trim()))
-  if (admin && !out.includes(admin)) out = [admin, ...out]
-  return out
-}
-function stripQueryFromHash() {
-  if (location.hash !== '#/chat') { try { history.replaceState(null, '', '#/chat') } catch {} }
 }
 
 /* ─── Veronica "V" sigil ─────────────────────────────────────────────────── */
@@ -303,7 +265,7 @@ function AIMessage({ content, thinking, blocks, notice }) {
         }}
       >
         <ThinkingBlock text={thinking} />
-        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeBreaks]} components={mdComponents}>
           {content}
         </ReactMarkdown>
         <ChatBlocks blocks={blocks} />
@@ -528,18 +490,12 @@ function InputBar({ value, onChange, onSubmit, loading, onStop }) {
 }
 
 /* ─── Main page ──────────────────────────────────────────────────────────── */
-export default function ChatPage() {
-  const [messages, setMessages] = React.useState([])
-  const [input, setInput] = React.useState('')
-  const [loading, setLoading] = React.useState(false)
-  const [toolStatus, setToolStatus] = React.useState(null)
-  const [liveThinking, setLiveThinking] = React.useState('')
-  const [chatPhase, setChatPhase] = React.useState('idle')
-  const phaseTimerRef = React.useRef(null)
-  const streamRef = React.useRef(null)
-  const pendingRef = React.useRef({ content: '', thinking: '', blocks: [] })
-  const lastSeedRef = React.useRef('')
-  const seededOnceRef = React.useRef(false)
+/** The classic (Obsidian Monolith) skin. The engine comes from ChatRoute. */
+export default function ChatPage({ v }) {
+  const { messages, input, setInput, loading, live, send, stop } = v
+  const chatPhase = v.phase
+  const toolStatus = live.tool ? (TOOL_STATUS_LABELS[live.tool.name] || 'PROCESSING...') : null
+  const liveThinking = live.thinking
   const endRef = React.useRef(null)
   const scrollAreaRef = React.useRef(null)
 
@@ -555,107 +511,6 @@ export default function ChatPage() {
   React.useEffect(() => {
     if (loading) scrollToBottom()
   }, [loading, scrollToBottom])
-
-  // Ends the current turn. Whatever already streamed is kept as the reply —
-  // a stop, timeout or dropped connection never throws an answer away.
-  const finishTurn = React.useCallback((notice, phase = 'idle') => {
-    streamRef.current = null
-    setLoading(false)
-    setToolStatus(null)
-    setLiveThinking('')
-    clearTimeout(phaseTimerRef.current)
-    setChatPhase(phase)
-    if (phase === 'error') phaseTimerRef.current = setTimeout(() => setChatPhase('idle'), 2500)
-    const { content, thinking, blocks, error } = pendingRef.current
-    pendingRef.current = { content: '', thinking: '', blocks: [], error: '' }
-    const note = error || notice || ''
-    if (content || blocks.length || thinking || note) {
-      setMessages(m => [...m, { role: 'model', content, thinking, blocks, notice: note }])
-    }
-  }, [])
-
-  const stop = React.useCallback(() => {
-    if (!streamRef.current) return
-    try { streamRef.current.close() } catch {}
-    finishTurn('INTERRUPTED')
-  }, [finishTurn])
-
-  const appendUser = text => setMessages(m => [...m, { role: 'user', content: text, thinking: '', blocks: [] }])
-
-  const send = React.useCallback(async (text, { skipAppendUser = false } = {}) => {
-    const q = (text || '').trim()
-    if (!q || loading) return
-    try { streamRef.current?.close?.() } catch {}
-    streamRef.current = null
-    if (!skipAppendUser) appendUser(q)
-    setInput('')
-    setLoading(true)
-    clearTimeout(phaseTimerRef.current)
-    setChatPhase('loading')
-    setToolStatus(null)
-    setLiveThinking('')
-    // Reset buffer — accumulate silently, render when the turn ends
-    pendingRef.current = { content: '', thinking: '', blocks: [], error: '' }
-    const turnsHistory = prepareHistory(messages.concat({ role: 'user', content: q, thinking: '', blocks: [] }))
-    const handle = streamChat({
-      base: API_BASE,
-      text: q,
-      history: turnsHistory,
-      onEvent: (event) => {
-        if (event.t === 'text') {
-          pendingRef.current.content += event.v
-        } else if (event.t === 'thinking') {
-          pendingRef.current.thinking += event.v
-          setLiveThinking(t => t + event.v)
-        } else if (event.t === 'tool') {
-          setToolStatus(TOOL_STATUS_LABELS[event.name] || 'PROCESSING...')
-        } else if (event.t === 'block') {
-          pendingRef.current.blocks.push({ type: event.name, data: event.data })
-          setToolStatus(null)
-        } else if (event.t === 'error') {
-          pendingRef.current.error = event.v
-        }
-      },
-      onDone: () => finishTurn('', pendingRef.current.error ? 'error' : 'idle'),
-      onError: (err) => finishTurn(err?.message || 'Veronica is unavailable right now.', 'error'),
-    })
-    streamRef.current = handle
-  }, [loading, messages, finishTurn])
-
-  // The hero prompt bar and ⌘K stash their question in sessionStorage before
-  // navigating, so a stashed seed is the visitor's own words: send it. A bare
-  // `?q=` can come from any third-party link, so it only pre-fills the input.
-  const seedFromAny = React.useCallback(() => {
-    if (seededOnceRef.current) return
-    const q = (parseSearch(location.hash.split('?')[1] || '').q || '').trim()
-    let stash = ''
-    try { stash = (sessionStorage.getItem(SEED_KEY) || '').trim() } catch {}
-    const seed = stash || q
-    if (seed && seed !== lastSeedRef.current) {
-      lastSeedRef.current = seed
-      try { sessionStorage.removeItem(SEED_KEY) } catch {}
-      seededOnceRef.current = true
-      if (stash) setTimeout(() => send(stash), 0)
-      else setInput(q.slice(0, 2000))
-      stripQueryFromHash()
-    }
-  }, [send])
-
-  React.useLayoutEffect(() => {
-    seedFromAny()
-    const t1 = setTimeout(seedFromAny, 120)
-    const t2 = setTimeout(seedFromAny, 360)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [seedFromAny])
-
-  React.useEffect(() => {
-    const onHash = () => { seededOnceRef.current = false; seedFromAny() }
-    window.addEventListener('hashchange', onHash)
-    return () => window.removeEventListener('hashchange', onHash)
-  }, [seedFromAny])
-
-  React.useEffect(() => () => { try { streamRef.current?.close?.() } catch {} }, [])
-  React.useEffect(() => () => clearTimeout(phaseTimerRef.current), [])
 
   const isEmpty = messages.length === 0
 
