@@ -277,10 +277,10 @@
 @keyframes vs-fade { 0% { opacity: 0; } 15% { opacity: 0.6; } 100% { opacity: 0; } }
 
 /* ═══ Super cut-in ═══ */
-/* On screen for 2.4s: a 0.15s wipe in, ~1.95s to read, a 0.3s wipe out.
+/* On screen for 1.4s: a 0.15s wipe in, 1s to read, a 0.25s wipe out.
    Keep CUT_MS in CutIn.jsx in step with --vs-cut. */
 .vs-cutin {
-  --vs-cut: 2.4s;
+  --vs-cut: 1.4s;
   position: fixed; inset: 0; z-index: 55; pointer-events: none;
   display: grid; align-items: center;
 }
@@ -314,23 +314,23 @@
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.8rem, 7.5vw, 7rem); line-height: 0.85;
   color: var(--vs-paper); white-space: nowrap; --vs-mx: 5px;
 }
-/* Easing lives in the keyframes so the long hold stays still while the
-   wipes stay snappy (6% ≈ 0.15s in, 87.5% → 100% ≈ 0.3s out). */
+/* Easing lives in the keyframes so the hold stays still while the wipes
+   stay snappy (11% ≈ 0.15s in, 82% → 100% ≈ 0.25s out). */
 @keyframes vs-cut {
   0% { clip-path: inset(0 0 0 100%); animation-timing-function: cubic-bezier(.3,.9,.2,1); }
-  6% { clip-path: inset(0 0 0 0); }
-  87.5% { clip-path: inset(0 0 0 0); opacity: 1; animation-timing-function: cubic-bezier(.6,0,.8,.4); }
+  11% { clip-path: inset(0 0 0 0); }
+  82% { clip-path: inset(0 0 0 0); opacity: 1; animation-timing-function: cubic-bezier(.6,0,.8,.4); }
   100% { clip-path: inset(0 100% 0 0); opacity: 0.6; }
 }
 @keyframes vs-cutback {
   0% { clip-path: inset(0 100% 0 0); animation-timing-function: cubic-bezier(.3,.9,.2,1); }
-  6% { clip-path: inset(0 0 0 0); }
-  87.5% { clip-path: inset(0 0 0 0); opacity: 1; animation-timing-function: cubic-bezier(.6,0,.8,.4); }
+  11% { clip-path: inset(0 0 0 0); }
+  82% { clip-path: inset(0 0 0 0); opacity: 1; animation-timing-function: cubic-bezier(.6,0,.8,.4); }
   100% { clip-path: inset(0 0 0 100%); opacity: 0.6; }
 }
 @keyframes vs-cuttext {
   0% { transform: translate(18vw, -50%); animation-timing-function: cubic-bezier(.2,.9,.2,1); }
-  8% { transform: translate(0, -50%); }
+  14% { transform: translate(0, -50%); }
   100% { transform: translate(-4vw, -50%); }
 }
 @keyframes vs-streak { from { transform: translateX(20%); } to { transform: translateX(-60%); } }
