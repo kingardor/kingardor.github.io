@@ -452,9 +452,65 @@ html { transition: --vs-act 0.8s ease; }
   .vs-combo-hits { font-size: 1rem; }
   .vs-mode { padding: 58vh 0 8vh; }
   .vs-mode-sub { font-size: 0.62rem; letter-spacing: 0.1em; }
-  .vs-cutin-eyes { right: -8vw; opacity: 0.9; }
-  .vs-cutin-text { left: 18vw; }
   .vs-btn { font-size: 1.15rem; }
+}
+
+/* ═══ Banners on phones: manga lettering ═══
+   At phone size the desktop banners smear: the white misregistration copy
+   blurs white letters, and the cut-in's name sat on top of the eye crop.
+   Here the letters are inked (white fill, ink keyline, one spot-colour
+   offset), the cut-in stacks eyes over name, and nothing runs off-screen.
+   Phones held sideways (short screens) get the same treatment. */
+@media (max-width: 720px), (max-height: 500px) {
+  .vs-call-big, .vs-cutin-name {
+    -webkit-text-stroke: 3px var(--vs-ink); paint-order: stroke fill;
+    --vs-mx: 4px; --vs-my: 3px;
+  }
+  .vs-call-big::after, .vs-cutin-name::after { display: none; }
+
+  /* ROUND N / FINAL ROUND / BONUS STAGE / finishers */
+  .vs-call-plate {
+    transform: translateY(-50%) rotate(-6deg);
+    padding: 2.4vh 0 2.8vh;
+    background: var(--vs-dots) 0 0 / 5px 5px, var(--vs-ink);
+  }
+  .vs-call-big { font-size: min(16vw, 5rem); }
+  .vs-call-small { font-size: min(6.4vw, 1.7rem); margin-top: 0.3em; }
+  .vs-call-finisher .vs-call-big { -webkit-text-stroke: 0; }
+  .vs-call-finisher .vs-call-small {
+    font-size: 0.68rem; line-height: 1.45; letter-spacing: 0.06em;
+    white-space: normal; text-align: center; max-width: 84vw; margin-top: 0.6em;
+  }
+
+  /* Super cut-in: eye line across the top of the strip, name centred below */
+  .vs-cutin-strip {
+    left: -10vw; width: 120vw;
+    height: clamp(170px, 26vh, 220px);
+    margin-top: 6vh;
+    transform: rotate(-7deg);
+    background:
+      radial-gradient(circle, color-mix(in srgb, var(--vs-spot) 55%, transparent) 1px, transparent 1.6px) 0 0 / 6px 6px,
+      rgba(var(--vs-ink-rgb), 0.92);
+  }
+  .vs-cutin-eyes {
+    right: auto; left: 50%; translate: -50% 0;
+    height: 54%; opacity: 0.8;
+    -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent), linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    mask-image: linear-gradient(180deg, #000 60%, transparent), linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    -webkit-mask-composite: source-in; mask-composite: intersect;
+  }
+  .vs-cutin-text {
+    left: 0; right: 0; top: auto; bottom: 9%;
+    justify-items: center; text-align: center;
+    animation-name: vs-cuttext-m;
+  }
+  .vs-cutin-kicker { justify-self: center; font-size: 0.62rem; letter-spacing: 0.24em; margin-bottom: 5px; }
+  .vs-cutin-name { font-size: min(15vw, 4.4rem); }
+}
+@keyframes vs-cuttext-m {
+  0% { transform: translateX(18vw); animation-timing-function: cubic-bezier(.2,.9,.2,1); }
+  14% { transform: translateX(0); }
+  100% { transform: translateX(-4vw); }
 }
 
 /* ═══ Reduced motion: still, complete, readable ═══ */
