@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { ROSTER, BOSS } from './data.js'
 import { ModeHeader } from './StoryMode.jsx'
-import { reduced, shake, flash, SPOT } from './fx.js'
+import { reduced, shake, flash, spot } from './fx.js'
 import { Burst } from './Art.jsx'
 import VsScreen from './VsScreen.jsx'
 
@@ -43,7 +43,7 @@ export default function CharacterSelect() {
     setUnlocked(true)
     if (select) setActive('boss')
     if (!reduced()) {
-      flash(0.8, SPOT)
+      flash(0.8, spot())
       shake(bossRef.current?.closest('.vs-select-grid'), 9, 360, 80)
     }
   }

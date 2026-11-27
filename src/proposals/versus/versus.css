@@ -1,22 +1,26 @@
 /* ════════════════════════════════════════════════════════════════════
    VERSUS: a manga fight page in motion. Palette "Manga Ink": black, white
-   and one spot red. The portrait behind it is graded to match (black and
-   white, one red light).
+   and ONE spot colour per chapter (ChapterInk.jsx: house red on the title,
+   then ember, cyan, cobalt... as the acts change). He stays in colour; the
+   stage's right-hand light and the wall take the chapter's ink.
    Base tokens, print layer, HUD, combo, credits, announcer, cut-ins,
    shared shapes. Every selector is .vs- prefixed.
    ════════════════════════════════════════════════════════════════════ */
 
 /* Ink roles (fx.js holds SPOT/HI for JS; keep them in step):
      --vs-hi    the main highlight: HUD bars, headlines, buttons (ink text on it)
-     --vs-spot  the one spot colour: offset shadows, misregistration, Player 2
+     --vs-spot  the chapter's spot colour: offset shadows, misregistration,
+                tags, Player 2. Follows --vs-act (set on <html> by ChapterInk);
+                tints use color-mix() on it so they cross-fade too.
      --vs-p1    Player 1 (him)      --vs-boss  the boss / stage ground
    .vs-print sits beside .vs-root (not inside), so it gets the tokens too. */
+@property --vs-act { syntax: '<color>'; inherits: true; initial-value: #FF2A2A; }
+html { transition: --vs-act 0.8s ease; }
 .vs-root, .vs-print {
   --vs-ink: #0A0A0A;
   --vs-ink-rgb: 10, 10, 10;
   --vs-paper: #F4F1EA;
-  --vs-spot: #FF2A2A;
-  --vs-spot-rgb: 255, 42, 42;
+  --vs-spot: var(--vs-act, #FF2A2A);
   --vs-hi: #FFFFFF;
   --vs-hi-rgb: 255, 255, 255;
   --vs-p1: #FFFFFF;
@@ -55,21 +59,25 @@
 }
 .vs-skip:focus { transform: none; }
 
-/* ── The portrait, graded: he and the wall go black and white, the
-   right-hand light burns spot red. Uses the stage's gel layers
-   (src/components/portrait/portrait.css); .vs-film is Versus's stage only. ── */
+/* ── The portrait, re-lit per chapter: he stays in colour, his side's light
+   (left) burns white, the right-hand light and its rim take the chapter's
+   ink, and the wall goes ink-dark with a hint of it. Uses the stage's gel
+   layers (src/components/portrait/portrait.css); .vs-film is Versus only. ── */
 .vs-film {
   background: #0A0A0A;
-  --ps-gel-wall: #808080;
-  --ps-gel-subject: #808080;
+  --ps-gel-wall: color-mix(in srgb, var(--vs-act, #FF2A2A) 30%, #808080);
   --ps-gel-warm: #808080;
-  --ps-gel-cool: #FF2A2A;
+  --ps-gel-cool: var(--vs-act, #FF2A2A);
   --ps-glow-warm: rgba(128, 128, 128, 0.22);
-  --ps-glow-cool: rgba(255, 42, 42, 0.22);
+  --ps-glow-cool: color-mix(in srgb, var(--vs-act, #FF2A2A) 22%, transparent);
   --ps-sweep-warm: #A0A0A0;
-  --ps-sweep-cool: #FF5F5F;
+  --ps-sweep-cool: color-mix(in srgb, var(--vs-act, #FF2A2A) 75%, white);
 }
 .vs-film .ps-gel { display: block; }
+/* Gels must paint below the cursor-steered key light (see "Gels" in
+   portrait.css): lift the key, and the lens/LED above it, out of the way. */
+.vs-film .ps-key { z-index: 1; }
+.vs-film .ps-lens, .vs-film .ps-led { z-index: 2; }
 
 /* ── Print layer: halftone screen + grain over the film ── */
 .vs-print {
@@ -82,7 +90,7 @@
 }
 .vs-print::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(115deg, rgba(var(--vs-spot-rgb), 0.16), transparent 30%, transparent 72%, rgba(var(--vs-hi-rgb), 0.08));
+  background: linear-gradient(115deg, color-mix(in srgb, var(--vs-spot) 16%, transparent), transparent 30%, transparent 72%, rgba(var(--vs-hi-rgb), 0.08));
   mix-blend-mode: screen;
 }
 
@@ -316,7 +324,7 @@
   margin-top: 26vh;
   transform: rotate(-12deg);
   background:
-    radial-gradient(circle, rgba(var(--vs-spot-rgb), 0.55) 1px, transparent 1.6px) 0 0 / 6px 6px,
+    radial-gradient(circle, color-mix(in srgb, var(--vs-spot) 55%, transparent) 1px, transparent 1.6px) 0 0 / 6px 6px,
     rgba(var(--vs-ink-rgb), 0.8);
   border-top: 4px solid var(--vs-hi); border-bottom: 4px solid var(--vs-spot);
   overflow: hidden;

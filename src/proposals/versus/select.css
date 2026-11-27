@@ -44,7 +44,7 @@
   color: var(--vs-paper); text-transform: uppercase;
   text-shadow: -5px 3px 0 var(--vs-spot), 4px -2px 0 rgba(var(--vs-hi-rgb), 0.9);
 }
-.vs-ink-hi .vs-pv-name { text-shadow: -5px 3px 0 var(--vs-hi), 4px -2px 0 rgba(var(--vs-spot-rgb), 0.9); }
+.vs-ink-hi .vs-pv-name { text-shadow: -5px 3px 0 var(--vs-hi), 4px -2px 0 color-mix(in srgb, var(--vs-spot) 90%, transparent); }
 .vs-pv-kicker { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
 .vs-pv-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; margin-top: 6px; background: rgba(244, 241, 234, 0.4); border: 2px solid var(--vs-paper); }
 .vs-pv-stats div { background: var(--vs-ink); padding: 8px 10px 6px; min-width: 0; }
@@ -80,7 +80,7 @@
 .vs-pv-boss { background: var(--vs-boss); clip-path: polygon(0 0, 100% 0, 84% 100%, 0 100%); }
 .vs-pv-boss::before {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle, rgba(var(--vs-spot-rgb), 0.5) 1.2px, transparent 1.8px) 0 0 / 7px 7px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--vs-spot) 50%, transparent) 1.2px, transparent 1.8px) 0 0 / 7px 7px;
 }
 .vs-pv-boss-burst { position: absolute; left: 8%; top: 4%; width: 70%; opacity: 0.9; }
 .vs-pv-boss-name {
@@ -140,7 +140,7 @@
 /* the locked slot */
 .vs-tile-boss {
   background:
-    radial-gradient(circle, rgba(var(--vs-spot-rgb), 0.6) 1.2px, transparent 1.8px) 0 0 / 6px 6px,
+    radial-gradient(circle, color-mix(in srgb, var(--vs-spot) 60%, transparent) 1.2px, transparent 1.8px) 0 0 / 6px 6px,
     var(--vs-ink);
   border-style: dashed;
 }

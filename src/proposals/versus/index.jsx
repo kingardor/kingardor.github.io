@@ -15,6 +15,7 @@ import Trophies from './Trophies.jsx'
 import Continue from './Continue.jsx'
 import '../shared/film.css' // pins the stage (.lab-film); also loaded outside the lab router
 import './fonts.css'
+import ChapterInk from './ChapterInk.jsx'
 import './versus.css'
 import './sections.css'
 import './select.css'
@@ -31,6 +32,7 @@ export default function Versus() {
   return (
     <>
       <FilmStage acts={ACTS} layerClass="lab-film vs-film" scrim={false} compactActs={8} pane={null} />
+      <ChapterInk />
       <div className="vs-print" aria-hidden="true" />
       <main className={`lab-root vs-root${live ? ' is-live' : ''}`}>
         <a className="vs-skip" href="#vs-story">Skip to story mode</a>

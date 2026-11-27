@@ -123,7 +123,10 @@ export function useInView(margin = '0px') {
   return [ref, inView]
 }
 
-// The two inks for JS (flashes, keyframes); keep in step with --vs-spot and
-// --vs-hi in versus.css.
+// The inks for JS (flashes, keyframes); keep in step with versus.css.
+// SPOT is the house red (the chat skin uses it); spot() is the current
+// chapter's colour on the Versus page (--vs-act, set by ChapterInk).
 export const SPOT = '#FF2A2A'
 export const HI = '#FFFFFF'
+export const spot = () => (typeof document === 'undefined' ? SPOT
+  : getComputedStyle(document.documentElement).getPropertyValue('--vs-act').trim() || SPOT)

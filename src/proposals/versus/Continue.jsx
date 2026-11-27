@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { EMAIL, LINKS, PROFILE } from '../../content/index.js'
-import { useInView, reduced, flash, shake, SPOT, HI } from './fx.js'
+import { useInView, reduced, flash, shake, spot, HI } from './fx.js'
 import { Burst, Mis } from './Art.jsx'
 
 // What the visitor is bringing; sets the mail's subject line.
@@ -96,7 +96,7 @@ export default function Continue() {
 
   useEffect(() => {
     if (!over || reduced()) return
-    flash(0.8, SPOT)
+    flash(0.8, spot())
     shake(overRef.current, 10, 380, 120)
   }, [over])
 

@@ -19,6 +19,23 @@ export const SUPERS = [
   'REC MODE', 'AFTERGLOW', 'REFLECTION', 'CLOSE-UP',
 ]
 
+/**
+ * Chapter colours: the page is black, white and ONE spot colour, and the spot
+ * changes with the act, like the spot ink on each chapter of a manga volume.
+ * One per act, named after its super (data.js SUPERS); the title and the
+ * last act print in the house red.
+ */
+export const CHAPTER_INKS = [
+  '#FF2A2A', // KEY LIGHT   · title
+  '#FF6B1A', // EMBER RUSH  · story mode, final round
+  '#22D3EE', // LENS LOCK   · move list
+  '#4D8BFF', // COLD SNAP   · character select, training
+  '#FF2A2A', // REC MODE    · replays
+  '#B06CFF', // AFTERGLOW   · lore
+  '#FFAE1F', // REFLECTION  · trophies (amber: pure gold goes olive on the dark wall)
+  '#FF2A2A', // CLOSE-UP    · continue
+]
+
 export const MODES = [
   'TITLE', 'STORY MODE', 'MOVE LIST', 'CHARACTER SELECT',
   'REPLAY THEATRE', 'LORE CODEX', 'TROPHY ROOM', 'CONTINUE?',

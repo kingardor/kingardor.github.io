@@ -342,7 +342,7 @@
   color: var(--vs-ink); background: var(--vs-hi); padding: 6px 12px;
 }
 .vs-move { border-bottom: 1px solid rgba(244, 241, 234, 0.18); outline-offset: -3px; transition: background 0.12s; }
-.vs-move:hover, .vs-move:focus-visible { background: rgba(var(--vs-spot-rgb), 0.14); }
+.vs-move:hover, .vs-move:focus-visible { background: color-mix(in srgb, var(--vs-spot) 14%, transparent); }
 .vs-move > * { padding: 14px 12px; vertical-align: middle; text-align: left; }
 .vs-move-name { width: 22%; }
 .vs-move-name span { display: block; font-family: var(--vs-display); font-weight: 900; font-size: 1.7rem; line-height: 0.92; letter-spacing: 0.01em; }
