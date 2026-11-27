@@ -25,6 +25,11 @@ export default function ChatRoute() {
   const setSkin = React.useCallback((next) => {
     if (!SKINS[next]) return
     if (next !== 'classic') rememberEdition(next)
+    // Keep the URL in step so a reload (or a shared link) shows the same skin.
+    const [path, query = ''] = location.hash.split('?')
+    const params = query.split('&').filter(kv => kv && !kv.startsWith('skin='))
+    params.unshift(`skin=${next}`)
+    try { history.replaceState(history.state, '', `${path}?${params.join('&')}`) } catch { /* ignore */ }
     setSkinState(next)
   }, [])
   const Skin = SKINS[skin]
