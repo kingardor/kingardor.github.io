@@ -118,6 +118,38 @@
   transform: rotate(-4deg);
 }
 .vs-round-right .vs-round-word { color: var(--vs-spot); }
+.vs-round-clear {
+  font-weight: 500; font-size: 0.7rem; letter-spacing: 0.22em;
+  color: var(--vs-ink); background: var(--vs-hi); padding: 2px 8px 1px; transform: skewX(-12deg);
+}
+
+/* ── Arcade ladder: the boss (current job) sits at the top of Story ── */
+.vs-story .vs-final { padding: 0 0 16vh; }
+.vs-story .vs-final-head { padding-top: 4vh; }
+.vs-ladder-label {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;
+  width: min(72rem, 100%); margin-bottom: 14vh;
+  font-size: 0.74rem; letter-spacing: 0.24em; font-weight: 500;
+  border-bottom: 3px solid var(--vs-spot); padding-bottom: 8px;
+  text-shadow: 0 0 10px rgba(var(--vs-ink-rgb), 0.9);
+}
+
+/* The origin: the oldest roles, combined into one wide stage */
+.vs-origin { width: min(56rem, 70vw); }
+.vs-origin-list { display: grid; margin: 4px 0 2px; border-top: 1px dashed rgba(244, 241, 234, 0.35); }
+.vs-origin-list li {
+  display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); column-gap: 18px; row-gap: 4px;
+  padding: 14px 0; border-bottom: 1px dashed rgba(244, 241, 234, 0.35);
+}
+.vs-origin-when {
+  grid-row: span 2; font-family: var(--vs-display); font-weight: 900; font-size: 1.5rem; line-height: 1;
+  color: var(--vs-spot);
+}
+.vs-origin-who { font-size: 0.9rem; color: var(--vs-paper); }
+.vs-origin-who b { font-weight: 700; letter-spacing: 0.04em; }
+.vs-origin-what { font-size: 0.86rem; color: rgba(244, 241, 234, 0.8); max-width: 40rem; }
+/* ACQUIRED! belongs to the top row (the acquisition), so the stamp sits top-right */
+.vs-origin .vs-finisher { top: -12vh; bottom: auto; right: -6vw; }
 .vs-round-org {
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.8rem, 5vw, 4.8rem); line-height: 0.86;
   letter-spacing: 0.01em; color: var(--vs-paper);

@@ -38,25 +38,32 @@ export const CHAPTER_INKS = [
 ]
 
 export const MODES = [
-  'TITLE', 'STORY MODE', 'MOVE LIST', 'CHARACTER SELECT',
+  'TITLE', 'ARCADE LADDER', 'MOVE LIST', 'CHARACTER SELECT',
   'REPLAY THEATRE', 'LORE CODEX', 'TROPHY ROOM', 'CONTINUE?',
 ]
 
-// ── Story mode ──────────────────────────────────────────────────────────
+// ── Arcade ladder (the career, newest at the top, like a resume) ────────
+// The boss stage is the current job (FINAL). Below it, the stages he cleared,
+// newest first, with the assists slotted in by start date. The oldest roles
+// share one stage, THE ORIGIN. Stages are numbered from the bottom, so reading
+// down the page counts down the ladder he climbed.
 const find = (org, role) => CAREER.find(c => c.org === org && (!role || c.role === role))
 
-export const ROUNDS = [
-  { c: find('iB Hubs'), word: 'BOOT UP', org: 'iB HUBS' },
-  { c: find('Integration Wizards Solutions', 'IoT & ML Engineer'), word: 'LIFT OFF', org: 'INTEGRATION WIZARDS' },
-  {
-    c: find('Integration Wizards Solutions', 'AI Architect'), word: 'SHIP IT', org: 'INTEGRATION WIZARDS',
-    finisher: { big: 'ACQUIRED!', small: 'Integration Wizards → SparkCognition · Mar 2022' },
-  },
-  { assist: find('NVIDIA'), label: 'ASSIST', org: 'NVIDIA' },
-  { c: find('Avathon (formerly SparkCognition)'), word: 'CROSS-COMPILE', org: 'AVATHON' },
+export const LADDER = [
+  { c: find('Sentics'), word: 'FUSE EVERYTHING', org: 'SENTICS' },
   { assist: find('HP'), label: 'ASSIST', org: 'Z BY HP' },
   { c: find('UC Berkeley'), word: 'FIRE WATCH', org: 'UC BERKELEY' },
-  { c: find('Sentics'), word: 'FUSE EVERYTHING', org: 'SENTICS' },
+  { c: find('Avathon (formerly SparkCognition)'), word: 'CROSS-COMPILE', org: 'AVATHON' },
+  { assist: find('NVIDIA'), label: 'ASSIST', org: 'NVIDIA' },
+  {
+    origin: [
+      { c: find('Integration Wizards Solutions', 'AI Architect'), org: 'INTEGRATION WIZARDS' },
+      { c: find('Integration Wizards Solutions', 'IoT & ML Engineer'), org: 'INTEGRATION WIZARDS' },
+      { c: find('iB Hubs'), org: 'iB HUBS' },
+    ],
+    word: 'THE ORIGIN',
+    finisher: { big: 'ACQUIRED!', small: 'Integration Wizards → SparkCognition · Mar 2022' },
+  },
 ]
 
 export const FINAL = find('BLUE')

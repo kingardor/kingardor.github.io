@@ -57,11 +57,13 @@ layouts, sound or catchphrases.
 2. **Combo meter.** Scroll velocity drives a hit counter in the margin ("12 HITS"), with rating
    words at thresholds ("NICE", "BRUTAL", "UNHINGED", "ARCHITECTURAL"); decays when idle.
    One rAF via scrollStore. Hidden under reduced motion.
-3. **Story mode (career).** CAREER from earliest to latest as round cards ("ROUND 1 · 2017 ·
-   iB HUBS"). Entering a round slams "ROUND N" and an original second word ("SHIP IT").
-   Integration Wizards, 2022, gets an "ACQUIRED!" finisher splash. Ambassadorships (NVIDIA,
-   HP) appear as ASSIST cameo cards. BLUE is the **FINAL ROUND**: BLUE_STACK as his ultimate
-   moves (name, line, facts).
+3. **Arcade ladder (career).** Newest first, like a resume (changed Nov 2026; it used to
+   run 2017 → now as ROUND 1-7). The current job sits at the top as the **BOSS STAGE**
+   (BLUE, BLUE_STACK as his ultimate moves, CopCars.in as the BONUS STAGE); below it the
+   stages he cleared, newest first ("STAGE 4 · CLEARED"), numbered from the bottom so the
+   page counts down the ladder. The oldest roles (Integration Wizards x2, iB Hubs) share one
+   stage, THE ORIGIN, with the "ACQUIRED!" finisher. Ambassadorships (NVIDIA, HP) stay
+   ASSIST cameo cards, slotted in by date.
 4. **Move list (skills).** A command list: each move is a skill with an input notation drawn
    in SVG (arrows + buttons) and "frame data" columns using real content numbers where they
    exist ("HYPER MEMORY · 73% fewer calls", "SENSOR FUSION · 30,000+/s", "DEEP SCAN · never

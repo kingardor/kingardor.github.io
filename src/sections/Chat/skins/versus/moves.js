@@ -3,7 +3,7 @@
 // her Q button. The notation is a label, not a stat.
 export const MOVES = {
   get_projects: { name: 'CHARACTER SELECT', page: 'ROSTER', input: [2, 3, 6] },
-  get_career_timeline: { name: 'STORY MODE', page: 'ROUNDS', input: [6, 2, 3] },
+  get_career_timeline: { name: 'ARCADE LADDER', page: 'STAGES', input: [6, 2, 3] },
   get_youtube_videos: { name: 'REPLAY THEATRE', page: 'TAPES', input: [2, 1, 4] },
   get_skills: { name: 'MOVE LIST', page: 'FRAME DATA', input: [4, 1, 2, 3, 6] },
   get_publications: { name: 'LORE CODEX', page: 'ENTRIES', input: [6, 3, 2, 1, 4] },

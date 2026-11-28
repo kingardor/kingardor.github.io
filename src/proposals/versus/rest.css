@@ -260,6 +260,8 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-hi);
   .vs-round-left .vs-round-ghost { right: 0; }
   .vs-round-right .vs-round-ghost { left: auto; right: 0; }
   .vs-story-track { row-gap: 14vh; }
+  .vs-origin { width: 100%; }
+  .vs-origin .vs-finisher { top: -16vh; bottom: auto; right: -2vw; }
   .vs-finisher { right: -2vw; bottom: -14vh; width: 220px; }
   .vs-ult { width: 100%; margin-left: 0; grid-template-columns: minmax(0, 1fr); }
   .vs-ult-no { font-size: 2.6rem; margin-bottom: -10px; position: relative; z-index: 1; }
@@ -324,7 +326,12 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-hi);
   /* ACQUIRED! stamp: below its card, in the gap, not over the tag line. */
   .vs-finisher { width: 170px; right: 2vw; bottom: -178px; }
   .vs-round.has-finisher { margin-bottom: 96px; }
-  .vs-finisher-big { font-size: 2.2rem; }
+  /* The origin's stamp sits above it, in the gap, not over its first row */
+  .vs-origin.has-finisher { margin: 150px 0 0; }
+  .vs-origin .vs-finisher { top: -168px; bottom: auto; right: 2vw; }
+  .vs-origin-list li { grid-template-columns: minmax(0, 1fr); }
+  .vs-origin-when { grid-row: auto; font-size: 1.25rem; }
+  .vs-ladder-label { margin-bottom: 10vh; }  .vs-finisher-big { font-size: 2.2rem; }
   .vs-finisher-small { font-size: 0.55rem; }
 
   /* VS splash: the burst sits in the middle of the screen, right where the

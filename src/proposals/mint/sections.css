@@ -161,7 +161,7 @@
 .mb-owner-more li::marker { content: '✓ '; color: #8a6a20; }
 .mb-owner-loc { font-family: var(--mb-mono); font-size: 0.66rem; color: #6a5e4c; }
 .mb-cert-acq {
-  margin: 0 0 0.6rem 3rem; display: inline-block; font-family: var(--mb-mono); font-size: 0.72rem;
+  margin: 0.6rem 0 0 3rem; display: inline-block; font-family: var(--mb-mono); font-size: 0.72rem;
   background: #d8261b; color: #fff; padding: 0.35rem 0.6rem; transform: rotate(-1.5deg);
 }
 .mb-cert-acq b { font-family: var(--mb-sign); font-weight: 400; }
