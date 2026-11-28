@@ -55,7 +55,7 @@
 .vs-title-start {
   position: absolute; left: 50%; bottom: 3.2vh; transform: translateX(-50%);
   font-family: var(--vs-display); font-weight: 900; font-size: clamp(1.4rem, 2.4vw, 2.2rem); letter-spacing: 0.3em;
-  color: var(--vs-paper); padding: 2px 6px 2px 14px;
+  color: var(--vs-paper); padding: 2px 6px 2px 14px; white-space: nowrap;
   text-shadow: 0 0 14px rgba(var(--vs-ink-rgb), 0.9), 3px 0 0 var(--vs-spot);
 }
 .vs-title-corner {

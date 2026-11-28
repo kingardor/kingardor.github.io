@@ -50,7 +50,7 @@ layouts, sound or catchphrases.
 1. **Title screen.** The pixel assembly is "PLAYER 1 LOADING". When it lands the name slams in
    (scale 1.8 → 1, a one-frame white flash, a 6 px shake decaying over ~300 ms) in giant
    condensed caps with misregistered pink/yellow duplicates. Subtitle: "CLASS: AI ARCHITECT ·
-   STYLE: VISION + AGENTS · DIFFICULTY: UNFAIR". Blinking "PRESS START" (any key, click or
+   STYLE: VISION + AGENTS · DIFFICULTY: UNFAIR". Blinking "SCROLL TO START" (any key, click or
    scroll starts: it scrolls to story mode). Corners: "CREDITS 00" counting clicks, "1P 2026".
    A health bar + super meter frame across the top; the super meter fills with page progress
    and is full at the contact screen.
