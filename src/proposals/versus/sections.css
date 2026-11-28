@@ -205,13 +205,19 @@
   pointer-events: none;
 }
 .vs-finisher-burst { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* Lettered like the call: white with an ink keyline and a spot offset, so it
+   reads over the burst and over the dark page it spills onto (black letters
+   vanished wherever they left the burst). */
 .vs-finisher-big {
   position: relative; font-family: var(--vs-display); font-weight: 900; font-size: clamp(2.6rem, 4.4vw, 4.2rem); line-height: 0.9;
-  color: var(--vs-ink);
+  color: var(--vs-paper);
+  -webkit-text-stroke: 4px var(--vs-ink); paint-order: stroke fill;
+  text-shadow: 4px 4px 0 var(--vs-spot);
 }
 .vs-finisher-small {
-  position: relative; max-width: 70%;
-  font-size: 0.62rem; font-weight: 500; letter-spacing: 0.08em; color: var(--vs-ink); text-transform: uppercase;
+  position: relative; max-width: 74%; margin-top: 6px;
+  font-size: 0.62rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--vs-paper); background: var(--vs-ink); padding: 3px 6px 2px;
 }
 @media (prefers-reduced-motion: no-preference) {
   .vs-finisher { opacity: 0; }
