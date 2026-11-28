@@ -11,7 +11,7 @@ export function LenisProvider({ children }) {
     // page keeps moving even when the main thread is busy. (A smoothed wheel ran
     // the scroll itself from JavaScript and stuttered on slow laptops; measured
     // Nov 2026.) Lenis stays for scripted scrolls: scrollTo with a duration
-    // (PRESS START, edition landing, the guided tour) and stop()/start().
+    // (SCROLL TO START, edition landing, the guided tour) and stop()/start().
     const lenis = new Lenis({
       lerp: 0.09,
       smoothWheel: false,
