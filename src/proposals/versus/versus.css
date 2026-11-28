@@ -280,10 +280,12 @@
 }
 .vs-call-burst { position: absolute; width: min(90vw, 900px); opacity: 0.95; animation: vs-burstpop 1.35s ease-out both; }
 .vs-call-speed { position: absolute; inset: -20%; width: 140%; height: 140%; opacity: 0.6; animation: vs-fade 1.6s ease-out both; }
-.vs-call-finisher .vs-call-plate { background: var(--vs-hi); border-color: var(--vs-ink); animation-duration: 1.7s; }
-.vs-call-finisher .vs-call-big { color: var(--vs-ink); --vs-mx: 8px; animation-duration: 1.7s; }
-.vs-call-finisher .vs-call-big::after { color: var(--vs-p1); }
-.vs-call-finisher .vs-call-small { font-family: var(--vs-mono); font-weight: 500; font-size: clamp(0.8rem, 1.4vw, 1.1rem); letter-spacing: 0.1em; color: var(--vs-ink); text-transform: uppercase; animation-duration: 1.7s; }
+.vs-call-finisher .vs-call-plate { border-top-width: 8px; border-bottom-width: 8px; animation-duration: 1.7s; }
+/* White letters with an ink keyline and a spot offset, like the round calls
+   (black on a white band read poorly once the flash and burst hit). */
+.vs-call-finisher .vs-call-big { color: var(--vs-paper); --vs-mx: 8px; -webkit-text-stroke: 4px var(--vs-ink); paint-order: stroke fill; animation-duration: 1.7s; }
+.vs-call-finisher .vs-call-big::after { display: none; }
+.vs-call-finisher .vs-call-small { font-family: var(--vs-mono); font-weight: 500; font-size: clamp(0.8rem, 1.4vw, 1.1rem); letter-spacing: 0.1em; color: var(--vs-paper); text-transform: uppercase; animation-duration: 1.7s; }
 .vs-call-final .vs-call-plate { background: var(--vs-dots) 0 0 / 5px 5px, color-mix(in srgb, var(--vs-boss) 92%, transparent); }
 @keyframes vs-band {
   0% { clip-path: inset(0 100% 0 0); }
@@ -477,7 +479,6 @@
   }
   .vs-call-big { font-size: min(16vw, 5rem); }
   .vs-call-small { font-size: min(6.4vw, 1.7rem); margin-top: 0.3em; }
-  .vs-call-finisher .vs-call-big { -webkit-text-stroke: 0; }
   .vs-call-finisher .vs-call-small {
     font-size: 0.68rem; line-height: 1.45; letter-spacing: 0.06em;
     white-space: normal; text-align: center; max-width: 84vw; margin-top: 0.6em;

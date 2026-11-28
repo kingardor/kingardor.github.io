@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { ROUNDS, FINAL, BONUS, BLUE_STACK, P1_RECORD } from './data.js'
+import { LADDER, FINAL, BONUS, BLUE_STACK, P1_RECORD } from './data.js'
 import { announceIf, useEnter, reduced, shake } from './fx.js'
 import { Burst, Mis, SpeedLines } from './Art.jsx'
 
@@ -20,32 +20,31 @@ function span(c) {
   return Math.max(1, end - c.startYear + (c.endYear ? 0 : 1))
 }
 
-function RoundCard({ r, n, side }) {
+const years = (c) => (c.endYear === c.startYear ? `${c.startYear}` : `${c.startYear} → ${c.endYear ?? 'NOW'}`)
+
+// Stages count from the bottom of the ladder; the boss (the current job) is the top one.
+const STAGES = LADDER.filter(r => !r.assist).length + 1
+
+/** A cleared stage: one role, newest first down the page. */
+function StageCard({ r, n, side }) {
   const c = r.c
-  const stampRef = useRef(null)
   const ref = useEnter((el) => {
     el.classList.add('is-in')
-    announceIf(el, { kind: 'round', big: `ROUND ${n}`, small: r.word })
-    if (r.finisher) {
-      setTimeout(() => {
-        announceIf(el, { kind: 'finisher', big: r.finisher.big, small: r.finisher.small }, 0)
-        stampRef.current?.classList.add('is-in')
-        shake(el, 8, 320, 160)
-      }, reduced() ? 0 : 1500)
-    }
+    announceIf(el, { kind: 'round', big: `STAGE ${n}`, small: `CLEARED · ${r.word}` })
   }, { line: 0.62 })
   const combo = c.wins.length
   return (
-    <article className={`vs-round vs-round-${side}${r.finisher ? ' has-finisher' : ''}`} ref={ref} aria-labelledby={`vs-r${n}`}>
+    <article className={`vs-round vs-round-${side}`} ref={ref} aria-labelledby={`vs-s${n}`}>
       <span className="vs-round-ghost" aria-hidden="true">{n}</span>
       <div className="vs-round-plate">
         <p className="vs-round-kicker">
-          <span className="vs-round-no">ROUND {n}</span>
-          <span>{c.startYear}</span>
+          <span className="vs-round-no">STAGE {n}</span>
+          <span>{years(c)}</span>
+          <span className="vs-round-clear">CLEARED</span>
           <span className="vs-round-word" aria-hidden="true">{r.word}</span>
         </p>
-        <h3 className="vs-round-org" id={`vs-r${n}`}>
-          <span className="vs-sr">Round {n}, {c.startYear}: </span>{r.org}
+        <h3 className="vs-round-org" id={`vs-s${n}`}>
+          <span className="vs-sr">Stage {n}, {c.period}: </span>{r.org}
         </h3>
         <p className="vs-round-role">{c.role} <span>· {c.period} · {c.location}</span></p>
         <div className="vs-round-bar" aria-hidden="true">
@@ -63,13 +62,55 @@ function RoundCard({ r, n, side }) {
         )}
         <p className="vs-round-tags">{c.tags.join(' / ')}</p>
       </div>
-      {r.finisher && (
-        <div className="vs-finisher" ref={stampRef}>
-          <Burst className="vs-finisher-burst" seed={9} spikes={20} inks={['hi', 'spot']} />
-          <span className="vs-finisher-big">ACQUIRED!</span>
-          <span className="vs-finisher-small">{r.finisher.small}</span>
-        </div>
-      )}
+    </article>
+  )
+}
+
+/** The bottom of the ladder: the oldest roles, combined into one stage. */
+function OriginCard({ r, side }) {
+  const stampRef = useRef(null)
+  const roles = r.origin
+  const first = Math.min(...roles.map(o => o.c.startYear))
+  const last = Math.max(...roles.map(o => o.c.endYear ?? o.c.startYear))
+  const ref = useEnter((el) => {
+    el.classList.add('is-in')
+    announceIf(el, { kind: 'round', big: 'STAGE 1', small: `CLEARED · ${r.word}` })
+    setTimeout(() => {
+      announceIf(el, { kind: 'finisher', big: r.finisher.big, small: r.finisher.small }, 0)
+      stampRef.current?.classList.add('is-in')
+      shake(el, 8, 320, 160)
+    }, reduced() ? 0 : 1500)
+  }, { line: 0.62 })
+  const tags = [...new Set(roles.flatMap(o => o.c.tags))]
+  return (
+    <article className={`vs-round vs-origin vs-round-${side} has-finisher`} ref={ref} aria-labelledby="vs-origin-h">
+      <span className="vs-round-ghost" aria-hidden="true">1</span>
+      <div className="vs-round-plate">
+        <p className="vs-round-kicker">
+          <span className="vs-round-no">STAGE 1</span>
+          <span>{first} → {last}</span>
+          <span className="vs-round-clear">CLEARED</span>
+        </p>
+        <h3 className="vs-round-org" id="vs-origin-h">
+          <span className="vs-sr">Stage 1, {first} to {last}: </span>{r.word}
+        </h3>
+        <p className="vs-round-role">{roles.length} roles, one acquisition <span>· Bengaluru</span></p>
+        <ol className="vs-origin-list">
+          {roles.map(({ c, org }) => (
+            <li key={c.role + c.startYear}>
+              <p className="vs-origin-when">{years(c)}</p>
+              <p className="vs-origin-who"><b>{org}</b> · {c.role}</p>
+              <p className="vs-origin-what">{c.blurb}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="vs-round-tags">{tags.join(' / ')}</p>
+      </div>
+      <div className="vs-finisher" ref={stampRef}>
+        <Burst className="vs-finisher-burst" seed={9} spikes={20} inks={['hi', 'spot']} />
+        <span className="vs-finisher-big">ACQUIRED!</span>
+        <span className="vs-finisher-small">{r.finisher.small}</span>
+      </div>
     </article>
   )
 }
@@ -90,51 +131,23 @@ function AssistCard({ r, side }) {
   )
 }
 
-export function StoryMode() {
-  let n = 0
-  let side = 0
-  return (
-    <section id="vs-story" className="vs-section vs-story" aria-labelledby="vs-story-h">
-      <ModeHeader
-        id="vs-story-h"
-        no={2}
-        title="STORY MODE"
-        sub="CAREER · 2017 → FINAL ROUND · EVERY ROUND WON ON SITE"
-        taunt="Eight-plus years. Zero continues used."
-      />
-      <dl className="vs-record" aria-label="Player 1 record">
-        {P1_RECORD.map(r => (
-          <div key={r.label}><dt>{r.label}</dt><dd>{r.num}</dd><span>{r.sub}</span></div>
-        ))}
-      </dl>
-      <div className="vs-story-track">
-        {ROUNDS.map((r) => {
-          if (r.assist) return <AssistCard key={r.assist.role} r={r} side={side % 2 ? 'left' : 'right'} />
-          n += 1
-          side += 1
-          return <RoundCard key={r.c.role + r.c.startYear} r={r} n={n} side={side % 2 ? 'left' : 'right'} />
-        })}
-      </div>
-    </section>
-  )
-}
-
-export function FinalRound() {
+/** The top of the ladder: where he works now, then the side quest. */
+function BossStage() {
   const ref = useEnter((el) => {
     el.classList.add('is-in')
-    announceIf(el, { kind: 'final', big: 'FINAL ROUND', small: 'BOSS STAGE: BLUE' })
+    announceIf(el, { kind: 'final', big: 'BOSS STAGE', small: 'NOW PLAYING · BLUE' })
   }, { line: 0.55 })
   const bonusRef = useEnter((el) => {
     el.classList.add('is-in')
     announceIf(el, { kind: 'round', big: 'BONUS STAGE', small: 'IT TAKES REAL MONEY' })
   }, { line: 0.6 })
   return (
-    <section id="vs-final" className="vs-section vs-final" aria-labelledby="vs-final-h">
+    <div className="vs-final">
       <div className="vs-final-head" ref={ref}>
         <SpeedLines className="vs-final-speed" seed={31} />
-        <p className="vs-final-kicker">ROUND 7 · {FINAL.startYear} → NOW · {FINAL.location.toUpperCase()}</p>
-        <h2 className="vs-final-title" id="vs-final-h"><Mis>FINAL ROUND</Mis></h2>
-        <p className="vs-final-vs"><span>{FINAL.role}</span> <b>vs</b> <span>every camera that forgets</span></p>
+        <p className="vs-final-kicker">STAGE {STAGES} · {FINAL.startYear} → NOW · {FINAL.location.toUpperCase()}</p>
+        <h3 className="vs-final-title" id="vs-final-h"><Mis>BOSS STAGE</Mis></h3>
+        <p className="vs-final-vs"><span>{FINAL.role} · {FINAL.org}</span> <b>vs</b> <span>every camera that forgets</span></p>
         <p className="vs-final-blurb">{FINAL.blurb}</p>
       </div>
 
@@ -149,13 +162,46 @@ export function FinalRound() {
       </div>
 
       <aside className="vs-bonus" ref={bonusRef} aria-label="Bonus stage: CopCars.in">
-        <span className="vs-bonus-tag">BONUS STAGE · {BONUS.startYear}</span>
+        <span className="vs-bonus-tag">BONUS STAGE · {BONUS.startYear} → NOW</span>
         <p className="vs-bonus-org">{BONUS.org}</p>
         <p className="vs-bonus-role">{BONUS.role} · {BONUS.period}</p>
         <p className="vs-bonus-blurb">{BONUS.blurb}</p>
         <p className="vs-bonus-wins">{BONUS.wins[0]}</p>
         <a className="vs-btn vs-btn-spot" href={BONUS.orgUrl} target="_blank" rel="noreferrer">SHOP THE LOOT · COPCARS.IN</a>
       </aside>
+    </div>
+  )
+}
+
+/** The career as an arcade ladder: the boss (now) at the top, then every
+ *  stage he cleared, newest first, down to the origin. */
+export function StoryMode() {
+  let n = STAGES
+  return (
+    <section id="vs-story" className="vs-section vs-story" aria-labelledby="vs-story-h">
+      <ModeHeader
+        id="vs-story-h"
+        no={2}
+        title="ARCADE LADDER"
+        sub="CAREER · NOW → 2017 · THE BOSS SITS AT THE TOP"
+        taunt="Eight-plus years. Zero continues used."
+      />
+      <dl className="vs-record" aria-label="Player 1 record">
+        {P1_RECORD.map(r => (
+          <div key={r.label}><dt>{r.label}</dt><dd>{r.num}</dd><span>{r.sub}</span></div>
+        ))}
+      </dl>
+      <BossStage />
+      <p className="vs-ladder-label"><span>CLEARED STAGES · NEWEST FIRST</span> <span>STAGE {STAGES - 1} → STAGE 1</span></p>
+      <div className="vs-story-track">
+        {LADDER.map((r, i) => {
+          const s = i % 2 ? 'left' : 'right' // every card swaps sides, assists included
+          if (r.assist) return <AssistCard key={r.assist.role} r={r} side={s} />
+          if (r.origin) return <OriginCard key="origin" r={r} side={s} />
+          n -= 1
+          return <StageCard key={r.c.role + r.c.startYear} r={r} n={n} side={s} />
+        })}
+      </div>
     </section>
   )
 }

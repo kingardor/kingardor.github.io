@@ -5,7 +5,7 @@ import { ACTS } from './data.js'
 import TitleScreen from './TitleScreen.jsx'
 import { Hud, Combo, Credits, Announcer, FlashLayer } from './Hud.jsx'
 import CutIn from './CutIn.jsx'
-import { StoryMode, FinalRound } from './StoryMode.jsx'
+import { StoryMode } from './StoryMode.jsx'
 import MoveList from './MoveList.jsx'
 import CharacterSelect from './CharacterSelect.jsx'
 import TrainingStage from './TrainingStage.jsx'
@@ -35,11 +35,10 @@ export default function Versus() {
       <ChapterInk />
       <div className="vs-print" aria-hidden="true" />
       <main className={`lab-root vs-root${live ? ' is-live' : ''}`}>
-        <a className="vs-skip" href="#vs-story">Skip to story mode</a>
+        <a className="vs-skip" href="#vs-story">Skip to the career ladder</a>
         <Hud live={live} />
         <TitleScreen live={live} onLive={() => setLive(true)} />
         <StoryMode />
-        <FinalRound />
         <MoveList />
         <CharacterSelect />
         <TrainingStage />

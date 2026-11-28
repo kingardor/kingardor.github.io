@@ -2,15 +2,18 @@ import { useState } from 'react'
 import { CAREER, EDUCATION } from '../../content/index.js'
 import { Talker, Barcode } from './parts.jsx'
 
-// Oldest owner first, the way provenance is read.
+// Newest owner first, the way a resume is read: the current roles lead (the
+// day job before the side business), then everything else by start date.
+// Owner numbers still count up from the first owner, so the list reads 08 → 01.
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const startOf = c => { const [m, y] = c.period.split(' — ')[0].split(' '); return +y * 12 + MON.indexOf(m) }
-const OWNERS = CAREER.filter(c => c.kind !== 'ambassador').sort((a, b) => startOf(a) - startOf(b))
+const rank = c => (c.current ? (c.kind === 'role' ? 0 : 1) : 2)
+const OWNERS = CAREER.filter(c => c.kind !== 'ambassador').sort((a, b) => rank(a) - rank(b) || startOf(b) - startOf(a))
 const SEALS = CAREER.filter(c => c.kind === 'ambassador')
 
 /** Career as a graded slab: acrylic case, grading label, certificate of provenance. */
 export default function Provenance() {
-  const [openIdx, setOpenIdx] = useState(OWNERS.length - 1)
+  const [openIdx, setOpenIdx] = useState(0) // the current job, at the top
   return (
     <section id="mb-provenance" className="mb-prov" aria-labelledby="mb-prov-title">
       <div className="mb-prov-side">
@@ -40,7 +43,7 @@ export default function Provenance() {
               <header className="mb-cert-h">
                 <span>CERTIFICATE OF</span>
                 <b>PROVENANCE</b>
-                <span className="mb-cert-sub">Chain of custody, oldest first. Every owner improved the specimen.</span>
+                <span className="mb-cert-sub">Chain of custody, newest owner first. Every owner improved the specimen.</span>
               </header>
               <ol className="mb-cert-list">
                 {OWNERS.map((c, i) => {
@@ -48,8 +51,11 @@ export default function Provenance() {
                   const acquisition = c.org === 'Integration Wizards Solutions' && c.role === 'AI Architect'
                   return (
                     <li key={c.role + c.org} className={`mb-owner${c.current ? ' is-current' : ''}`}>
+                      {acquisition && (
+                        <p className="mb-cert-acq"><b>Changed hands:</b> Integration Wizards → SparkCognition, 2022</p>
+                      )}
                       <button type="button" className="mb-owner-row" aria-expanded={isOpen} onClick={() => setOpenIdx(isOpen ? -1 : i)}>
-                        <span className="mb-owner-no">{String(i + 1).padStart(2, '0')}</span>
+                        <span className="mb-owner-no">{String(OWNERS.length - i).padStart(2, '0')}</span>
                         <span className="mb-owner-main">
                           <b>{c.org}</b>
                           <span>{c.role}</span>
@@ -63,9 +69,6 @@ export default function Provenance() {
                           {c.wins.length > 0 && <ul>{c.wins.map(w => <li key={w}>{w}</li>)}</ul>}
                           <p className="mb-owner-loc">{c.location}</p>
                         </div>
-                      )}
-                      {acquisition && (
-                        <p className="mb-cert-acq"><b>Changed hands:</b> Integration Wizards → SparkCognition, 2022</p>
                       )}
                     </li>
                   )

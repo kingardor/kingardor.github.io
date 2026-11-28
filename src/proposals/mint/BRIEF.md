@@ -69,10 +69,11 @@ starbursts, "NEW!", "INCLUDES", "COLLECT THEM ALL", absurd warnings.
    appears on the wall holding ARCHIVE (GloveBud, Oculus, GARB-e, Zuko, the classic repos).
    Add a small "peek" link for impatient people.
 5. **Provenance (career).** A graded slab: thick clear acrylic with bevelled edges, a label
-   header ("GEM MINT 10", cert number, "AKASH JAMES — AI ARCHITECT"), holding a certificate
-   listing CAREER as owners/chapters with dates, expandable (blurb + wins). The acquisition reads
-   "Changed hands: Integration Wizards → SparkCognition, 2022". Ambassadorships as endorsement
-   seals on the certificate.
+   header ("GEM MINT 10", cert number, "AKASH JAMES · DIRECTOR AI - BLUE"), holding a certificate
+   listing CAREER as owners/chapters with dates, expandable (blurb + wins), newest owner first
+   like a resume (current roles lead, the day job first; numbered 08 → 01; changed Nov 2026).
+   The acquisition reads "Changed hands: Integration Wizards → SparkCognition, 2022", just above
+   that owner. Ambassadorships as endorsement seals on the certificate.
 6. **Accessories sold separately (skills).** SKILLS.groups as small accessory blister cards,
    each item a tiny part on the card (CUDA, TensorRT, vLLM, DeepStream …); hover jiggles.
 7. **As seen on TV (talks).** TALKS as retro TV-spot cards with "AS SEEN AT NVIDIA GTC" seals;
