@@ -5,6 +5,9 @@ import './shared/utils/prefetch.js' // kick off API fetches during loader window
 import App from './App.jsx'
 import { LenisProvider } from './shared/components/SmoothScroll'
 import { currentEdition, lastEdition } from './editions/editions.js'
+import { applyLite } from './shared/utils/lite.js'
+
+applyLite() // phones, tablets, no GPU: lighter rendering (see lite.js)
 
 const loader = document.getElementById('loader')
 const rootEl = document.getElementById('root')

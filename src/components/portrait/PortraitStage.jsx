@@ -3,6 +3,7 @@ import { subscribe, kick } from '../../shared/scroll/scrollStore.js'
 import { setFilm } from '../story/filmPosition.js'
 import { PROJECTS } from '../../content/index.js'
 import { META, pickSet, setDir } from './portraitSets.js'
+import { isLite } from '../../shared/utils/lite.js'
 import './portrait.css'
 
 // Same sections the story film scrubs through on Home.
@@ -32,6 +33,9 @@ const LOOKS = [
 ]
 
 const FILES = ['plate.webp', 'subject.webp', 'rim-warm.webp', 'rim-cool.webp', 'slash-warm.webp', 'slash-cool.webp', 'lens.webp']
+// Lite rendering (phones, tablets, no graphics acceleration; shared/utils/lite.js):
+// backdrop + subject only, which together are the original photo.
+const LITE_FILES = ['plate.webp', 'subject.webp']
 const COVERS = PROJECTS.filter(p => p.featured && p.images?.[0]).map(p => p.images[0].src)
 
 const FOLLOW = 9          // 1/s: how fast the camera settles onto scroll
@@ -53,8 +57,8 @@ function toSet(set, u, axis) {
   return b[i] + ((u - a[i]) / (a[i + 2] - a[i])) * (b[i + 2] - b[i])
 }
 
-function preload(set, onEach) {
-  return Promise.all(FILES.map(f => {
+function preload(set, files, onEach) {
+  return Promise.all(files.map(f => {
     const img = new Image()
     img.src = setDir(set) + f
     return img.decode().catch(() => {}).then(() => onEach?.())
@@ -95,6 +99,8 @@ export default function PortraitStage({
   const setRef = useRef(set)
   const [ready, setReady] = useState(false)
   const [lensSrc, setLensSrc] = useState(reflections[0] ?? null)
+  const [lite] = useState(() => isLite())
+  const files = lite ? LITE_FILES : FILES
   const [still] = useState(() => typeof window === 'undefined' || !!window.__PRERENDER ||
     window.matchMedia('(prefers-reduced-motion: reduce)').matches)
 
@@ -104,15 +110,15 @@ export default function PortraitStage({
     let alive = true
     let done = 0
     const first = setRef.current
-    preload(first, () => { done += 1; window.__storyProgress?.(done, FILES.length) }).then(() => {
+    preload(first, files, () => { done += 1; window.__storyProgress?.(done, files.length) }).then(() => {
       if (!alive) return
       setReady(true)
       const other = first === 'wide' ? 'tall' : 'wide'
       const later = window.requestIdleCallback || ((fn) => setTimeout(fn, 1500))
-      later(() => { if (alive) preload(other) })
+      later(() => { if (alive) preload(other, files) })
     })
     return () => { alive = false }
-  }, [])
+  }, [files])
 
   useEffect(() => {
     const root = rootRef.current
@@ -277,33 +283,37 @@ export default function PortraitStage({
   const dir = setDir(set)
 
   return (
-    <div ref={rootRef} data-set={set} className={`${layerClass} portrait-stage${ready ? ' is-ready' : ''}${still ? ' is-still' : ''}`} aria-hidden="true">
+    <div ref={rootRef} data-set={set} className={`${layerClass} portrait-stage${ready ? ' is-ready' : ''}${still ? ' is-still' : ''}${lite ? ' is-lite' : ''}`} aria-hidden="true">
       <div ref={backRef} className="ps-frame ps-back" style={frameStyle}>
         <img className="ps-plate" src={`${dir}plate.webp`} alt="" draggable="false" />
         <div className="ps-gel ps-gel-wall" />
-        <div className="ps-gel ps-gel-slash-warm" />
-        <div className="ps-gel ps-gel-slash-cool" />
-        <div className="ps-slash ps-slash-warm"><i /></div>
-        <div className="ps-slash ps-slash-cool"><i /></div>
+        {!lite && <>
+          <div className="ps-gel ps-gel-slash-warm" />
+          <div className="ps-gel ps-gel-slash-cool" />
+          <div className="ps-slash ps-slash-warm"><i /></div>
+          <div className="ps-slash ps-slash-cool"><i /></div>
+        </>}
       </div>
       {midground && set === 'wide' && (
         <div ref={midRef} className="ps-frame ps-mid" style={frameStyle}>{midground}</div>
       )}
       <div ref={frontRef} className="ps-frame ps-front" style={frameStyle}>
         <img className="ps-subject" src={`${dir}subject.webp`} alt="" draggable="false" />
-        <div className="ps-key"><i ref={keyRef} /></div>
-        <img ref={rimWarmRef} className="ps-rim ps-rim-warm" src={`${dir}rim-warm.webp`} alt="" draggable="false" />
-        <img ref={rimCoolRef} className="ps-rim ps-rim-cool" src={`${dir}rim-cool.webp`} alt="" draggable="false" />
-        <div className="ps-gel ps-gel-rim-cool" />
-        <div className="ps-lens">
-          {lensSrc && (
-            <img key={lensSrc} className="ps-lens-img" src={lensSrc} alt="" draggable="false" style={{
-              left: pct(lensBox.left - 0.01), top: pct(lensBox.top - 0.012),
-              width: pct(lensBox.right - lensBox.left + 0.02), height: pct(lensBox.bottom - lensBox.top + 0.024),
-            }} />
-          )}
-          <i key={`glint:${lensSrc}`} className="ps-lens-glint" />
-        </div>
+        {!lite && <>
+          <div className="ps-key"><i ref={keyRef} /></div>
+          <img ref={rimWarmRef} className="ps-rim ps-rim-warm" src={`${dir}rim-warm.webp`} alt="" draggable="false" />
+          <img ref={rimCoolRef} className="ps-rim ps-rim-cool" src={`${dir}rim-cool.webp`} alt="" draggable="false" />
+          <div className="ps-gel ps-gel-rim-cool" />
+          <div className="ps-lens">
+            {lensSrc && (
+              <img key={lensSrc} className="ps-lens-img" src={lensSrc} alt="" draggable="false" style={{
+                left: pct(lensBox.left - 0.01), top: pct(lensBox.top - 0.012),
+                width: pct(lensBox.right - lensBox.left + 0.02), height: pct(lensBox.bottom - lensBox.top + 0.024),
+              }} />
+            )}
+            <i key={`glint:${lensSrc}`} className="ps-lens-glint" />
+          </div>
+        </>}
         <span className="ps-led" style={{ left: pct(geo.led[0]), top: pct(geo.led[1]) }} />
       </div>
       {scrim && <div className="story-scrim" />}

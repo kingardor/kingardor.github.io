@@ -621,3 +621,14 @@ main { position: relative; z-index: 1; }
   --nm-accent-2: #bba2f5;
 }
 .veronica-chat .nm-bar { background: var(--nm-surface); }
+
+/* ── Lite rendering (src/shared/utils/lite.js) ──
+   Phones, tablets and machines without graphics acceleration. No blend modes
+   (a Pixel 10's GPU drew them wrong and blanked whole cards) and no backdrop
+   blurs (each re-blurs whatever scrolls behind it, every frame). Pages add
+   their own lite tweaks next to the rules they change. */
+html.is-lite *, html.is-lite *::before, html.is-lite *::after {
+  mix-blend-mode: normal !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
