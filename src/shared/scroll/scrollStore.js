@@ -1,8 +1,8 @@
 /**
  * scrollStore — the one rAF loop every scroll-driven visual shares.
  *
- * Lenis drives the page by moving the real scroll position, so listening to
- * `scroll` is enough: each scroll (or resize) wakes the loop, subscribers run
+ * The page scrolls natively (Lenis only runs scripted scrollTo calls), and
+ * both move the real scroll position, so listening to `scroll` is enough: each scroll (or resize) wakes the loop, subscribers run
  * with the current scrollY, and the loop goes back to sleep unless a
  * subscriber returns `true` (it is still easing toward its target). An idle
  * page costs zero frames.

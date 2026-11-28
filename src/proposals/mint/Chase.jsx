@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { onscreen } from '../../shared/hooks/onscreen.js'
 import { ARCHIVE, PROJECTS } from '../../content/index.js'
 import { useLenis } from '../../shared/components/lenisContext.js'
 import { useCollection, peekChase } from './collection.js'
@@ -42,7 +43,7 @@ export default function ChaseSlot() {
         <button ref={btn} type="button" className="mb-pick" onClick={() => setOpen(true)} aria-label="Chase variant: Akash, prototype 2016 to 2019. Open it">
           <div className="mb-pbox mb-gbox">
             <div className="mb-pbox-face">
-              <div className="mb-gbox-foil" aria-hidden="true" />
+              <div className="mb-gbox-foil" aria-hidden="true" ref={onscreen} />
               <div className="mb-pbox-tab"><span>CHASE VARIANT</span><span>No. 00/08</span></div>
               <div className="mb-gbox-body">
                 <span className="mb-gbox-k">GOLD FOIL · 1 OF 1</span>

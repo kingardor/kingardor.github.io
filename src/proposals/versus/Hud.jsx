@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { subscribe } from '../../shared/scroll/scrollStore.js'
+import { subscribe, kick } from '../../shared/scroll/scrollStore.js'
 import { useFilmAct } from '../shared/useFilm.js'
-import { MODES, SUPERS, ACTS } from './data.js'
+import { MODES, SUPERS, ACTS, CHAPTER_INKS } from './data.js'
 import { onAnnounce, reduced, shake, flash, isVsOpen, HI } from './fx.js'
 import { Burst, SpeedLines } from './Art.jsx'
 
@@ -18,18 +18,26 @@ export function Hud({ live }) {
 
   useEffect(() => {
     let last = ''
+    let lastFill = ''
     const still = reduced()
-    return subscribe((y) => {
+    // The page height, measured when it changes rather than read every frame.
+    let max = 1
+    const measure = () => { max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight); kick() }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(document.documentElement)
+    window.addEventListener('resize', measure)
+    const off = subscribe((y) => {
       if (still) {
         let k = 0
         ACTS.forEach((a, i) => { const el = document.getElementById(a.id); if (el && el.getBoundingClientRect().top < window.innerHeight * 0.5) k = i })
         setRmAct(k)
       }
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
       const p = Math.min(1, Math.max(0, y / max))
       // full at the continue screen, not only at the very last pixel
       const fill = Math.min(1, p / 0.94)
-      if (fillRef.current) fillRef.current.style.transform = `scaleX(${fill.toFixed(4)})`
+      const tf = `scaleX(${fill.toFixed(4)})`
+      if (tf !== lastFill && fillRef.current) { lastFill = tf; fillRef.current.style.transform = tf }
       const lv = fill >= 0.999 ? 'MAX' : `LV ${Math.floor(fill * 8)}`
       if (lv !== last && lvRef.current) {
         last = lv
@@ -38,6 +46,7 @@ export function Hud({ live }) {
       }
       return false
     })
+    return () => { off(); ro.disconnect(); window.removeEventListener('resize', measure) }
   }, [])
 
   return (
@@ -152,6 +161,7 @@ export function Credits() {
 /** Round calls and finishers, centre screen. */
 export function Announcer() {
   const [call, setCall] = useState(null)
+  const act = useFilmAct()
   const boxRef = useRef(null)
   useEffect(() => {
     let t = 0
@@ -170,7 +180,7 @@ export function Announcer() {
   }, [call])
   if (!call) return null
   return (
-    <div className={`vs-call vs-call-${call.kind}`} key={call.key} ref={boxRef} aria-hidden="true">
+    <div className={`vs-call vs-call-${call.kind}`} key={call.key} ref={boxRef} aria-hidden="true" style={{ '--vs-spot': CHAPTER_INKS[act] ?? CHAPTER_INKS[0] }}>
       {call.kind === 'finisher' && <SpeedLines className="vs-call-speed" />}
       {call.kind !== 'round' && <Burst className="vs-call-burst" seed={call.key % 97} spikes={18} />}
       <div className="vs-call-plate">

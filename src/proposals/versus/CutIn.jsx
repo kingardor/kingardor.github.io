@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useFilmAct } from '../shared/useFilm.js'
 import { getFilm } from '../../components/story/filmPosition.js'
 import { META, photoOf } from '../../components/portrait/portraitSets.js'
-import { SUPERS } from './data.js'
+import { SUPERS, CHAPTER_INKS } from './data.js'
 import { reduced, isVsOpen } from './fx.js'
 import { Streaks } from './Art.jsx'
 
@@ -19,6 +19,25 @@ function photo(set) {
   return photos[set]
 }
 
+/**
+ * Bake the strip's look into the crop once, so the browser composites it as a
+ * plain image instead of re-blending it with everything behind it on every
+ * frame: grayscale -> contrast 1.55 -> brightness 1.15 (what the CSS filter
+ * did), then white at that brightness as alpha, which is exactly a "screen"
+ * blend over whatever is behind the strip.
+ */
+function ink(ctx, w, h) {
+  const d = ctx.getImageData(0, 0, w, h)
+  const px = d.data
+  for (let i = 0; i < px.length; i += 4) {
+    const y = (0.2126 * px[i] + 0.7152 * px[i + 1] + 0.0722 * px[i + 2]) / 255
+    const v = Math.min(1, Math.max(0, ((y - 0.5) * 1.55 + 0.5) * 1.15))
+    px[i] = px[i + 1] = px[i + 2] = 255
+    px[i + 3] = Math.round(v * px[i + 3])
+  }
+  ctx.putImageData(d, 0, 0)
+}
+
 /** Eye line from the studio photo: centred on his sunglasses, strip-shaped. */
 function drawPhotoEyes(ctx, w, h) {
   const set = document.querySelector('.portrait-stage')?.dataset.set || 'wide'
@@ -31,6 +50,7 @@ function drawPhotoEyes(ctx, w, h) {
     const sw = (Math.max(a[2], b[2]) - Math.min(a[0], b[0])) * m.width * 1.9
     const sh = (sw * h) / w
     ctx.drawImage(img, cx - sw / 2, cy - sh / 2, sw, sh, 0, 0, w, h)
+    ink(ctx, w, h)
   }
   if (img.complete && img.naturalWidth) draw()
   else img.addEventListener('load', draw, { once: true })
@@ -73,12 +93,13 @@ export default function CutIn() {
     const ctx = dst.getContext('2d')
     try {
       ctx.drawImage(src, sx, sy, sw, sh, 0, 0, dst.width, dst.height)
+      ink(ctx, dst.width, dst.height)
     } catch { /* canvas not ready */ }
   }, [shot])
 
   if (!shot) return null
   return (
-    <div className={`vs-cutin${shot.forward ? '' : ' is-back'}`} key={shot.key} aria-hidden="true">
+    <div className={`vs-cutin${shot.forward ? '' : ' is-back'}`} key={shot.key} aria-hidden="true" style={{ '--vs-spot': CHAPTER_INKS[shot.act] ?? CHAPTER_INKS[0] }}>
       <div className="vs-cutin-strip">
         <Streaks className="vs-cutin-streaks" seed={shot.act + 3} />
         <canvas ref={eyeRef} className="vs-cutin-eyes" width="640" height="180" />

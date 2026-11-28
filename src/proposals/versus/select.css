@@ -158,7 +158,7 @@
   text-shadow: -4px 3px 0 var(--vs-spot), 3px -2px 0 var(--vs-ink);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .vs-tile-boss:not(.is-unlocked) .vs-tile-q { animation: vs-qbob 1.6s ease-in-out infinite; }
+  .vs-tile-boss:not(.is-unlocked) .vs-tile-q.is-onscreen { animation: vs-qbob 1.6s ease-in-out 4; } /* onscreen ref */
   .vs-tile-boss.is-unlocked .vs-tile-boss-mark { animation: vs-unlock 0.6s cubic-bezier(.2,.9,.3,1.4) both; }
 }
 @keyframes vs-qbob { 50% { transform: skewX(8deg) translateY(-6px) scale(1.04); } }

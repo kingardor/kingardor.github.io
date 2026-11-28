@@ -4,6 +4,7 @@ import './index.css'
 import './shared/utils/prefetch.js' // kick off API fetches during loader window
 import App from './App.jsx'
 import { LenisProvider } from './shared/components/SmoothScroll'
+import { currentEdition, lastEdition } from './editions/editions.js'
 
 const loader = document.getElementById('loader')
 const rootEl = document.getElementById('root')
@@ -59,6 +60,24 @@ const app = (
 // replaces the snapshot on first commit, hidden under the loader.
 createRoot(rootEl).render(app)
 
+// Warm the chat the moment a visitor reaches for a chat link (hover, focus or
+// touch), so it opens fast without loading half a megabyte of chat code while
+// they scroll: the route plus the skin they will see (their edition).
+function warmChat() {
+  if (isChat()) return
+  let done = false
+  const go = (e) => {
+    if (done || !e.target?.closest?.('a[href^="#/chat"]')) return
+    done = true
+    for (const t of ['pointerover', 'focusin', 'touchstart']) document.removeEventListener(t, go, true)
+    import('./sections/Chat/ChatRoute.jsx').catch(() => {})
+    const ed = currentEdition() || lastEdition() || 'mint'
+    if (ed === 'versus') import('./sections/Chat/skins/versus/VersusChat.jsx').catch(() => {})
+    else import('./sections/Chat/skins/mint/MintChat.jsx').catch(() => {})
+  }
+  for (const t of ['pointerover', 'focusin', 'touchstart']) document.addEventListener(t, go, { capture: true, passive: true })
+}
+
 // Skip loader dismissal during build-time prerender so the snapshot includes the
 // loader div. window.__PRERENDER is injected by prerender.mjs via evaluateOnNewDocument
 // and is never present in real browsers.
@@ -70,7 +89,7 @@ if (loader && !window.__PRERENDER) {
     isChat() ? Promise.resolve() : heroReadyPromise,
     storyReady,
   ]).then(() => {
-    import('./sections/Chat/ChatPage').catch(() => {})
+    warmChat()
     loader.style.opacity = '0'
     loader.style.pointerEvents = 'none'
     setTimeout(() => loader.remove(), 600)

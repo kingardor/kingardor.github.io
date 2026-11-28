@@ -175,6 +175,16 @@ export default function PortraitStage({
     let shown = -1
     let dirty = true
     let lastAct = -1
+    // Every scroll frame lands here; write a style only when its value changed
+    // (most of the time only the act progress moves, and nothing reads it but
+    // the picker's flank name).
+    const written = new Map()
+    const write = (el, key, v) => {
+      if (!el || written.get(el)?.[key] === v) return
+      written.set(el, { ...written.get(el), [key]: v })
+      if (key.startsWith('--')) el.style.setProperty(key, v)
+      else el.style[key] = v
+    }
     const place = (P) => {
       const s_ = setRef.current
       const { width: W, height: H } = META[s_]
@@ -186,7 +196,7 @@ export default function PortraitStage({
       const x = clamp(cw / 2 - fx * fw, cw - fw + m, -m)
       const y = clamp(ch / 2 - fy * fh, ch - fh + m, -m)
       const put = (el, d) => {
-        if (el) el.style.transform = `translate3d(${(x + ptr.x * d).toFixed(2)}px, ${(y + ptr.y * d * 0.55).toFixed(2)}px, 0) scale(${s.toFixed(5)})`
+        write(el, 'transform', `translate3d(${(x + ptr.x * d).toFixed(2)}px, ${(y + ptr.y * d * 0.55).toFixed(2)}px, 0) scale(${s.toFixed(5)})`)
       }
       put(backRef.current, PARALLAX.back)
       put(midRef.current, PARALLAX.mid)
@@ -195,20 +205,20 @@ export default function PortraitStage({
       // Lights: each rim swells when the cursor sits on its side.
       const warm = clamp(look.warm * (1 - 0.45 * ptr.x), 0, 1.3)
       const cool = clamp(look.cool * (1 + 0.45 * ptr.x), 0, 1.3)
-      if (rimWarmRef.current) rimWarmRef.current.style.opacity = (0.2 + 0.7 * warm).toFixed(3)
-      if (rimCoolRef.current) rimCoolRef.current.style.opacity = (0.1 + 0.46 * cool).toFixed(3)
+      write(rimWarmRef.current, 'opacity', (0.2 + 0.7 * warm).toFixed(3))
+      write(rimCoolRef.current, 'opacity', (0.1 + 0.46 * cool).toFixed(3))
       if (keyRef.current) {
         // A soft key light over the subject, steered by the cursor (photo px).
         const [fcx, fcy] = META[s_].face
         const lx = W * (fcx + ptr.x * 0.32), ly = H * (fcy + 0.02 + ptr.y * 0.22)
-        keyRef.current.style.transform = `translate3d(${(lx - 450).toFixed(1)}px, ${(ly - 450).toFixed(1)}px, 0)`
+        write(keyRef.current, 'transform', `translate3d(${(lx - 450).toFixed(1)}px, ${(ly - 450).toFixed(1)}px, 0)`)
       }
-      root.style.setProperty('--ps-warm', warm.toFixed(3))
-      root.style.setProperty('--ps-cool', cool.toFixed(3))
-      root.style.setProperty('--ps-lens', look.lens.toFixed(3))
-      root.style.setProperty('--ps-rec', look.rec > 0.5 ? '1' : '0')
-      root.classList.toggle('is-rec', look.rec > 0.5)
-      root.style.setProperty('--ps-p', P.toFixed(4))
+      write(root, '--ps-warm', warm.toFixed(3))
+      write(root, '--ps-cool', cool.toFixed(3))
+      write(root, '--ps-lens', look.lens.toFixed(3))
+      write(root, '--ps-rec', look.rec > 0.5 ? '1' : '0')
+      if (root.classList.contains('is-rec') !== look.rec > 0.5) root.classList.toggle('is-rec', look.rec > 0.5)
+      if (midRef.current) write(root, '--ps-p', P.toFixed(4)) // only the midground (flank name) reads it
 
       const k = clamp(Math.floor(P), 0, Math.max(0, acts.length - 1))
       if (k !== lastAct) {

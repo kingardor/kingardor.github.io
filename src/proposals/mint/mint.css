@@ -292,7 +292,7 @@
 }
 .mb-hero-marks { width: 130px; height: 14px; }
 .mb-hero-foot .mb-fine { max-width: 92ch; justify-self: start; background: rgba(255, 61, 0, 0.94); padding: 5px 8px; box-shadow: 0 0 0 1px rgba(20, 4, 2, 0.25); }
-.mb-hero-scrollhint { font-family: var(--mb-sign); font-size: 0.78rem; background: #121014; color: #FFD400; padding: 0.5em 0.8em 0.4em; animation: mb-nudge 2.4s ease-in-out infinite; }
+.mb-hero-scrollhint { font-family: var(--mb-sign); font-size: 0.78rem; background: #121014; color: #FFD400; padding: 0.5em 0.8em 0.4em; animation: mb-nudge 2.4s ease-in-out 4; } /* finite: endless loops keep the whole screen redrawing */
 @keyframes mb-nudge { 0%, 70%, 100% { transform: none; } 80% { transform: translateY(3px); } 90% { transform: translateY(-2px); } }
 
 /* The blister: clear PETG with a flange, inner shadow and a specular band that tracks the cursor */
@@ -340,7 +340,7 @@
   transform: rotate(10deg);
   filter: drop-shadow(0 8px 10px rgba(0,0,0,0.35));
 }
-.mb-hero-slam.is-landed .mb-hero-burst { animation: mb-pop 0.7s 0.85s var(--mb-spring) both, mb-wobble 3.2s 1.6s ease-in-out infinite; }
+.mb-hero-slam.is-landed .mb-hero-burst { animation: mb-pop 0.7s 0.85s var(--mb-spring) both, mb-wobble 3.2s 1.6s ease-in-out 3; }
 @keyframes mb-pop { from { transform: scale(0) rotate(-40deg); } to { transform: scale(1) rotate(10deg); } }
 @keyframes mb-wobble { 0%, 100% { transform: rotate(10deg) scale(1); } 50% { transform: rotate(4deg) scale(1.05); } }
 

@@ -27,8 +27,9 @@
   background-size: 200% 100%;
   -webkit-background-clip: text; background-clip: text;
   filter: drop-shadow(0 2px 0 #06122f) drop-shadow(0 4px 0 #040c22);
-  animation: mb-foil 6s ease-in-out infinite alternate;
 }
+/* Shimmers when it comes on screen, then rests (onscreen ref). */
+.mb-set-foil.is-onscreen { animation: mb-foil 6s ease-in-out 2 alternate; }
 @keyframes mb-foil { to { background-position: 100% 0; } }
 .mb-set-ed { font-family: var(--mb-sign); font-size: 0.95rem; line-height: 1; color: #cfd6e6; border-left: 2px solid #cfd6e6; padding-left: 0.8rem; }
 .mb-set-claim { margin: 0; font-size: clamp(1rem, 1.5vw, 1.35rem); font-weight: 600; max-width: 30ch; line-height: 1.25; color: #d9deea; }
@@ -318,8 +319,8 @@
   background: radial-gradient(circle at 35% 30%, #fff4c0, #e6b43c 45%, #8a5a08);
   color: #3a2400; transform: rotate(12deg);
   box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 0 5px rgba(255,255,255,0.25), inset 0 0 0 7px rgba(90,58,0,0.4);
-  animation: mb-wobble 4s ease-in-out infinite;
 }
+.mb-tv-seal.is-onscreen { animation: mb-wobble 4s ease-in-out 3 both; }
 .mb-tv-seal span { font-family: var(--mb-mono); font-size: 0.62rem; letter-spacing: 0.12em; font-weight: 500; }
 .mb-tv-seal b { font-family: var(--mb-sign); font-weight: 400; font-size: 1.05rem; line-height: 1; max-width: 110px; }
 .mb-guide {

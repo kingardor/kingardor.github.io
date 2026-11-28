@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { onscreen } from '../../shared/hooks/onscreen.js'
 import { ROSTER, BOSS } from './data.js'
 import { ModeHeader } from './StoryMode.jsx'
 import { reduced, shake, flash, spot } from './fx.js'
@@ -43,7 +44,7 @@ export default function CharacterSelect() {
     setUnlocked(true)
     if (select) setActive('boss')
     if (!reduced()) {
-      flash(0.8, spot())
+      flash(0.8, spot(bossRef.current))
       shake(bossRef.current?.closest('.vs-select-grid'), 9, 360, 80)
     }
   }
@@ -135,7 +136,7 @@ export default function CharacterSelect() {
                   >
                     {unlocked
                       ? <span className="vs-tile-boss-mark">BLUE</span>
-                      : <span className="vs-tile-q" aria-hidden="true">?</span>}
+                      : <span className="vs-tile-q" aria-hidden="true" ref={onscreen}>?</span>}
                     <span className="vs-tile-name">{unlocked ? 'BOSS' : `${scouted}/8`}</span>
                   </button>
                 )

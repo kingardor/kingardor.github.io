@@ -1,10 +1,11 @@
 import React, { Suspense, useEffect } from 'react'
 import useHashPath from './shared/hooks/useHashPath'
 import { useLenis } from './shared/components/lenisContext.js'
-import Home from './components/portfolio/Home'
 import CommandPalette from './components/os/CommandPalette.jsx'
 
 const ChatPage = React.lazy(() => import('./sections/Chat/ChatRoute'))
+// The pre-redesign homepage (/#/classic) loads only when asked for.
+const Home = React.lazy(() => import('./components/portfolio/Home'))
 const LabRouter = React.lazy(() => import('./proposals/LabRouter.jsx'))
 // Peer-review build: the front door picks between the two candidate designs.
 const EditionPicker = React.lazy(() => import('./editions/EditionPicker.jsx'))
@@ -123,7 +124,9 @@ export default function App() {
     return (
       <>
         <CommandPalette />
-        <Home />
+        <Suspense fallback={blank}>
+          <Home />
+        </Suspense>
       </>
     )
   }
