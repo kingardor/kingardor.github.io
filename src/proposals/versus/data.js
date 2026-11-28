@@ -143,6 +143,15 @@ const FIGHTER_STATS = {
   shred: [['HOOKS', '0'], ['INPUT', '416²'], ['YEAR', '2019'], ['FEATURE', 'AUG 2019']],
 }
 
+// Each fighter wears its own ink in character select (tile tint, preview, VS
+// screen, stage), an exception to one spot colour per chapter. None of them
+// is blue: blue belongs to the boss (BLUE_INK).
+const FIGHTER_INKS = {
+  noir: '#FFAE1F', vector: '#FF4FA3', veronica: '#B06CFF', hermes: '#FF2A2A',
+  'q-pocket': '#A3E635', copcars: '#2EE59D', zassistant: '#22D3EE', shred: '#FF6B1A',
+}
+export const BLUE_INK = '#2F6BFF'
+
 const SHORT = { vector: 'VECTOR', 'q-pocket': 'Q-POCKET', shred: 'SHRED FPS', zassistant: 'Z ASSISTANT' }
 
 const ALIAS = {
@@ -159,7 +168,8 @@ export const ROSTER = PROJECTS.map((p, i) => ({
   stats: FIGHTER_STATS[p.slug],
   taunt: p.quote?.line ?? p.pitch,
   tauntBy: p.quote ? p.quote.by : null,
-  ink: i % 2 ? 'hi' : 'spot',
+  ink: 'spot',
+  color: FIGHTER_INKS[p.slug],
   link: p.private
     ? (p.slug === 'veronica' ? { href: '#/chat', label: 'TALK TO HER WEB TWIN' } : { href: p.href, label: 'VISIT COPCARS.IN' })
     : { href: p.repo, label: 'SOURCE ON GITHUB' },
@@ -169,6 +179,7 @@ export const BOSS = {
   slug: 'blue', name: 'BLUE', alias: 'THE FINAL BOSS', kicker: FINAL.role,
   pitch: 'Cameras record everything and remember nothing. I’m fixing that.',
   link: { href: FINAL.orgUrl, label: 'MYBLUE.AI' },
+  color: BLUE_INK,
 }
 
 // ── Replays, lore, trophies ─────────────────────────────────────────────

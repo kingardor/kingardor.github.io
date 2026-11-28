@@ -81,7 +81,7 @@ export default function CharacterSelect() {
       <div className="vs-select-stage">
         <div className="vs-select-preview" aria-live="polite">
           {cur ? (
-            <div className={`vs-pv vs-ink-${cur.ink}`} key={cur.slug}>
+            <div className={`vs-pv vs-ink-${cur.ink}`} key={cur.slug} style={{ '--vs-spot': cur.color }}>
               <Portrait p={cur} className="vs-pv-portrait" big eager />
               <span className="vs-pv-no" aria-hidden="true">{String(cur.n).padStart(2, '0')}</span>
               <div className="vs-pv-info">
@@ -101,7 +101,7 @@ export default function CharacterSelect() {
             </div>
           ) : (
             <div className="vs-pv vs-pv-boss" key="boss">
-              <Burst className="vs-pv-boss-burst" seed={77} spikes={22} inks={['spot', 'hi']} />
+              <Burst className="vs-pv-boss-burst" seed={77} spikes={22} inks={['ink', 'paper']} />
               <span className="vs-pv-boss-name" aria-hidden="true">BLUE</span>
               <div className="vs-pv-info">
                 <p className="vs-pv-alias">{BOSS.alias} · 2025</p>
@@ -147,6 +147,7 @@ export default function CharacterSelect() {
                   key={p.slug} type="button"
                   ref={el => { tiles.current[slot] = el }}
                   className={`vs-tile vs-ink-${p.ink}${active === s ? ' is-active' : ''}${seen.has(s) ? ' is-seen' : ''}`}
+                  style={{ '--vs-spot': p.color }}
                   onMouseEnter={() => scout(s)}
                   onFocus={() => scout(s)}
                   onClick={(e) => choose(s, e.currentTarget)}

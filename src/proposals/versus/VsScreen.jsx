@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLenis } from '../../shared/components/lenisContext.js'
-import { ACTS, BLUE_STACK, CHAPTER_INKS, P1_RECORD } from './data.js'
-
-// The VS screen opens from character select, so it wears that chapter's ink.
-const SELECT_INK = CHAPTER_INKS[ACTS.findIndex(a => a.id === 'vs-select')] ?? CHAPTER_INKS[0]
+import { BLUE_STACK, P1_RECORD } from './data.js'
 import { reduced, shake, flash, setVsOpen } from './fx.js'
 import { Burst, SpeedLines, Mis } from './Art.jsx'
 import { Portrait } from './CharacterSelect.jsx'
 import { portraitBg } from '../../components/portrait/portraitFlag.js'
 
 /**
- * VS screen → stage. Diagonal split (P1 Akash vs the project), the VS crash,
+ * VS screen → stage, in the fighter's own ink (BLUE in its blue).
+ * Diagonal split (P1 Akash vs the project), the VS crash,
  * then the project's stage: its images as backdrops, story, facts as frame
  * data, loadout and links. Esc returns to the select screen.
  */
@@ -23,6 +21,8 @@ export default function VsScreen({ fighter, onClose }) {
   const vsRef = useRef(null)
   const closeRef = useRef(null)
   const isBoss = fighter.slug === 'blue'
+  // one unbreakable word (SHREDFPSOPPONENTS) gets a smaller size so it fits
+  const long = Math.max(...fighter.name.split(' ').map(w => w.length)) > 12 ? ' is-long' : ''
 
   // Open: stop the page, trap focus, Esc to leave.
   useEffect(() => {
@@ -68,8 +68,8 @@ export default function VsScreen({ fighter, onClose }) {
 
   return createPortal(
     <div
-      className={`vs-overlay vs-root-portal is-${phase}`}
-      style={{ '--vs-spot': SELECT_INK }}
+      className={`vs-overlay vs-root-portal is-${phase}${isBoss ? ' is-boss' : ''}`}
+      style={{ '--vs-spot': fighter.color }}
       ref={rootRef}
       data-lenis-prevent
       role="dialog"
@@ -101,7 +101,7 @@ export default function VsScreen({ fighter, onClose }) {
               : <Portrait p={fighter} big eager className="vs-vs-portrait" />}
             <div className="vs-vs-label vs-vs-label-r">
               <span className="vs-vs-tag">{isBoss ? 'BOSS' : `NO.${String(fighter.n).padStart(2, '0')}`}</span>
-              <span className="vs-vs-name">{fighter.name}</span>
+              <span className={`vs-vs-name${long}`}>{fighter.name}</span>
               <span className="vs-vs-sub">{fighter.alias}</span>
             </div>
           </div>
@@ -118,13 +118,13 @@ export default function VsScreen({ fighter, onClose }) {
         <div className="vs-stage" tabIndex={-1}>
           <div className="vs-stage-bg" aria-hidden="true">
             {isBoss
-              ? <Burst className="vs-stage-bg-burst" seed={5} spikes={24} inks={['spot', 'hi']} />
+              ? <Burst className="vs-stage-bg-burst" seed={5} spikes={24} inks={['ink', 'paper']} />
               : <img key={bg} src={images[bg].src} width={images[bg].w} height={images[bg].h} alt="" />}
           </div>
           <div className="vs-stage-inner">
             <header className="vs-stage-head">
               <p className="vs-stage-kicker">STAGE · {isBoss ? 'BOSS FIGHT' : `${fighter.kicker} · ${fighter.year}`}</p>
-              <h2 className="vs-stage-name"><Mis>{fighter.name}</Mis></h2>
+              <h2 className={`vs-stage-name${long}`}><Mis>{fighter.name}</Mis></h2>
               <p className="vs-stage-pitch">{fighter.pitch}</p>
             </header>
 
@@ -186,7 +186,7 @@ export default function VsScreen({ fighter, onClose }) {
             {!isBoss && images.length === 1 && <p className="vs-stage-caption">{images[0].alt}</p>}
 
             <div className="vs-stage-links">
-              <a className="vs-btn vs-btn-hi" href={fighter.link.href}
+              <a className={`vs-btn ${isBoss ? 'vs-btn-hi' : 'vs-btn-spot'}`} href={fighter.link.href}
                 {...(fighter.link.href.startsWith('#') ? {} : { target: '_blank', rel: 'noreferrer' })}
                 onClick={fighter.link.href.startsWith('#') ? onClose : undefined}
               >

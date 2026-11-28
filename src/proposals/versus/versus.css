@@ -27,6 +27,7 @@
   --vs-hi-rgb: 255, 255, 255;
   --vs-p1: #FFFFFF;
   --vs-boss: #161616;
+  --vs-blue: #2F6BFF; /* BLUE, the boss, in character select (BLUE_INK in data.js) */
   --vs-silver: #C9CCD3;
   --vs-bronze: #D9822B;
   --vs-display: 'Big Shoulders Display', 'Impact', 'Arial Narrow', sans-serif;

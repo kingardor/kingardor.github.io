@@ -22,7 +22,9 @@ layouts, sound or catchphrases.
   `#FFFFFF` (`--vs-hi`) and ONE spot colour per chapter (`--vs-spot`, from `CHAPTER_INKS`:
   house red `#FF2A2A` on the title and the close, then ember, cyan, cobalt, red, violet,
   amber as the acts change; each section wears its own, the fixed HUD/stage follow the act on screen).
-  Player 1 is white, the boss ground `#161616`.
+  Player 1 is white, the boss ground `#161616`. One exception: in character select each
+  fighter wears its own ink (`FIGHTER_INKS` in `data.js`: tile tint, preview, VS half, stage),
+  and BLUE, the boss, is the only blue (`--vs-blue` `#2F6BFF`, lettered white with an ink keyline).
   He stays in colour; the wall and the right-hand light take the chapter's ink (`.vs-film`
   gels). Misregistered overprints: headline duplicates offset 3–6 px in white and the spot.
   Halftone dot fields as shading and as transitions. Layout tilts on −12° diagonals; only
