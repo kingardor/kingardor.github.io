@@ -67,19 +67,19 @@
    layers (src/components/portrait/portrait.css); .vs-film is Versus only. ── */
 .vs-film {
   background: #0A0A0A;
-  --ps-gel-wall: color-mix(in srgb, var(--vs-spot, #FF2A2A) 30%, #808080);
-  --ps-gel-warm: #808080;
+  /* plain translucent tints (no blend modes, see portrait.css) */
+  --ps-gel-wall: var(--vs-spot, #FF2A2A);
+  --ps-gel-wall-o: 0.3;
+  --ps-gel-warm: #9A9A9A;
   --ps-gel-cool: var(--vs-spot, #FF2A2A);
+  --ps-gel-o: 0.4;
+  --ps-gel-rim-o: 0.65;
   --ps-glow-warm: rgba(128, 128, 128, 0.22);
   --ps-glow-cool: color-mix(in srgb, var(--vs-spot, #FF2A2A) 22%, transparent);
   --ps-sweep-warm: #A0A0A0;
   --ps-sweep-cool: color-mix(in srgb, var(--vs-spot, #FF2A2A) 75%, white);
 }
 .vs-film .ps-gel { display: block; }
-/* Gels must paint below the cursor-steered key light (see "Gels" in
-   portrait.css): lift the key, and the lens/LED above it, out of the way. */
-.vs-film .ps-key { z-index: 1; }
-.vs-film .ps-lens, .vs-film .ps-led { z-index: 2; }
 
 /* ── Print layer: halftone screen + grain over the film ── */
 .vs-print {

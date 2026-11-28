@@ -41,7 +41,6 @@
   overflow: hidden;
   -webkit-mask: var(--ps-m-slash-warm) 0 0 / 100% 100% no-repeat;
   mask: var(--ps-m-slash-warm) 0 0 / 100% 100% no-repeat;
-  mix-blend-mode: screen;
   opacity: calc(0.35 + 0.65 * var(--ps-warm));
 }
 .ps-slash::before {
@@ -67,19 +66,22 @@
   animation-direction: reverse;
 }
 
-/* ── Gels: optional colour re-lighting, off unless a page switches them on ──
-   Each gel re-hues what sits under it (mix-blend-mode: color keeps the
-   photo's light and shade and swaps its colour): the wall, the light through
-   each slash, and the cool-side rim light on him. A page shows them and sets
-   --ps-gel-wall (+ --ps-gel-wall-o), --ps-gel-warm and --ps-gel-cool; the
-   slash glows take --ps-glow-* / --ps-sweep-*.
-   GPU caveat: the cursor-steered key light (.ps-key) is its own GPU layer,
-   and a blend layer painted AFTER it loses its backdrop and paints flat
-   colour (software renderers, e.g. headless Chrome, don't show this). A page
-   using the rim gel must lift .ps-key above it with z-index. Versus does
-   (.vs-film in src/proposals/versus/versus.css). */
-.ps-gel { display: none; mix-blend-mode: color; }
-.ps-gel-wall { background: var(--ps-gel-wall, transparent); opacity: var(--ps-gel-wall-o, 1); }
+/* ── No blend modes anywhere in the stage ──
+   Every layer composites as a plain translucent layer. mix-blend-mode
+   (screen, soft-light, color) broke on real GPUs: on a Pixel 10 (PowerVR,
+   Chrome over ANGLE/Vulkan) the key light painted him as a flat peach
+   silhouette and whole cards went blank; on Macs a blend layer after the key
+   light painted flat colour. Headless Chrome never showed either. Each blend
+   also cost an offscreen pass per frame. Lights over a dark photo look nearly
+   the same drawn plainly; the gels below are tints, not hue swaps.
+
+   Gels: optional colour tints, off unless a page switches them on: the wall,
+   the light through each slash, and the cool-side rim light on him. A page
+   shows them and sets --ps-gel-wall (+ --ps-gel-wall-o), --ps-gel-warm,
+   --ps-gel-cool (+ --ps-gel-o, --ps-gel-rim-o); the slash glows take
+   --ps-glow-* / --ps-sweep-*. Versus uses them (.vs-film in versus.css). */
+.ps-gel { display: none; opacity: var(--ps-gel-o, 0.35); }
+.ps-gel-wall { background: var(--ps-gel-wall, transparent); opacity: var(--ps-gel-wall-o, 0.25); }
 .ps-gel-slash-warm {
   background: var(--ps-gel-warm, transparent);
   -webkit-mask: var(--ps-m-slash-warm) 0 0 / 100% 100% no-repeat;
@@ -93,6 +95,7 @@
 /* the rim's shape intersected with his silhouette, so it stays on him */
 .ps-gel-rim-cool {
   background: var(--ps-gel-cool, transparent);
+  opacity: var(--ps-gel-rim-o, 0.6);
   -webkit-mask-image: var(--ps-m-rim-cool), var(--ps-m-subject);
   mask-image: var(--ps-m-rim-cool), var(--ps-m-subject);
   -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
@@ -105,12 +108,13 @@
 }
 
 /* ── Subject and its lights ── */
-.ps-rim { mix-blend-mode: screen; opacity: 0.5; }
+.ps-rim { opacity: 0.5; }
+/* A faint warm glow over his face (it used to be a soft-light blend). */
 .ps-key {
   overflow: hidden;
   -webkit-mask: var(--ps-m-subject) 0 0 / 100% 100% no-repeat;
   mask: var(--ps-m-subject) 0 0 / 100% 100% no-repeat;
-  mix-blend-mode: soft-light;
+  opacity: var(--ps-key-o, 0.16);
 }
 .ps-key i {
   position: absolute; left: 0; top: 0;
@@ -134,7 +138,6 @@
   object-fit: cover;
   transform: scaleX(-1);
   filter: brightness(0.82) contrast(1.1) saturate(0.75) blur(0.5px);
-  mix-blend-mode: screen;
   -webkit-mask-image: linear-gradient(to bottom, #000 30%, rgba(0, 0, 0, 0.35) 100%);
   mask-image: linear-gradient(to bottom, #000 30%, rgba(0, 0, 0, 0.35) 100%);
   animation: ps-fade 0.9s ease both;

@@ -128,6 +128,11 @@
 .vs-tile:hover, .vs-tile.is-active { border-color: var(--vs-hi); transform: skewX(-8deg) scale(1.06); z-index: 2; }
 .vs-tile:hover .vs-portrait img, .vs-tile.is-active .vs-portrait img { filter: none; }
 .vs-tile:hover .vs-portrait::after, .vs-tile.is-active .vs-portrait::after { opacity: 0; }
+/* Lite (no blend modes): a translucent tint instead of the multiplied one */
+html.is-lite .vs-tile .vs-portrait::after { opacity: 0.45; }
+html.is-lite .vs-tile.vs-ink-hi .vs-portrait::after,
+html.is-lite .vs-tile:hover .vs-portrait::after,
+html.is-lite .vs-tile.is-active .vs-portrait::after { opacity: 0; }
 .vs-tile.is-active::before {
   content: '1P'; position: absolute; right: 6px; top: 6px; z-index: 3;
   font-family: var(--vs-display); font-weight: 900; font-size: 1.2rem; line-height: 1;
