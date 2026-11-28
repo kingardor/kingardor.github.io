@@ -328,7 +328,8 @@ a.vs-trophy-in:hover, a.vs-trophy-in:focus-visible { border-color: var(--vs-hi);
   .vs-origin .vs-finisher { top: -168px; bottom: auto; right: 2vw; }
   .vs-origin-list li { grid-template-columns: minmax(0, 1fr); }
   .vs-origin-when { grid-row: auto; font-size: 1.25rem; }
-  .vs-ladder-label { margin-bottom: 10vh; }  .vs-finisher-big { font-size: 2.2rem; }
+  .vs-ladder-label { margin-bottom: 10vh; }
+  .vs-finisher-big { font-size: 2.2rem; -webkit-text-stroke-width: 3px; text-shadow: 3px 3px 0 var(--vs-spot); }
   .vs-finisher-small { font-size: 0.55rem; }
 
   /* VS splash: the burst sits in the middle of the screen, right where the
