@@ -6,16 +6,16 @@ export function LenisProvider({ children }) {
   const lenisRef = useRef(null)
   const scrollProgressRef = useRef(0)
 
-  // Detect mobile once on mount (don't re-run on resize — Lenis teardown is expensive)
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-
   useEffect(() => {
-    // Desktop gets cinematic smoothing (heavy lag suits the monolith choreography);
-    // mobile stays on native scroll — no rubber-band conflicts, no wasted frames.
+    // Native scrolling everywhere: the browser scrolls on its own thread, so the
+    // page keeps moving even when the main thread is busy. (A smoothed wheel ran
+    // the scroll itself from JavaScript and stuttered on slow laptops; measured
+    // Nov 2026.) Lenis stays for scripted scrolls: scrollTo with a duration
+    // (PRESS START, edition landing, the guided tour) and stop()/start().
     const lenis = new Lenis({
-      lerp: isMobile ? 1 : 0.09,
-      smoothWheel: !isMobile,
-      smoothTouch: false,
+      lerp: 0.09,
+      smoothWheel: false,
+      syncTouch: false,
       orientation: 'vertical',
       gestureOrientation: 'vertical',
     })
@@ -56,7 +56,7 @@ export function LenisProvider({ children }) {
       lenis.destroy()
       lenisRef.current = null
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <LenisContext.Provider value={lenisRef}>

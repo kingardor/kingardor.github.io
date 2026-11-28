@@ -23,7 +23,8 @@ export const SUPERS = [
  * Chapter colours: the page is black, white and ONE spot colour, and the spot
  * changes with the act, like the spot ink on each chapter of a manga volume.
  * One per act, named after its super (data.js SUPERS); the title and the
- * last act print in the house red.
+ * last act print in the house red. ChapterInk.jsx applies them: each section
+ * wears its act's ink, the fixed layers follow the act on screen.
  */
 export const CHAPTER_INKS = [
   '#FF2A2A', // KEY LIGHT   · title

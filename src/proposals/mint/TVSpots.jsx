@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { onscreen } from '../../shared/hooks/onscreen.js'
 import { TALKS } from '../../content/index.js'
 import { Talker } from './parts.jsx'
 import { isReduced } from './data.js'
@@ -75,7 +76,7 @@ export default function TVSpots() {
             </div>
           </div>
           {seal && (
-            <div className="mb-tv-seal" aria-label={`As seen at ${seal}`}>
+            <div className="mb-tv-seal" aria-label={`As seen at ${seal}`} ref={onscreen}>
               <span>AS SEEN AT</span><b>{seal.replace('NVIDIA ', 'NVIDIA ')}</b>
             </div>
           )}

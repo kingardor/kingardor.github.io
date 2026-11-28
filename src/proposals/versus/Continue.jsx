@@ -96,7 +96,7 @@ export default function Continue() {
 
   useEffect(() => {
     if (!over || reduced()) return
-    flash(0.8, spot())
+    flash(0.8, spot(overRef.current))
     shake(overRef.current, 10, 380, 120)
   }, [over])
 

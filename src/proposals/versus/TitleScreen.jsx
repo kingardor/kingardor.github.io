@@ -32,10 +32,14 @@ export default function TitleScreen({ live, onLive }) {
   }, [live])
 
   // Scrolling away splits the name and lifts the plates off the face.
+  // Writes only when the split changes: past the title it stays at 1.
   useEffect(() => {
+    let last = -1
     return subscribe((y) => {
       const vh = window.innerHeight
       const p = Math.min(1, Math.max(0, y / (vh * 0.9)))
+      if (p === last) return false
+      last = p
       const e = p * p
       if (leftRef.current) leftRef.current.style.transform = `translate3d(${(-e * 60).toFixed(2)}vw, 0, 0)`
       if (rightRef.current) rightRef.current.style.transform = `translate3d(${(e * 60).toFixed(2)}vw, 0, 0)`

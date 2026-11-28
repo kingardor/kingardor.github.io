@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { onscreen } from '../../shared/hooks/onscreen.js'
 import { BLUE_STACK, LINKS } from '../../content/index.js'
 import { Talker, Burst, Barcode, PrintMarks } from './parts.jsx'
 
@@ -15,7 +16,7 @@ export default function BlueSet() {
       <div className="mb-set">
         <div className="mb-set-lid">
           <div className="mb-set-brand">
-            <span className="mb-set-foil">BLUE</span>
+            <span className="mb-set-foil" ref={onscreen}>BLUE</span>
             <span className="mb-set-ed">PLATINUM<br />EDITION</span>
           </div>
           <p className="mb-set-claim">Cameras record everything and remember nothing. <b>This set fixes that.</b></p>

@@ -10,17 +10,19 @@
 /* Ink roles (fx.js holds SPOT/HI for JS; keep them in step):
      --vs-hi    the main highlight: HUD bars, headlines, buttons (ink text on it)
      --vs-spot  the chapter's spot colour: offset shadows, misregistration,
-                tags, Player 2. Follows --vs-act (set on <html> by ChapterInk);
-                tints use color-mix() on it so they cross-fade too.
+                tags, Player 2. House red here; ChapterInk.jsx sets each
+                section's own ink once, and the act's ink on the fixed layers
+                (stage tint, print, HUD, combo). Tints use color-mix() on it.
      --vs-p1    Player 1 (him)      --vs-boss  the boss / stage ground
-   .vs-print sits beside .vs-root (not inside), so it gets the tokens too. */
-@property --vs-act { syntax: '<color>'; inherits: true; initial-value: #FF2A2A; }
-html { transition: --vs-act 0.8s ease; }
+   .vs-print sits beside .vs-root (not inside), so it gets the tokens too.
+   Never change or transition a colour every element inherits (on html or
+   .vs-root): it restyles and repaints the whole page, which made the
+   section banners stutter. */
 .vs-root, .vs-print {
   --vs-ink: #0A0A0A;
   --vs-ink-rgb: 10, 10, 10;
   --vs-paper: #F4F1EA;
-  --vs-spot: var(--vs-act, #FF2A2A);
+  --vs-spot: #FF2A2A;
   --vs-hi: #FFFFFF;
   --vs-hi-rgb: 255, 255, 255;
   --vs-p1: #FFFFFF;
@@ -65,13 +67,13 @@ html { transition: --vs-act 0.8s ease; }
    layers (src/components/portrait/portrait.css); .vs-film is Versus only. ── */
 .vs-film {
   background: #0A0A0A;
-  --ps-gel-wall: color-mix(in srgb, var(--vs-act, #FF2A2A) 30%, #808080);
+  --ps-gel-wall: color-mix(in srgb, var(--vs-spot, #FF2A2A) 30%, #808080);
   --ps-gel-warm: #808080;
-  --ps-gel-cool: var(--vs-act, #FF2A2A);
+  --ps-gel-cool: var(--vs-spot, #FF2A2A);
   --ps-glow-warm: rgba(128, 128, 128, 0.22);
-  --ps-glow-cool: color-mix(in srgb, var(--vs-act, #FF2A2A) 22%, transparent);
+  --ps-glow-cool: color-mix(in srgb, var(--vs-spot, #FF2A2A) 22%, transparent);
   --ps-sweep-warm: #A0A0A0;
-  --ps-sweep-cool: color-mix(in srgb, var(--vs-act, #FF2A2A) 75%, white);
+  --ps-sweep-cool: color-mix(in srgb, var(--vs-spot, #FF2A2A) 75%, white);
 }
 .vs-film .ps-gel { display: block; }
 /* Gels must paint below the cursor-steered key light (see "Gels" in
@@ -205,8 +207,8 @@ html { transition: --vs-act 0.8s ease; }
 }
 .vs-hud-super.is-max .vs-hud-super-lv { background: var(--vs-hi); }
 @media (prefers-reduced-motion: no-preference) {
-  .vs-hud-super.is-max .vs-hud-meter-fill { animation: vs-max 0.5s steps(2) infinite; }
-  .vs-hud-super.is-max .vs-hud-super-lv { animation: vs-bob 1.2s ease-in-out infinite; }
+  .vs-hud-super.is-max .vs-hud-meter-fill { animation: vs-max 0.5s steps(2) 6; } /* finite: the HUD is always on screen */
+  .vs-hud-super.is-max .vs-hud-super-lv { animation: vs-bob 1.2s ease-in-out 3; }
 }
 @keyframes vs-max { 50% { filter: brightness(1.35) hue-rotate(-20deg); } }
 @keyframes vs-bob { 50% { transform: skewX(12deg) translateY(-3px); } }
@@ -332,10 +334,9 @@ html { transition: --vs-act 0.8s ease; }
 }
 .vs-cutin.is-back .vs-cutin-strip { animation-name: vs-cutback; }
 .vs-cutin-streaks { position: absolute; inset: 0; width: 100%; height: 100%; animation: vs-streak var(--vs-cut) linear both; }
+/* The crop arrives already inked (CutIn.jsx ink()): no filter or blend here. */
 .vs-cutin-eyes {
   position: absolute; right: 22vw; top: 0; height: 100%; width: auto; aspect-ratio: 640 / 180;
-  filter: grayscale(1) contrast(1.55) brightness(1.15);
-  mix-blend-mode: screen;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 }

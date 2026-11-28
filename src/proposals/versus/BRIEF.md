@@ -21,7 +21,8 @@ layouts, sound or catchphrases.
   yellow `#F3FF4A` riso pair): ink black `#0A0A0A`, paper white `#F4F1EA`, highlight white
   `#FFFFFF` (`--vs-hi`) and ONE spot colour per chapter (`--vs-spot`, from `CHAPTER_INKS`:
   house red `#FF2A2A` on the title and the close, then ember, cyan, cobalt, red, violet,
-  amber as the acts change, cross-fading). Player 1 is white, the boss ground `#161616`.
+  amber as the acts change; each section wears its own, the fixed HUD/stage follow the act on screen).
+  Player 1 is white, the boss ground `#161616`.
   He stays in colour; the wall and the right-hand light take the chapter's ink (`.vs-film`
   gels). Misregistered overprints: headline duplicates offset 3–6 px in white and the spot.
   Halftone dot fields as shading and as transitions. Layout tilts on −12° diagonals; only

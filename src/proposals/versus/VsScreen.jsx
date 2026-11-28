@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLenis } from '../../shared/components/lenisContext.js'
-import { BLUE_STACK, P1_RECORD } from './data.js'
+import { ACTS, BLUE_STACK, CHAPTER_INKS, P1_RECORD } from './data.js'
+
+// The VS screen opens from character select, so it wears that chapter's ink.
+const SELECT_INK = CHAPTER_INKS[ACTS.findIndex(a => a.id === 'vs-select')] ?? CHAPTER_INKS[0]
 import { reduced, shake, flash, setVsOpen } from './fx.js'
 import { Burst, SpeedLines, Mis } from './Art.jsx'
 import { Portrait } from './CharacterSelect.jsx'
@@ -66,6 +69,7 @@ export default function VsScreen({ fighter, onClose }) {
   return createPortal(
     <div
       className={`vs-overlay vs-root-portal is-${phase}`}
+      style={{ '--vs-spot': SELECT_INK }}
       ref={rootRef}
       data-lenis-prevent
       role="dialog"
